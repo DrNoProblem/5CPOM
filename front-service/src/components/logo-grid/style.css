@@ -1,0 +1,121 @@
+.grid {
+    display: grid;
+}
+
+.grid .grid-bloc__0,
+.grid .grid-bloc__1,
+.grid .grid-bloc__2,
+.grid .grid-bloc__3,
+.grid .grid-bloc__9,
+.grid .grid-bloc__10,
+.grid .grid-bloc__11,
+.grid .grid-bloc__12 {
+    background: #ff2768;
+    transition: all 0.2s ease-in-out;
+}
+
+.grid.hover:hover .grid-bloc__0,
+.grid.hover:hover .grid-bloc__1,
+.grid.hover:hover .grid-bloc__2,
+.grid.hover:hover .grid-bloc__3,
+.grid.hover:hover .grid-bloc__9,
+.grid.hover:hover .grid-bloc__10,
+.grid.hover:hover .grid-bloc__11,
+.grid.hover:hover .grid-bloc__12 {
+    background: #3f80ff;
+}
+
+
+.grid .grid-bloc__4,
+.grid .grid-bloc__5,
+.grid .grid-bloc__6,
+.grid .grid-bloc__7,
+.grid .grid-bloc__8 {
+    background: #3f80ff;
+    transition: all 0.2s ease-in-out;}
+
+.grid.hover:hover .grid-bloc__4,
+.grid.hover:hover .grid-bloc__5,
+.grid.hover:hover .grid-bloc__6,
+.grid.hover:hover .grid-bloc__7,
+.grid.hover:hover .grid-bloc__8 {
+    background: #ff2768;
+}
+
+
+.grid-bloc__0 {
+    grid-column: 1 / 4;
+    grid-row: 5;
+    border-top-left-radius: 100px;
+}
+
+.grid-bloc__1 {
+    grid-column: 4;
+    grid-row: 2 / 7;
+    border-top-left-radius: 100px;
+}
+
+.grid-bloc__2 {
+    grid-column: 1;
+    grid-row: 6 / 8;
+}
+
+.grid-bloc__3 {
+    grid-column: 1 / 7;
+    grid-row: 8;
+    border-bottom-left-radius: 100px;
+}
+
+
+.grid-bloc__4 {
+    grid-column: 6;
+    grid-row: 1 / 7;
+    border-top-left-radius: 100px;
+}
+
+.grid-bloc__5 {
+    grid-column: 7 / 9;
+    grid-row: 1;
+    border-top-right-radius: 100px;
+}
+
+.grid-bloc__6 {
+    grid-column: 8;
+    grid-row: 2 / 9;
+}
+
+.grid-bloc__7 {
+    grid-column: 8 / 10;
+    grid-row: 9;
+    border-bottom-left-radius: 100px;
+}
+
+.grid-bloc__8 {
+    grid-column: 10;
+    grid-row: 4 / 10;
+    border-bottom-right-radius: 100px;
+}
+
+
+.grid-bloc__9 {
+    grid-column: 10 / 16;
+    grid-row: 2;
+    border-top-right-radius: 100px;
+}
+
+.grid-bloc__10 {
+    grid-column: 15;
+    grid-row: 3 / 5;
+}
+
+.grid-bloc__11 {
+    grid-column: 13 / 16;
+    grid-row: 5;
+    border-bottom-right-radius: 100px;
+}
+
+.grid-bloc__12 {
+    grid-column: 12;
+    grid-row: 4 / 9;
+    border-bottom-right-radius: 100px;
+}

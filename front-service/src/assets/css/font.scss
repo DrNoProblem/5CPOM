@@ -1,0 +1,24 @@
+@charset "UTF-8";
+
+/* FONTS */
+@font-face {
+    font-family: 'silkabold';
+    src: url('../fonts/silka-bold-webfont.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'silkamedium';
+    src: url('../fonts/silka-medium-webfont.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'silkasemibold';
+    src: url('../fonts/silka-semibold-webfont.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    letter-spacing:0;
+}

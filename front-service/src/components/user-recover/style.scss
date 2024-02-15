@@ -1,0 +1,25 @@
+.user-recover {
+    width: 100%;
+    height: 94vh;
+}
+
+.user-recover .bloc {
+    padding: 50px;
+    background-color: var(--color-dark-bg);
+    border-radius: 15px;
+}
+
+.user-recover .logo {
+    width: 10vh;
+    border-radius: 8px;
+}
+
+.user-recover .forget {
+    margin: 15px 0;
+}
+
+.user-recover .forget span:hover {
+    color: var(--color-blue);
+    text-decoration: underline;
+    cursor: pointer;
+}

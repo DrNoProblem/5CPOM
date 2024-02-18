@@ -1,9 +1,6 @@
 .board-container {
   height: 65vh;
   transform: translateY(-100px);
-  border: 2px solid #00000000;
-  border-right: 2px solid var(--color-red);
-  border-left: 2px solid var(--color-blue);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,7 +16,7 @@ h1.scores {
   overflow: visible;
 }
 
-.scores.playerTurn-1::after {
+.scores.playerTurn1::after {
   content: "PLAYER 2";
   font-size: 20px;
   background: var(--color-red);
@@ -29,7 +26,7 @@ h1.scores {
   padding: 5px 10px;
   border-radius: 0px 5px 5px 0px;
 }
-.scores.playerTurn1::before {
+.scores.playerTurn-1::before {
   content: "PLAYER 1";
   font-size: 20px;
   background: var(--color-blue);
@@ -50,14 +47,14 @@ h1.scores {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   border: 2px solid grey;
-  border-radius: 5vh;
-}
-
-.board.playerTurn-1 {
-  border: 2px solid var(--color-red);
+  border-radius: 4vh;
 }
 
 .board.playerTurn1 {
+  border: 2px solid var(--color-red);
+}
+
+.board.playerTurn-1 {
   border: 2px solid var(--color-blue);
 }
 
@@ -110,19 +107,19 @@ h1.scores {
   border-radius: 100%;
   position: absolute;
   border: solid 2px #fff;
-  background-color: #252e37dd;
+  background-color: var(--color-dark-bg);
 }
 .case:hover::after {
-  opacity: 1;
+  opacity: 0.2;
 }
 
-.playerTurn-1 .case:hover .red-player {
+.playerTurn1 .case:hover .red-player {
   background-color: var(--color-red);
   box-shadow: #992a51 0px 0px 20px 0px;
   cursor: pointer;
 }
 
-.playerTurn1 .case:hover .blue-player {
+.playerTurn-1 .case:hover .blue-player {
   background-color: var(--color-blue);
   box-shadow: #115ba2 0px 0px 20px 0px;
   cursor: pointer;

@@ -2,7 +2,6 @@ import React, { FunctionComponent, useState } from "react";
 import { Link } from "react-router-dom";
 import UserModel from "../../models/user-model";
 import "./style.scss";
-import { nextTick } from "process";
 
 type Props = {
   currentUser: UserModel;
@@ -77,31 +76,42 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
   };
 
   const nextTurn = (pawn: Pawn) => {
-    let PawnListToRemoveByNoCapture: Pawn[] = []
+    let PawnListToRemoveByNoCapture: Pawn[] = [];
     virtualBoard.forEach((line, yIndex) => {
       line.forEach((row, xIndex) => {
         if (!(xIndex === pawn.x && yIndex === pawn.y)) {
           if (row.p === PlayerTurn) {
-            const ListOfEat = checkPossibleEat({ x: xIndex, y: yIndex, player: PlayerTurn });
-            if (ListOfEat.length !== 0) PawnListToRemoveByNoCapture.push({ x: xIndex, y: yIndex, player: PlayerTurn })
+            const ListOfEat = checkPossibleEat({
+              x: xIndex,
+              y: yIndex,
+              player: PlayerTurn,
+            });
+            if (ListOfEat.length !== 0)
+              PawnListToRemoveByNoCapture.push({
+                x: xIndex,
+                y: yIndex,
+                player: PlayerTurn,
+              });
           }
         }
-      })
-    })
+      });
+    });
 
     setVirtualBoard((currentBoard) => {
       const newBoard = JSON.parse(JSON.stringify(currentBoard));
-      PawnListToRemoveByNoCapture.forEach(target => {
-        newBoard[target.y][target.x].p = PlayerTurn;
+      PawnListToRemoveByNoCapture.forEach((target) => {
+        newBoard[target.y][target.x].p = 0;
       });
       return newBoard;
     });
 
-    document.querySelector('.pawn-selected')!.classList.remove("pawn-selected");
+    if (document.querySelector(".pawn-selected"))
+      document
+        .querySelector(".pawn-selected")!
+        .classList.remove("pawn-selected");
     setPawnSelected(false);
-    setPlayerTurn(PlayerTurn * -1)
-  }
-
+    setPlayerTurn(PlayerTurn * -1);
+  };
 
   const clickPawn = (element: any) => {
     // span pawn -> case
@@ -130,36 +140,40 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
 
       let targetPosition: string;
 
-
-      if (listOfPossiblePosition.move.includes(`${tempoPawn.x}&${tempoPawn.y}`)) targetPosition = "move";
-      else if (listOfPossiblePosition.eat.includes(`${tempoPawn.x}&${tempoPawn.y}`)) targetPosition = "eat";
+      if (listOfPossiblePosition.move.includes(`${tempoPawn.x}&${tempoPawn.y}`))
+        targetPosition = "move";
+      else if (
+        listOfPossiblePosition.eat.includes(`${tempoPawn.x}&${tempoPawn.y}`)
+      )
+        targetPosition = "eat";
       else targetPosition = "null";
 
       // unselect pion
       if (targetPosition === "move") MovePawn(tempoPawn);
       else if (targetPosition === "eat") EatPawn(tempoPawn);
 
-
-
       // pion deplacé peut manger ?
-      if (document.querySelector('.pawn-selected')) document.querySelector('.pawn-selected')!.classList.remove("pawn-selected");
+      if (document.querySelector(".pawn-selected"))
+        document
+          .querySelector(".pawn-selected")!
+          .classList.remove("pawn-selected");
 
       if (targetPosition === "eat") {
         const NewPossibleEat = checkPossibleEat(tempoPawn);
+        console.log(NewPossibleEat);
         if (NewPossibleEat.length !== 0) {
           spanPawn.classList.add("pawn-selected");
           setPawnSelected(tempoPawn);
         } else nextTurn(tempoPawn);
       } else nextTurn(tempoPawn);
-
     } else {
       if (spanPawn.children.length === 0) return false;
       if (parseInt(spanPawn.dataset["player"]) !== PlayerTurn) return false;
       const possibleMove = checkPossibleMove(tempoPawn);
       const possibleEat = checkPossibleEat(tempoPawn);
       if (possibleMove.length === 0 && possibleEat.length === 0) return false;
-      console.log('move', possibleMove); //!--------------------------------------------------
-      console.log('eat', possibleEat); //!--------------------------------------------------
+      console.log("move", possibleMove); //!--------------------------------------------------
+      console.log("eat", possibleEat); //!--------------------------------------------------
       spanPawn.classList.add("pawn-selected");
       setPawnSelected(tempoPawn);
     }
@@ -263,9 +277,9 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
   const checkPossibleEat = (Pawn: Pawn): string[] => {
     let EatPossbile: string[] = [];
 
-    virtualBoard[Pawn.y][Pawn.x].d.forEach(e => {
+    virtualBoard[Pawn.y][Pawn.x].d.forEach((e) => {
       switch (e) {
-        case 'N':
+        case "N":
           if (
             virtualBoard[Pawn.y - 1][Pawn.x] &&
             virtualBoard[Pawn.y - 1][Pawn.x].p === Pawn.player * -1
@@ -281,7 +295,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           }
           break;
 
-        case 'E':
+        case "E":
           if (
             virtualBoard[Pawn.y][Pawn.x + 1] &&
             virtualBoard[Pawn.y][Pawn.x + 1].p === Pawn.player * -1
@@ -294,10 +308,10 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
                 EatPossbile.push("E");
               }
             }
-          };
+          }
           break;
 
-        case 'S':
+        case "S":
           if (
             virtualBoard[Pawn.y + 1][Pawn.x] &&
             virtualBoard[Pawn.y + 1][Pawn.x].p === Pawn.player * -1
@@ -313,7 +327,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           }
           break;
 
-        case 'W':
+        case "W":
           if (
             virtualBoard[Pawn.y][Pawn.x - 1] &&
             virtualBoard[Pawn.y][Pawn.x - 1].p === Pawn.player * -1
@@ -329,7 +343,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           }
           break;
 
-        case 'NE':
+        case "NE":
           if (
             virtualBoard[Pawn.y - 1][Pawn.x + 1] &&
             virtualBoard[Pawn.y - 1][Pawn.x + 1].p === Pawn.player * -1
@@ -345,7 +359,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           }
           break;
 
-        case 'WN':
+        case "WN":
           if (
             virtualBoard[Pawn.y - 1][Pawn.x - 1] &&
             virtualBoard[Pawn.y - 1][Pawn.x - 1].p === Pawn.player * -1
@@ -361,7 +375,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           }
           break;
 
-        case 'SE':
+        case "ES":
           if (
             virtualBoard[Pawn.y + 1][Pawn.x + 1] &&
             virtualBoard[Pawn.y + 1][Pawn.x + 1].p === Pawn.player * -1
@@ -377,7 +391,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           }
           break;
 
-        case 'SW':
+        case "SW":
           if (
             virtualBoard[Pawn.y + 1][Pawn.x - 1] &&
             virtualBoard[Pawn.y + 1][Pawn.x - 1].p === Pawn.player * -1
@@ -393,10 +407,9 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           }
           break;
       }
-
-    })
+    });
     return EatPossbile;
-  }
+  };
 
   const checkPossibleMove = (Pawn: Pawn): string[] => {
     let MovePossible: string[] = [];
@@ -486,7 +499,6 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
     setPawnSelected(false);
   };
 
-
   const EatPawn = (target: Pawn) => {
     console.log("target move", target); //!--------------------------------------------------
     if (!PawnSelected) return false;
@@ -522,7 +534,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
         >
           <span className="blue">{P1score}</span>
           <span>-</span>
-          
+
           <span className="red">{P2score}</span>
         </h1>
         <div
@@ -545,8 +557,9 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
                     {f.p !== 0 ? (
                       <span
                         onClick={(e) => clickPawn(e)}
-                        className={`pawn flex-center ${f.p === 1 ? "red-player" : "blue-player"
-                          }`}
+                        className={`pawn flex-center ${
+                          f.p === 1 ? "red-player" : "blue-player"
+                        }`}
                       ></span>
                     ) : null}
                   </span>

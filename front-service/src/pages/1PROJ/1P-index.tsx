@@ -76,48 +76,44 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
     return PlaceDirection;
   };
 
-  /* 
-  !plan 
+  const nextTurn = (pawn: Pawn) => {
+    let PawnListToRemoveByNoCapture: Pawn[] = []
+    virtualBoard.forEach((line, yIndex) => {
+      line.forEach((row, xIndex) => {
+        if (!(xIndex === pawn.x && yIndex === pawn.y)) {
+          if (row.p === PlayerTurn) {
+            const ListOfEat = checkPossibleEat({ x: xIndex, y: yIndex, player: PlayerTurn });
+            if (ListOfEat.length !== 0) PawnListToRemoveByNoCapture.push({ x: xIndex, y: yIndex, player: PlayerTurn })
+          }
+        }
+      })
+    })
 
-  pion deja selectionné ? 
+    setVirtualBoard((currentBoard) => {
+      const newBoard = JSON.parse(JSON.stringify(currentBoard));
+      PawnListToRemoveByNoCapture.forEach(target => {
+        newBoard[target.y][target.x].p = PlayerTurn;
+      });
+      return newBoard;
+    });
 
-  non -> 
-    case click contient un pion ? 
-    non -> stop
+    document.querySelector('.pawn-selected')!.classList.remove("pawn-selected");
+    setPawnSelected(false);
+    setPlayerTurn(PlayerTurn * -1)
+  }
 
-    case click contient un pion du joueur ? 
-    non -> stop
-
-    pion selectionné peut se deplacer ou manger? 
-    non -> stop
-
-    select pion + stop
-
-  oui -> 
-    
-    case click contient un pion ?
-    oui -> stop
-
-    recuperer coordonnée possible du pion selectionné 
-
-    coordonnée possible contient coordonnée case click ?
-    non -> unselect pion + stop
-    
-    deplacement et/ou manger
-
-    unselect pion
-
-    pion deplacé peut manger ?
-    oui -> select pion + stop
-    non -> end turn
-  
-  */
 
   const clickPawn = (element: any) => {
     // span pawn -> case
     let spanPawn = element.target;
     if (spanPawn.classList.contains("pawn")) spanPawn = spanPawn.parentElement;
     // pion deja selectionné ?
+
+    const tempoPawn = {
+      x: parseInt(spanPawn.dataset["placementX"]),
+      y: parseInt(spanPawn.dataset["placementY"]),
+      player: parseInt(spanPawn.dataset["player"]),
+    };
     if (PawnSelected) {
       // case click contient un pion ?
       if (spanPawn.children.length !== 0) {
@@ -134,85 +130,36 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
 
       let targetPosition: string;
 
-      if (
-        listOfPossiblePosition.move.includes(
-          spanPawn.dataset["placementX"] + "&" + spanPawn.dataset["placementY"]
-        )
-      ) {
-        targetPosition = "move";
-      } else if (
-        listOfPossiblePosition.eat.includes(
-          spanPawn.dataset["placementX"] + "&" + spanPawn.dataset["placementY"]
-        )
-      ) {
-        targetPosition = "eat";
-      } else {
-        targetPosition = "null";
-      }
 
-      if (targetPosition !== "null")
-        console.log(
-          targetPosition,
-          spanPawn.dataset["placementX"] + "&" + spanPawn.dataset["placementY"]
-        );
+      if (listOfPossiblePosition.move.includes(`${tempoPawn.x}&${tempoPawn.y}`)) targetPosition = "move";
+      else if (listOfPossiblePosition.eat.includes(`${tempoPawn.x}&${tempoPawn.y}`)) targetPosition = "eat";
+      else targetPosition = "null";
+
       // unselect pion
-      if (targetPosition === "move")
-        MovePawn({
-          x: parseInt(spanPawn.dataset["placementX"]),
-          y: parseInt(spanPawn.dataset["placementY"]),
-        });
-      else if (targetPosition === "eat")
-        EatPawn({
-          x: parseInt(spanPawn.dataset["placementX"]),
-          y: parseInt(spanPawn.dataset["placementY"]),
-        });
+      if (targetPosition === "move") MovePawn(tempoPawn);
+      else if (targetPosition === "eat") EatPawn(tempoPawn);
 
 
 
       // pion deplacé peut manger ?
-      if (document.querySelector('.pawn-selected')) {
-        document.querySelector('.pawn-selected')!.classList.remove("pawn-selected");
-      }
+      if (document.querySelector('.pawn-selected')) document.querySelector('.pawn-selected')!.classList.remove("pawn-selected");
+
       if (targetPosition === "eat") {
-        const NewPossibleEat = checkPossibleEat({
-          x: parseInt(spanPawn.dataset["placementX"]),
-          y: parseInt(spanPawn.dataset["placementY"]),
-          player: PlayerTurn
-        });
-        setPawnSelected(false);
+        const NewPossibleEat = checkPossibleEat(tempoPawn);
         if (NewPossibleEat.length !== 0) {
           spanPawn.classList.add("pawn-selected");
-          setPawnSelected({ x: spanPawn.dataset["placementX"], y: spanPawn.dataset["placementY"], player: PlayerTurn });
-        } else setPlayerTurn(PlayerTurn * -1)
-
-        //!PROBLEME MANGER PION X2
-
-
-      }else {
-        setPlayerTurn(PlayerTurn * -1)
-      }
+          setPawnSelected(tempoPawn);
+        } else nextTurn(tempoPawn);
+      } else nextTurn(tempoPawn);
 
     } else {
-      // case click contient un pion ?
       if (spanPawn.children.length === 0) return false;
-
-      // case click contient un pion du joueur ?
-      if (spanPawn.dataset["player"] != PlayerTurn) return false;
-
-      const tempoPawn = {
-        x: parseInt(spanPawn.dataset["placementX"]),
-        y: parseInt(spanPawn.dataset["placementY"]),
-        player: parseInt(spanPawn.dataset["player"]),
-      };
-
-      // pion selectionné peut se deplacer ou manger?
+      if (parseInt(spanPawn.dataset["player"]) !== PlayerTurn) return false;
       const possibleMove = checkPossibleMove(tempoPawn);
       const possibleEat = checkPossibleEat(tempoPawn);
       if (possibleMove.length === 0 && possibleEat.length === 0) return false;
-      console.log('move', possibleMove);
-      console.log('eat', possibleEat);
-
-      // select pion
+      console.log('move', possibleMove); //!--------------------------------------------------
+      console.log('eat', possibleEat); //!--------------------------------------------------
       spanPawn.classList.add("pawn-selected");
       setPawnSelected(tempoPawn);
     }
@@ -527,8 +474,8 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
     return MovePossible;
   };
 
-  const MovePawn = (target: { x: number; y: number }) => {
-    console.log("target move", target);
+  const MovePawn = (target: Pawn) => {
+    console.log("target move", target); //!--------------------------------------------------
     if (!PawnSelected) return false;
     setVirtualBoard((currentBoard) => {
       const newBoard = JSON.parse(JSON.stringify(currentBoard));
@@ -540,8 +487,8 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
   };
 
 
-  const EatPawn = (target: { x: number; y: number }) => {
-    console.log("target move", target);
+  const EatPawn = (target: Pawn) => {
+    console.log("target move", target); //!--------------------------------------------------
     if (!PawnSelected) return false;
     let xEat: number = target.x - PawnSelected.x;
     let yEat: number = target.y - PawnSelected.y;
@@ -571,10 +518,11 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
         </h2>
         <h1
           className={`big-dark-container scores flex-center g50  playerTurn${PlayerTurn}`}
-          onClick={() => console.log(virtualBoard)}
+          onClick={() => console.log(virtualBoard)} //!--------------------------------------------------
         >
           <span className="blue">{P1score}</span>
           <span>-</span>
+          
           <span className="red">{P2score}</span>
         </h1>
         <div

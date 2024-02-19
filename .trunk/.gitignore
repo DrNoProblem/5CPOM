@@ -7,4 +7,5 @@ plugins
 user_trunk.yaml
 user.yaml
 tmp
-node_modules/
+front-service/node_modules/
+user-service/node_modules/

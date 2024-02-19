@@ -74,6 +74,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
       return PlaceDirection.filter((direction) => !direction.includes("N"));
     return PlaceDirection;
   };
+  
 
   const nextTurn = (pawn: Pawn) => {
     let PawnListToRemoveByNoCapture: Pawn[] = [];

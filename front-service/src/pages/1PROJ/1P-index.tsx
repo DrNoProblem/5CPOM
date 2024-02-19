@@ -2,6 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import { Link } from "react-router-dom";
 import UserModel from "../../models/user-model";
 import "./style.scss";
+import { nextTick } from "process";
 
 type Props = {
   currentUser: UserModel;
@@ -166,13 +167,31 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           y: parseInt(spanPawn.dataset["placementY"]),
         });
 
+
+
+      // pion deplacé peut manger ?
+      if (document.querySelector('.pawn-selected')) {
+        document.querySelector('.pawn-selected')!.classList.remove("pawn-selected");
+      }
+      if (targetPosition === "eat") {
         const NewPossibleEat = checkPossibleEat({
           x: parseInt(spanPawn.dataset["placementX"]),
           y: parseInt(spanPawn.dataset["placementY"]),
-          player: parseInt(spanPawn.dataset["player"])
+          player: PlayerTurn
         });
-        console.log(NewPossibleEat);
-      // pion deplacé peut manger ?
+        setPawnSelected(false);
+        if (NewPossibleEat.length !== 0) {
+          spanPawn.classList.add("pawn-selected");
+          setPawnSelected({ x: spanPawn.dataset["placementX"], y: spanPawn.dataset["placementY"], player: PlayerTurn });
+        } else setPlayerTurn(PlayerTurn * -1)
+
+        //!PROBLEME MANGER PION X2
+
+
+      }else {
+        setPlayerTurn(PlayerTurn * -1)
+      }
+
     } else {
       // case click contient un pion ?
       if (spanPawn.children.length === 0) return false;
@@ -187,10 +206,11 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
       };
 
       // pion selectionné peut se deplacer ou manger?
-      console.log(tempoPawn);
       const possibleMove = checkPossibleMove(tempoPawn);
       const possibleEat = checkPossibleEat(tempoPawn);
       if (possibleMove.length === 0 && possibleEat.length === 0) return false;
+      console.log('move', possibleMove);
+      console.log('eat', possibleEat);
 
       // select pion
       spanPawn.classList.add("pawn-selected");
@@ -295,132 +315,141 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
 
   const checkPossibleEat = (Pawn: Pawn): string[] => {
     let EatPossbile: string[] = [];
-    if (virtualBoard[Pawn.y][Pawn.x].d.includes("N")) {
-      if (
-        virtualBoard[Pawn.y - 1][Pawn.x] &&
-        virtualBoard[Pawn.y - 1][Pawn.x].p === Pawn.player * -1
-      ) {
-        if (virtualBoard[Pawn.y - 1][Pawn.x].d.includes("N")) {
-          if (
-            virtualBoard[Pawn.y - 2][Pawn.x] &&
-            virtualBoard[Pawn.y - 2][Pawn.x].p === 0
-          ) {
-            EatPossbile.push("N");
-          }
-        }
-      }
-    }
 
-    if (virtualBoard[Pawn.y][Pawn.x].d.includes("NE")) {
-      if (
-        virtualBoard[Pawn.y - 1][Pawn.x + 1] &&
-        virtualBoard[Pawn.y - 1][Pawn.x + 1].p === Pawn.player * -1
-      ) {
-        if (virtualBoard[Pawn.y - 1][Pawn.x + 1].d.includes("NE")) {
+    virtualBoard[Pawn.y][Pawn.x].d.forEach(e => {
+      switch (e) {
+        case 'N':
           if (
-            virtualBoard[Pawn.y - 2][Pawn.x + 2] &&
-            virtualBoard[Pawn.y - 2][Pawn.x + 2].p === 0
+            virtualBoard[Pawn.y - 1][Pawn.x] &&
+            virtualBoard[Pawn.y - 1][Pawn.x].p === Pawn.player * -1
           ) {
-            EatPossbile.push("NE");
+            if (virtualBoard[Pawn.y - 1][Pawn.x].d.includes("N")) {
+              if (
+                virtualBoard[Pawn.y - 2][Pawn.x] &&
+                virtualBoard[Pawn.y - 2][Pawn.x].p === 0
+              ) {
+                EatPossbile.push("N");
+              }
+            }
           }
-        }
-      }
-    }
-    if (virtualBoard[Pawn.y][Pawn.x].d.includes("E")) {
-      if (
-        virtualBoard[Pawn.y][Pawn.x + 1] &&
-        virtualBoard[Pawn.y][Pawn.x + 1].p === Pawn.player * -1
-      ) {
-        if (virtualBoard[Pawn.y][Pawn.x + 1].d.includes("E")) {
-          if (
-            virtualBoard[Pawn.y][Pawn.x + 2] &&
-            virtualBoard[Pawn.y][Pawn.x + 2].p === 0
-          ) {
-            EatPossbile.push("E");
-          }
-        }
-      }
-    }
+          break;
 
-    if (virtualBoard[Pawn.y][Pawn.x].d.includes("ES")) {
-      if (
-        virtualBoard[Pawn.y + 1][Pawn.x + 1] &&
-        virtualBoard[Pawn.y + 1][Pawn.x + 1].p === Pawn.player * -1
-      ) {
-        if (virtualBoard[Pawn.y + 1][Pawn.x + 1].d.includes("ES")) {
+        case 'E':
           if (
-            virtualBoard[Pawn.y + 2][Pawn.x + 2] &&
-            virtualBoard[Pawn.y + 2][Pawn.x + 2].p === 0
+            virtualBoard[Pawn.y][Pawn.x + 1] &&
+            virtualBoard[Pawn.y][Pawn.x + 1].p === Pawn.player * -1
           ) {
-            EatPossbile.push("ES");
-          }
-        }
-      }
-    }
+            if (virtualBoard[Pawn.y][Pawn.x + 1].d.includes("E")) {
+              if (
+                virtualBoard[Pawn.y][Pawn.x + 2] &&
+                virtualBoard[Pawn.y][Pawn.x + 2].p === 0
+              ) {
+                EatPossbile.push("E");
+              }
+            }
+          };
+          break;
 
-    if (virtualBoard[Pawn.y][Pawn.x].d.includes("s")) {
-      if (
-        virtualBoard[Pawn.y + 1][Pawn.x] &&
-        virtualBoard[Pawn.y + 1][Pawn.x].p === Pawn.player * -1
-      ) {
-        if (virtualBoard[Pawn.y + 1][Pawn.x].d.includes("S")) {
+        case 'S':
           if (
-            virtualBoard[Pawn.y + 2][Pawn.x] &&
-            virtualBoard[Pawn.y + 2][Pawn.x].p === 0
+            virtualBoard[Pawn.y + 1][Pawn.x] &&
+            virtualBoard[Pawn.y + 1][Pawn.x].p === Pawn.player * -1
           ) {
-            EatPossbile.push("S");
+            if (virtualBoard[Pawn.y + 1][Pawn.x].d.includes("S")) {
+              if (
+                virtualBoard[Pawn.y + 2][Pawn.x] &&
+                virtualBoard[Pawn.y + 2][Pawn.x].p === 0
+              ) {
+                EatPossbile.push("S");
+              }
+            }
           }
-        }
-      }
-    }
+          break;
 
-    if (virtualBoard[Pawn.y][Pawn.x].d.includes("SW")) {
-      if (
-        virtualBoard[Pawn.y + 1][Pawn.x - 1] &&
-        virtualBoard[Pawn.y + 1][Pawn.x - 1].p === Pawn.player * -1
-      ) {
-        if (virtualBoard[Pawn.y + 1][Pawn.x - 1].d.includes("SW")) {
+        case 'W':
           if (
-            virtualBoard[Pawn.y + 2][Pawn.x - 2] &&
-            virtualBoard[Pawn.y + 2][Pawn.x - 2].p === 0
+            virtualBoard[Pawn.y][Pawn.x - 1] &&
+            virtualBoard[Pawn.y][Pawn.x - 1].p === Pawn.player * -1
           ) {
-            EatPossbile.push("SW");
+            if (virtualBoard[Pawn.y][Pawn.x - 1].d.includes("W")) {
+              if (
+                virtualBoard[Pawn.y][Pawn.x - 2] &&
+                virtualBoard[Pawn.y][Pawn.x - 2].p === 0
+              ) {
+                EatPossbile.push("W");
+              }
+            }
           }
-        }
-      }
-    }
-    if (virtualBoard[Pawn.y][Pawn.x].d.includes("W")) {
-      if (
-        virtualBoard[Pawn.y][Pawn.x - 1] &&
-        virtualBoard[Pawn.y][Pawn.x - 1].p === Pawn.player * -1
-      ) {
-        if (virtualBoard[Pawn.y][Pawn.x - 1].d.includes("W")) {
+          break;
+
+        case 'NE':
           if (
-            virtualBoard[Pawn.y][Pawn.x - 2] &&
-            virtualBoard[Pawn.y][Pawn.x - 2].p === 0
+            virtualBoard[Pawn.y - 1][Pawn.x + 1] &&
+            virtualBoard[Pawn.y - 1][Pawn.x + 1].p === Pawn.player * -1
           ) {
-            EatPossbile.push("W");
+            if (virtualBoard[Pawn.y - 1][Pawn.x + 1].d.includes("NE")) {
+              if (
+                virtualBoard[Pawn.y - 2][Pawn.x + 2] &&
+                virtualBoard[Pawn.y - 2][Pawn.x + 2].p === 0
+              ) {
+                EatPossbile.push("NE");
+              }
+            }
           }
-        }
-      }
-    }
-    if (virtualBoard[Pawn.y][Pawn.x].d.includes("WN")) {
-      if (
-        virtualBoard[Pawn.y - 1][Pawn.x - 1] &&
-        virtualBoard[Pawn.y - 1][Pawn.x - 1].p === Pawn.player * -1
-      ) {
-        if (virtualBoard[Pawn.y - 1][Pawn.x - 1].d.includes("WN")) {
+          break;
+
+        case 'WN':
           if (
-            virtualBoard[Pawn.y - 2][Pawn.x - 2] &&
-            virtualBoard[Pawn.y - 2][Pawn.x - 2].p === 0
+            virtualBoard[Pawn.y - 1][Pawn.x - 1] &&
+            virtualBoard[Pawn.y - 1][Pawn.x - 1].p === Pawn.player * -1
           ) {
-            EatPossbile.push("WN");
+            if (virtualBoard[Pawn.y - 1][Pawn.x - 1].d.includes("WN")) {
+              if (
+                virtualBoard[Pawn.y - 2][Pawn.x - 2] &&
+                virtualBoard[Pawn.y - 2][Pawn.x - 2].p === 0
+              ) {
+                EatPossbile.push("WN");
+              }
+            }
           }
-        }
+          break;
+
+        case 'SE':
+          if (
+            virtualBoard[Pawn.y + 1][Pawn.x + 1] &&
+            virtualBoard[Pawn.y + 1][Pawn.x + 1].p === Pawn.player * -1
+          ) {
+            if (virtualBoard[Pawn.y + 1][Pawn.x + 1].d.includes("ES")) {
+              if (
+                virtualBoard[Pawn.y + 2][Pawn.x + 2] &&
+                virtualBoard[Pawn.y + 2][Pawn.x + 2].p === 0
+              ) {
+                EatPossbile.push("ES");
+              }
+            }
+          }
+          break;
+
+        case 'SW':
+          if (
+            virtualBoard[Pawn.y + 1][Pawn.x - 1] &&
+            virtualBoard[Pawn.y + 1][Pawn.x - 1].p === Pawn.player * -1
+          ) {
+            if (virtualBoard[Pawn.y + 1][Pawn.x - 1].d.includes("SW")) {
+              if (
+                virtualBoard[Pawn.y + 2][Pawn.x - 2] &&
+                virtualBoard[Pawn.y + 2][Pawn.x - 2].p === 0
+              ) {
+                EatPossbile.push("SW");
+              }
+            }
+          }
+          break;
       }
-    }
+
+    })
     return EatPossbile;
-  };
+  }
 
   const checkPossibleMove = (Pawn: Pawn): string[] => {
     let MovePossible: string[] = [];
@@ -568,9 +597,8 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
                     {f.p !== 0 ? (
                       <span
                         onClick={(e) => clickPawn(e)}
-                        className={`pawn flex-center ${
-                          f.p === 1 ? "red-player" : "blue-player"
-                        }`}
+                        className={`pawn flex-center ${f.p === 1 ? "red-player" : "blue-player"
+                          }`}
                       ></span>
                     ) : null}
                   </span>

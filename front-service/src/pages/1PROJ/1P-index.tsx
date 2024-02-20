@@ -74,7 +74,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
       return PlaceDirection.filter((direction) => !direction.includes("N"));
     return PlaceDirection;
   };
-  
+
 
   const nextTurn = (pawn: Pawn) => {
     let PawnListToRemoveByNoCapture: Pawn[] = [];
@@ -120,6 +120,8 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
     if (spanPawn.classList.contains("pawn")) spanPawn = spanPawn.parentElement;
     // pion deja selectionné ?
 
+    console.log('spanPawn', spanPawn); //!--------------------------------------------------
+
     const tempoPawn = {
       x: parseInt(spanPawn.dataset["placementX"]),
       y: parseInt(spanPawn.dataset["placementY"]),
@@ -135,12 +137,15 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
       }
       const possibleMove = checkPossibleMove(PawnSelected);
       const possibleEat = checkPossibleEat(PawnSelected);
+      console.log('possibleMove', possibleMove); //!--------------------------------------------------
+      console.log('possibleEat', possibleEat); //!--------------------------------------------------
 
       const listOfPossiblePosition: { move: string[]; eat: string[] } =
         getListOfPositionPossible(possibleMove, possibleEat);
 
       let targetPosition: string;
-
+      console.log('listOfPossiblePosition', listOfPossiblePosition); //!--------------------------------------------------
+      console.log('target', `${tempoPawn.x}&${tempoPawn.y}`); //!--------------------------------------------------
       if (listOfPossiblePosition.move.includes(`${tempoPawn.x}&${tempoPawn.y}`))
         targetPosition = "move";
       else if (
@@ -148,6 +153,8 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
       )
         targetPosition = "eat";
       else targetPosition = "null";
+
+      console.log('targetPosition', targetPosition); //!--------------------------------------------------
 
       // unselect pion
       if (targetPosition === "move") MovePawn(tempoPawn);
@@ -161,12 +168,12 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
 
       if (targetPosition === "eat") {
         const NewPossibleEat = checkPossibleEat(tempoPawn);
-        console.log(NewPossibleEat);
+        console.log('NewPossibleEat', NewPossibleEat); //!--------------------------------------------------
         if (NewPossibleEat.length !== 0) {
           spanPawn.classList.add("pawn-selected");
           setPawnSelected(tempoPawn);
-        } else nextTurn(tempoPawn);
-      } else nextTurn(tempoPawn);
+        } else console.log('next turn'); //!-------------------------------------------------- nextTurn(tempoPawn);
+      } else console.log('next turn'); //!-------------------------------------------------- nextTurn(tempoPawn);
     } else {
       if (spanPawn.children.length === 0) return false;
       if (parseInt(spanPawn.dataset["player"]) !== PlayerTurn) return false;
@@ -558,9 +565,8 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
                     {f.p !== 0 ? (
                       <span
                         onClick={(e) => clickPawn(e)}
-                        className={`pawn flex-center ${
-                          f.p === 1 ? "red-player" : "blue-player"
-                        }`}
+                        className={`pawn flex-center ${f.p === 1 ? "red-player" : "blue-player"
+                          }`}
                       ></span>
                     ) : null}
                   </span>

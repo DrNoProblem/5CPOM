@@ -48,7 +48,9 @@ npm start
 ## S'authentifier
 
 un utilisateur est créer, utilisez ces informations: 
-'email' : admin@cpom.com
-'password' : userAdmin
+
+`electron-service` : admin@cpom.com
+
+`electron-service` : userAdmin
 
 ## Suivez ces étapes pour installer et démarrer les services nécessaires pour exécuter l'application.

@@ -41,8 +41,14 @@ npm i
 - Pour lancer l'application desktop, exécutez la commande suivante dans le dossier `electron-service` :
 npm start
 
-
 - Pour lancer l'application dans un navigateur, démarrez le service frontal en exécutant la commande suivante dans le dossier `front-service` :
 npm start
+
+
+## S'authentifier
+
+un utilisateur est créer, utilisez ces informations: 
+'email' : admin@cpom.com
+'password' : userAdmin
 
 ## Suivez ces étapes pour installer et démarrer les services nécessaires pour exécuter l'application.

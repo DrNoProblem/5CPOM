@@ -54,3 +54,13 @@ un utilisateur est créer, utilisez ces informations:
 `password` : userAdmin
 
 ## Suivez ces étapes pour installer et démarrer les services nécessaires pour exécuter l'application.
+
+## ANNEXE
+
+manuel de jeu :
+
+https://docs.google.com/document/d/1djfsCSjymtz3PGVKHYy1OQCtr2ys32OrCO0VpLD0aOA/edit?usp=sharing
+
+documentation technique : 
+
+https://docs.google.com/document/d/1IlKz6jYbYpAWbAXJohOPiLQAp99H9uxE-IBYb4GIIcY/edit?usp=sharing

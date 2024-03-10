@@ -10,7 +10,7 @@ type Props = {
   isLog: string | Boolean;
 };
 
-const HeaderCMS: FunctionComponent<Props> = ({ currentUser, log_out, isLog }) => {
+const Header5CPOM: FunctionComponent<Props> = ({ currentUser, log_out, isLog }) => {
 
 
 
@@ -27,12 +27,9 @@ const HeaderCMS: FunctionComponent<Props> = ({ currentUser, log_out, isLog }) =>
             <h3 className="m0 blue">
               <Link to={`/user/${currentUser._id}`}>{currentUser.pseudo}</Link>
             </h3>
-            <div className="cta mlrauto cta-red" onClick={() => log_out()}>
-              <span className="flex-center g15">
-                Log Out
-                <i className="material-icons">power_settings_new</i>
-              </span>
-            </div>
+
+                <i className="material-icons red" onClick={() => log_out()}>power_settings_new</i>
+
           </div>
         ) : (
           <div></div>
@@ -42,4 +39,4 @@ const HeaderCMS: FunctionComponent<Props> = ({ currentUser, log_out, isLog }) =>
     </div>
   ) : null;
 };
-export default HeaderCMS;
+export default Header5CPOM;

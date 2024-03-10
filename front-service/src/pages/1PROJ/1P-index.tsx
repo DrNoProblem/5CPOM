@@ -1,7 +1,8 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import UserModel from "../../models/user-model";
-import "./style.scss";
+import "./1P-style.scss";
+import { X_OK } from "constants";
 
 type Props = {
   currentUser: UserModel;
@@ -13,171 +14,175 @@ interface Pawn {
   player: number;
 }
 
+interface Board {
+  p: number;
+  d: string[];
+  css: string;
+}
+
+const initGameBoard: Board[][] = [
+  [
+    { p: 1, d: ["E", "ES", "S"], css: "bot-right" },
+    { p: 1, d: ["E", "S", "W"], css: "bot-right" },
+    { p: 1, d: ["E", "ES", "S", "SW", "W"], css: "" },
+    { p: 1, d: ["E", "S", "W"], css: "bot-left" },
+    { p: 1, d: ["S", "SW", "W"], css: "bot-left" },
+  ],
+  [
+    { p: 1, d: ["N", "E", "S"], css: "bot-right" },
+    { p: 1, d: ["N", "NE", "E", "ES", "S", "SW", "W", "WN"], css: "diag" },
+    { p: 1, d: ["N", "E", "S", "W"], css: "cross" },
+    { p: 1, d: ["N", "NE", "E", "ES", "S", "SW", "W", "WN"], css: "diag" },
+    { p: 1, d: ["N", "S", "W"], css: "bot-left" },
+  ],
+  [
+    { p: 1, d: ["N", "NE", "E", "ES", "S"], css: "" },
+    { p: 1, d: ["N", "E", "S", "W"], css: "cross" },
+    { p: 0, d: ["N", "NE", "E", "ES", "S", "SW", "W", "WN"], css: "" },
+    { p: -1, d: ["N", "E", "S", "W"], css: "cross" },
+    { p: -1, d: ["N", "S", "SW", "W", "WN"], css: "" },
+  ],
+  [
+    { p: -1, d: ["N", "E", "S"], css: "top-right" },
+    { p: -1, d: ["N", "NE", "E", "ES", "S", "SW", "W", "WN"], css: "diag" },
+    { p: -1, d: ["N", "E", "S", "W"], css: "cross" },
+    { p: -1, d: ["N", "NE", "E", "ES", "S", "SW", "W", "WN"], css: "diag" },
+    { p: -1, d: ["N", "S", "W"], css: "top-left" },
+  ],
+  [
+    { p: -1, d: ["N", "NE", "E"], css: "top-right" },
+    { p: -1, d: ["N", "E", "W"], css: "top-right" },
+    { p: -1, d: ["N", "NE", "E", "W", "WN"], css: "" },
+    { p: -1, d: ["N", "E", "W"], css: "top-left" },
+    { p: -1, d: ["N", "W", "WN"], css: "top-left" },
+  ],
+];
+
 const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
-  const [virtualBoard, setVirtualBoard] = useState<{ p: number; d: string[]; ab: string }[][]>([
-    [
-      { p: 1, d: ["E", "ES", "S"], ab: "bot-right" },
-      { p: 0, d: ["E", "S", "W"], ab: "bot-right" },
-      { p: 0, d: ["E", "ES", "S", "SW", "W"], ab: "" },
-      { p: 0, d: ["E", "S", "W"], ab: "bot-left" },
-      { p: 0, d: ["S", "SW", "W"], ab: "bot-left" },
-    ],
-    [
-      { p: 0, d: ["N", "E", "S"], ab: "bot-right" },
-      { p: -1, d: ["N", "NE", "E", "ES", "S", "SW", "W", "WN"], ab: "diag" },
-      { p: 1, d: ["N", "E", "S", "W"], ab: "cross" },
-      { p: 0, d: ["N", "NE", "E", "ES", "S", "SW", "W", "WN"], ab: "diag" },
-      { p: 0, d: ["N", "S", "W"], ab: "bot-left" },
-    ],
-    [
-      { p: 0, d: ["N", "NE", "E", "ES", "S"], ab: "" },
-      { p: 0, d: ["N", "E", "S", "W"], ab: "cross" },
-      { p: 1, d: ["N", "NE", "E", "ES", "S", "SW", "W", "WN"], ab: "" },
-      { p: -1, d: ["N", "E", "S", "W"], ab: "cross" },
-      { p: 0, d: ["N", "S", "SW", "W", "WN"], ab: "" },
-    ],
-    [
-      { p: 0, d: ["N", "E", "S"], ab: "top-right" },
-      { p: 0, d: ["N", "NE", "E", "ES", "S", "SW", "W", "WN"], ab: "diag" },
-      { p: 0, d: ["N", "E", "S", "W"], ab: "cross" },
-      { p: 0, d: ["N", "NE", "E", "ES", "S", "SW", "W", "WN"], ab: "diag" },
-      { p: 0, d: ["N", "S", "W"], ab: "top-left" },
-    ],
-    [
-      { p: 0, d: ["N", "NE", "E"], ab: "top-right" },
-      { p: 0, d: ["N", "E", "W"], ab: "top-right" },
-      { p: 0, d: ["N", "NE", "E", "W", "WN"], ab: "" },
-      { p: 0, d: ["N", "E", "W"], ab: "top-left" },
-      { p: 0, d: ["N", "W", "WN"], ab: "top-left" },
-    ],
-  ]);
-
-  const [P1score, setP1score] = useState<number>(0);
-  const [P2score, setP2score] = useState<number>(0);
-
-  const [MenuOpen, setMenuOpen] = useState<boolean>(true);
+  const [VirtualBoardRender, setVirtualBoardRender] = useState<Board[][]>(initGameBoard);
+  const [MenuOpen, setMenuOpen] = useState<string | false>("start");
 
   const [PlayerTurn, setPlayerTurn] = useState<number>(0);
 
+  const [ListOfPwnCanEat, setListOfPwnCanEat] = useState<Pawn[]>([]);
+  const [PawnSelected, setPawnSelected] = useState<Pawn | false>(false);
+
   const InitGame = () => {
+    setVirtualBoardRender(initGameBoard);
     setMenuOpen(false);
     setPlayerTurn(-1);
   };
 
-  const getListDirectionSelectedPawn = (Pawn: Pawn) => {
+  useEffect(() => {
+    let instanceListOfPwnCanEat: Pawn[] = [];
+    VirtualBoardRender.forEach((y, yIndex) => {
+      y.forEach((x, xIndex) => {
+        if (x.p === PlayerTurn) {
+          const listOfPossibleEat = checkPossibleEat({ x: xIndex, y: yIndex, player: PlayerTurn }, VirtualBoardRender);
+          if (listOfPossibleEat.length !== 0) {
+            instanceListOfPwnCanEat.push({ x: xIndex, y: yIndex, player: PlayerTurn });
+          }
+        }
+      });
+    });
+    setListOfPwnCanEat(instanceListOfPwnCanEat);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [PlayerTurn]);
+
+  function countPlayerPawns(virtualBoard: Board[][]): { P1: number; P2: number } {
+    let countP1 = 0;
+    let countP2 = 0;
+    virtualBoard.forEach((y, yIndex) => {
+      y.forEach((x, xIndex) => {
+        if (x.p === 1) {
+          countP2++;
+        } else if (x.p === -1) {
+          countP1++;
+        }
+      });
+    });
+    return { P1: countP1, P2: countP2 };
+  }
+
+  const getListDirectionSelectedPawn = (Pawn: Pawn, virtualBoard: Board[][]) => {
     const PlaceDirection: string[] = virtualBoard[Pawn.y][Pawn.x].d;
     if (Pawn.player === -1) return PlaceDirection.filter((direction) => !direction.includes("S"));
     else if (Pawn.player === 1) return PlaceDirection.filter((direction) => !direction.includes("N"));
     return PlaceDirection;
   };
 
-  const nextTurn = (pawn: Pawn) => {
+  const checkOnceWin = (virtualBoard: Board[][]) => {
+    const PawnsAlive: { P1: number; P2: number } = countPlayerPawns(virtualBoard);
+    if (PawnsAlive.P1 === 0 && PawnsAlive.P2 !== 0) return "red win";
+    else if (PawnsAlive.P1 !== 0 && PawnsAlive.P2 === 0) return "blue win";
+    else if (PawnsAlive.P1 === 0 && PawnsAlive.P2 === 0) return "equality";
+    else {
+      let NbrRedCanMove: number = 0;
+      let NbrBlueCanMove: number = 0;
+      virtualBoard.forEach((y, yIndex) => {
+        y.forEach((x, xIndex) => {
+          if (x.p !== 0) {
+            const listOfPossibleEat: string[] = checkPossibleEat({ x: xIndex, y: yIndex, player: x.p }, virtualBoard);
+            const listOfPossibleMove: string[] = checkPossibleMove({ x: xIndex, y: yIndex, player: x.p }, virtualBoard);
+            let containsS: boolean = false;
+            let containsN: boolean = false;
+            if (x.p === -1) {
+              containsN = listOfPossibleMove.some((element) => element.includes("N"));
+              if (!(!containsN && listOfPossibleEat.length === 0)) {
+                NbrRedCanMove++;
+              }
+            } else if (x.p === 1) {
+              containsS = listOfPossibleMove.some((element) => element.includes("S"));
+              if (!(!containsS && listOfPossibleEat.length === 0)) {
+                NbrBlueCanMove++;
+              }
+            }
+          }
+        });
+      });
+
+      if (NbrRedCanMove === 0 && NbrBlueCanMove === 0) return "equality";
+    }
+    return "continue";
+  };
+
+  const nextTurn = (pawn: Pawn, virtualBoard: Board[][]) => {
     let PawnListToRemoveByNoCapture: Pawn[] = [];
-    virtualBoard.forEach((line, yIndex) => {
-      line.forEach((row, xIndex) => {
-        if (!(xIndex === pawn.x && yIndex === pawn.y)) {
-          if (row.p === PlayerTurn) {
-            const ListOfEat = checkPossibleEat({ x: xIndex, y: yIndex, player: PlayerTurn });
-            if (ListOfEat.length !== 0) PawnListToRemoveByNoCapture.push({ x: xIndex, y: yIndex, player: PlayerTurn });
+
+    ListOfPwnCanEat.forEach((e) => {
+      if (!(e.x === pawn.x && e.y === pawn.y)) {
+        if (virtualBoard[e.y][e.x].p === e.player) {
+          if (checkPossibleEat({ x: e.x, y: e.y, player: e.player }, virtualBoard).length !== 0) {
+            PawnListToRemoveByNoCapture.push(e);
           }
         }
-      });
+      }
     });
 
-    setVirtualBoard((currentBoard) => {
-      const newBoard = JSON.parse(JSON.stringify(currentBoard));
-      PawnListToRemoveByNoCapture.forEach((target) => {
-        newBoard[target.y][target.x].p = 0;
-      });
-      return newBoard;
+    /*
+      virtualBoard.forEach((line, yIndex) => {
+        line.forEach((row, xIndex) => {
+          if (!(xIndex === pawn.x && yIndex === pawn.y)) {
+            if (row.p === PlayerTurn) {
+              const ListOfEat = checkPossibleEat({ x: xIndex, y: yIndex, player: PlayerTurn });
+              if (ListOfEat.length !== 0) PawnListToRemoveByNoCapture.push({ x: xIndex, y: yIndex, player: PlayerTurn });
+            }
+          }
+        });
+      }); 
+    */
+
+    const newBoard = JSON.parse(JSON.stringify(virtualBoard));
+    PawnListToRemoveByNoCapture.forEach((target) => {
+      newBoard[target.y][target.x].p = 0;
     });
+    setVirtualBoardRender(newBoard);
 
     if (document.querySelector(".pawn-selected")) document.querySelector(".pawn-selected")!.classList.remove("pawn-selected");
     setPawnSelected(false);
-    setPlayerTurn(PlayerTurn * -1);
-    const stateFinish: number = checkOnceWin();
-    if (stateFinish === 1) console.log('red win');
-    else if (stateFinish === -1) console.log('blue win');
-    else if (stateFinish === 2) console.log('egality');
-  };
-
-  const checkOnceWin = () => {
-    let RedPlayerCount: number = 0;
-    let BluePlayerCount: number = 0;
-    virtualBoard.forEach((line) => {
-      line.forEach((row) => {
-        if (row.p === 1) {
-          RedPlayerCount++;
-        } else if (row.p === 1) {
-          BluePlayerCount++;
-        }
-      });
-    });
-    if (RedPlayerCount === 0 && BluePlayerCount === 0) return 2;
-    else if (RedPlayerCount === 0) return -1;
-    else if (BluePlayerCount === 0) return 1;
-    else return 0;
-  };
-
-  const clickPawn = (element: any) => {
-    let spanPawn = element.target;
-    if (spanPawn.classList.contains("pawn")) spanPawn = spanPawn.parentElement;
-
-    const tempoPawn = {
-      x: parseInt(spanPawn.dataset["placementX"]),
-      y: parseInt(spanPawn.dataset["placementY"]),
-      player: parseInt(spanPawn.dataset["player"]),
-    };
-
-    if (PawnSelected) {
-      console.log(spanPawn.children.length);
-      if (spanPawn.children.length !== 0) {
-        spanPawn.classList.remove("pawn-selected");
-        setPawnSelected(false);
-        return false;
-      }
-
-      const possibleMove = checkPossibleMove(PawnSelected);
-      const possibleEat = checkPossibleEat(PawnSelected);
-
-      let targetPosition: string;
-      const listOfPossiblePosition: { move: string[]; eat: string[] } = getListOfPositionPossible(possibleMove, possibleEat);
-      if (listOfPossiblePosition.move.includes(`${tempoPawn.x}&${tempoPawn.y}`)) targetPosition = "move";
-      else if (listOfPossiblePosition.eat.includes(`${tempoPawn.x}&${tempoPawn.y}`)) targetPosition = "eat";
-      else targetPosition = "null";
-
-      if (targetPosition === "move" && possibleEat.length !== 0) {
-        setVirtualBoard((currentBoard) => {
-          const newBoard = JSON.parse(JSON.stringify(currentBoard));
-          newBoard[tempoPawn.y][tempoPawn.x].p = 0;
-          return newBoard;
-        });
-        nextTurn(tempoPawn);
-      }
-
-      if (targetPosition === "move") MovePawn(tempoPawn);
-      else if (targetPosition === "eat") EatPawn(tempoPawn);
-
-      if (document.querySelector(".pawn-selected")) document.querySelector(".pawn-selected")!.classList.remove("pawn-selected");
-      if (targetPosition === "eat") {
-        const NewPossibleEat = checkPossibleEat(tempoPawn);
-        console.log("NewPossibleEat", NewPossibleEat); //!
-        if (NewPossibleEat.length !== 0) {
-          spanPawn.classList.add("pawn-selected");
-          setPawnSelected(tempoPawn);
-        } else nextTurn(tempoPawn);
-      } else nextTurn(tempoPawn);
-    } else {
-      if (spanPawn.children.length === 0) return false;
-      if (parseInt(spanPawn.dataset["player"]) !== PlayerTurn) return false;
-      const possibleMove = checkPossibleMove(tempoPawn);
-      const possibleEat = checkPossibleEat(tempoPawn);
-      if (possibleMove.length === 0 && possibleEat.length === 0) return false;
-      console.log("move", possibleMove); //!
-      console.log("eat", possibleEat); //!
-      spanPawn.classList.add("pawn-selected");
-      setPawnSelected(tempoPawn);
-    }
+    const winState: string = checkOnceWin(newBoard);
+    if (winState === "continue") setPlayerTurn(PlayerTurn * -1);
+    else setMenuOpen(winState);
   };
 
   const getListOfPositionPossible = (MoveDirection: string[], EatDirection: string[]): { move: string[]; eat: string[] } => {
@@ -244,9 +249,8 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
     return { move: MovePositionPossible, eat: EatPositionPossible };
   };
 
-  const checkPossibleEat = (Pawn: Pawn): string[] => {
+  const checkPossibleEat = (Pawn: Pawn, virtualBoard: Board[][]): string[] => {
     let EatPossbile: string[] = [];
-
     virtualBoard[Pawn.y][Pawn.x].d.forEach((e) => {
       switch (e) {
         case "N":
@@ -333,9 +337,9 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
     return EatPossbile;
   };
 
-  const checkPossibleMove = (Pawn: Pawn): string[] => {
+  const checkPossibleMove = (Pawn: Pawn, virtualBoard: Board[][]): string[] => {
     let MovePossible: string[] = [];
-    let listDirection = getListDirectionSelectedPawn(Pawn);
+    let listDirection = getListDirectionSelectedPawn(Pawn, virtualBoard);
     if (listDirection && listDirection.length > 0) {
       listDirection.forEach((element: string) => {
         switch (element) {
@@ -365,7 +369,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
             }
             break;
           case "SW":
-            if (virtualBoard[Pawn.y + 1][Pawn.x - 1] && virtualBoard[Pawn.y + 1][Pawn.y - 1].p === 0) {
+            if (virtualBoard[Pawn.y + 1][Pawn.x - 1] && virtualBoard[Pawn.y + 1][Pawn.x - 1].p === 0) {
               MovePossible.push(element);
             }
             break;
@@ -385,20 +389,16 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
     return MovePossible;
   };
 
-  const MovePawn = (target: Pawn) => {
-    console.log("target move", target); //!
+  const MovePawn = (target: Pawn, virtualBoard: Board[][]) => {
     if (!PawnSelected) return false;
-    setVirtualBoard((currentBoard) => {
-      const newBoard = JSON.parse(JSON.stringify(currentBoard));
-      newBoard[PawnSelected.y][PawnSelected.x].p = 0;
-      newBoard[target.y][target.x].p = PlayerTurn;
-      return newBoard;
-    });
+    const newBoard = JSON.parse(JSON.stringify(virtualBoard));
+    newBoard[PawnSelected.y][PawnSelected.x].p = 0;
+    newBoard[target.y][target.x].p = PlayerTurn;
     setPawnSelected(false);
+    return newBoard;
   };
 
-  const EatPawn = (target: Pawn) => {
-    console.log("target move", target); //!
+  const EatPawn = (target: Pawn, virtualBoard: Board[][]) => {
     if (!PawnSelected) return false;
     let xEat: number = target.x - PawnSelected.x;
     let yEat: number = target.y - PawnSelected.y;
@@ -406,40 +406,86 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
       x: (xEat !== 0 ? xEat / 2 : xEat) + PawnSelected.x,
       y: (yEat !== 0 ? yEat / 2 : yEat) + PawnSelected.y,
     };
-    setVirtualBoard((currentBoard) => {
-      const newBoard = JSON.parse(JSON.stringify(currentBoard));
-      newBoard[PawnSelected.y][PawnSelected.x].p = 0;
-      newBoard[target.y][target.x].p = PlayerTurn;
-      newBoard[targetEat.y][targetEat.x].p = 0;
-      return newBoard;
-    });
+    const newBoard = JSON.parse(JSON.stringify(virtualBoard));
+    newBoard[PawnSelected.y][PawnSelected.x].p = 0;
+    newBoard[target.y][target.x].p = PlayerTurn;
+    newBoard[targetEat.y][targetEat.x].p = 0;
+    return newBoard;
   };
 
-  const [PawnSelected, setPawnSelected] = useState<Pawn | false>(false);
+  const clickPawn = (element: any) => {
+    let InstanceVirtualBoard: Board[][] = VirtualBoardRender;
+    let spanPawn = element.target;
+    if (spanPawn.classList.contains("pawn")) spanPawn = spanPawn.parentElement;
+
+    const tempoPawn = {
+      x: parseInt(spanPawn.dataset["placementX"]),
+      y: parseInt(spanPawn.dataset["placementY"]),
+      player: parseInt(spanPawn.dataset["player"]),
+    };
+
+    if (PawnSelected) {
+      if (spanPawn.children.length !== 0) {
+        spanPawn.classList.remove("pawn-selected");
+        if (document.querySelector(".pawn-selected")) document.querySelector(".pawn-selected")!.classList.remove("pawn-selected");
+        setPawnSelected(false);
+        return false;
+      }
+
+      const possibleMove = checkPossibleMove(PawnSelected, InstanceVirtualBoard); //! list direction possible move
+      const possibleEat = checkPossibleEat(PawnSelected, InstanceVirtualBoard); //! list direction possibleeat
+
+      if (document.querySelector(".pawn-selected")) document.querySelector(".pawn-selected")!.classList.remove("pawn-selected");
+
+      const listOfPossiblePosition: { move: string[]; eat: string[] } = getListOfPositionPossible(possibleMove, possibleEat);
+      if (listOfPossiblePosition.move.includes(`${tempoPawn.x}&${tempoPawn.y}`)) {
+        InstanceVirtualBoard = MovePawn(tempoPawn, InstanceVirtualBoard);
+        nextTurn(tempoPawn, InstanceVirtualBoard);
+      } else if (listOfPossiblePosition.eat.includes(`${tempoPawn.x}&${tempoPawn.y}`)) {
+        InstanceVirtualBoard = EatPawn(tempoPawn, InstanceVirtualBoard);
+        const NewPossibleEat = checkPossibleEat(tempoPawn, InstanceVirtualBoard);
+        if (NewPossibleEat.length !== 0) {
+          setVirtualBoardRender(InstanceVirtualBoard);
+          spanPawn.classList.add("pawn-selected");
+          setPawnSelected(tempoPawn);
+        } else nextTurn(tempoPawn, InstanceVirtualBoard);
+      } else {
+        setPawnSelected(false);
+        return false;
+      }
+    } else {
+      if (spanPawn.children.length === 0) return false;
+      if (parseInt(spanPawn.dataset["player"]) !== PlayerTurn) return false;
+      const possibleMove = checkPossibleMove(tempoPawn, InstanceVirtualBoard);
+      const possibleEat = checkPossibleEat(tempoPawn, InstanceVirtualBoard);
+      if (possibleMove.length === 0 && possibleEat.length === 0) return false;
+      spanPawn.classList.add("pawn-selected");
+      setPawnSelected(tempoPawn);
+    }
+  };
 
   return (
     <div className={`main p20 flex-col relative flex-end-align g25`}>
       <div className="flex-col g25 w100">
-        <h2 className="m0">
-          Projects : 1PROJ
-          <i className="material-icons ml25" onClick={() => setMenuOpen(true)}>
-            settings
-          </i>
-        </h2>
         <h1
           className={`big-dark-container scores flex-center g50  playerTurn${PlayerTurn}`}
-          onClick={() => console.log(virtualBoard)} //!
+          onClick={() => console.log(VirtualBoardRender)} //!
         >
-          <span className="blue">{P1score}</span>
-          <span>-</span>
-
-          <span className="red">{P2score}</span>
+          <i className="material-icons blue" onClick={() => setMenuOpen("red win")}>
+            flag
+          </i>
+          <i className="material-icons" onClick={() => setMenuOpen("pause")}>
+            settings
+          </i>
+          <i className="material-icons red" onClick={() => setMenuOpen("blue win")}>
+            flag
+          </i>
         </h1>
         <div className={`board-container flex-col flex-center g25 big-dark-container `}>
           <div className={`board playerTurn${PlayerTurn}`}>
-            {virtualBoard.map((e, ei) =>
+            {VirtualBoardRender.map((e, ei) =>
               e.map((f, fi) => (
-                <span key={"case-" + ei + "-" + fi} className={"setting-line " + f.ab}>
+                <span key={"case-" + ei + "-" + fi} className={"setting-line " + f.css}>
                   <span className={"case flex-center"} data-placement-y={ei} data-placement-x={fi} data-player={f.p} onClick={(e) => clickPawn(e)}>
                     {f.p !== 0 ? <span onClick={(e) => clickPawn(e)} className={`pawn flex-center ${f.p === 1 ? "red-player" : "blue-player"}`}></span> : null}
                   </span>
@@ -451,10 +497,22 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
             <div className="menu-pop-up absolute zi5 flex-center">
               <div className="small-normal-container">
                 <h2 className="m0 mb25 blue txt-center">Game Menu</h2>
+                {MenuOpen === "blue win" ? <h2 className={`winner${PlayerTurn}`}>CONGRATULATION BLUE PLAYER</h2> : null}
+                {MenuOpen === "red win" ? <h2 className={`winner${PlayerTurn}`}>CONGRATULATION RED PLAYER</h2> : null}
+                {MenuOpen === "equality" ? <h2 className={`winner${PlayerTurn}`}>EQUALITY</h2> : null}
+
                 <div className="flex-rox flex-between g25">
-                  <div className="cta cta-blue" onClick={() => InitGame()}>
-                    <span>{PlayerTurn === 0 ? "START" : "RESUME"}</span>
-                  </div>
+                  {MenuOpen === "start" || MenuOpen === "blue win" || MenuOpen === "red win" || MenuOpen === "equality" ? (
+                    <div className="cta cta-blue" onClick={() => InitGame()}>
+                      <span>START NEW GAME</span>
+                    </div>
+                  ) : null}
+
+                  {MenuOpen === "pause" ? (
+                    <div className="cta cta-blue" onClick={() => InitGame()}>
+                      <span>RESUME GAME</span>
+                    </div>
+                  ) : null}
 
                   <Link className="cta cta-red" to={"/"}>
                     <span>BACK</span>

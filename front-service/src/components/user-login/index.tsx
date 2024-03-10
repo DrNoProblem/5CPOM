@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import React, { FunctionComponent, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -12,6 +11,7 @@ import logIn from "../../api-request/user/log-in";
 import isHttpStatusValid from "../../helpers/check-status";
 import displayStatusRequest from "../../helpers/display-status-request";
 import Logo from "../logo-grid";
+import { storeToken } from "../../helpers/token-verifier";
 
 //? components
 
@@ -31,7 +31,7 @@ const UserHeader: FunctionComponent<Props> = ({ ValidLogIn }) => {
   const signIn = (email: string, password: string) => {
     logIn(email, password).then((result) => {
       if (isHttpStatusValid(result.status)) {
-        Cookies.set("token", result.response.token, { expires: 1 });
+        storeToken(result.response.token);
         ValidLogIn();
       } else
         displayStatusRequest(
@@ -68,7 +68,7 @@ const UserHeader: FunctionComponent<Props> = ({ ValidLogIn }) => {
             />
           </div>
 
-          <div className="button flex-col w100">
+{/*           <div className="button flex-col w100">
             <Link to="/recover" className="forget mb25">
               <span>Foreget password ?</span>
             </Link>
@@ -78,7 +78,7 @@ const UserHeader: FunctionComponent<Props> = ({ ValidLogIn }) => {
             >
               Sign In
             </div>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>

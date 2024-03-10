@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Link, RouteComponentProps, useHistory } from 'react-router-dom';
 import DeleteUserById from '../../api-request/user/delete';
@@ -7,6 +6,7 @@ import isHttpStatusValid from '../../helpers/check-status';
 import displayStatusRequest from '../../helpers/display-status-request';
 import voidUser from '../../models/mocks/void-user';
 import UserModel from '../../models/user-model';
+import { getToken } from '../../helpers/token-verifier';
 
 
 
@@ -96,7 +96,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
     }
 
     const UpdateUserById = (userID: string, valueType: string, value: string) => {
-        const token = Cookies.get('token')
+        const token = getToken()
         if (token) {
             userUpdate(userID, token, valueType, value).then(result => {
                 if (isHttpStatusValid(result.response)) {
@@ -109,7 +109,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
     }
 
     const DeleteUser = (target: string) => {
-        const token = Cookies.get('token')
+        const token = getToken()
         if (token) {
             DeleteUserById(token, target).then(result => {
                 if (isHttpStatusValid(result.response)) {

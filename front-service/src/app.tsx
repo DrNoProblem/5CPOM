@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 
@@ -17,15 +16,16 @@ import logOut from "./api-request/user/log-out";
 
 //? helpers
 import isHttpStatusValid from "./helpers/check-status";
+import { getToken, removeToken } from "./helpers/token-verifier";
 
 //? components
-import HeaderCMS from "./components/header";
+import Header5CPOM from "./components/header";
 import SideMenu from "./components/side-menu";
 import UserLogIn from "./components/user-login";
 import UserRecover from "./components/user-recover";
 
 //? pages
-import PageNotFound from "./not-found";
+import PageNotFound from "./pages/not-found";
 import HomePage1PROJ from "./pages/1PROJ/1P-index";
 import HomePage2PROJ from "./pages/2PROJ/2P-index";
 import HomePage3PROJ from "./pages/3PROJ/3P-index";
@@ -62,31 +62,23 @@ const App: FunctionComponent = () => {
           if (result.response.role === "admin") {
             getUsersList(token).then((users) => {
               if (isHttpStatusValid(users.status)) setUsers(users.response);
-              else
-                displayStatusRequest(
-                  "error " + users.status + " : " + users.response.message,
-                  true
-                );
+              else displayStatusRequest("error " + users.status + " : " + users.response.message, true);
             });
           } else if (result.response.role === "user") {
           } else displayStatusRequest("error  : Unreconized User", true);
-        } else
-          displayStatusRequest(
-            "error " + result.status + " : " + result.response.message,
-            true
-          );
+        } else displayStatusRequest("error " + result.status + " : " + result.response.message, true);
       });
     }
     setIsLog(token);
   };
 
   const checklog = () => {
-    const token = Cookies.get("token");
+    const token = getToken();
     return token ? token : false;
   };
 
   const log_out = () => {
-    Cookies.remove("token");
+    removeToken();
     logOut().then(() => {
       setIsLog(false);
       setCurrentUser(voidUser);
@@ -102,54 +94,19 @@ const App: FunctionComponent = () => {
     return (
       <Router>
         <div>
-          <HeaderCMS
-            currentUser={currentUser}
-            log_out={log_out}
-            isLog={isLog}
-          />
+          <Header5CPOM currentUser={currentUser} log_out={log_out} isLog={isLog} />
           <div className="flex-row">
             <div className={`w20-tab${MiniMenu ? " side-menu-mini" : ""}`}>
               <SideMenu miniMenu={toggleSizeMenu} />
             </div>
             <div className={`w80-tab${MiniMenu ? " side-menu-mini" : ""}`}>
               <Switch>
-                <Route
-                  exact
-                  path="/"
-                  render={() => <HomePage currentUser={currentUser} />}
-                />
-                <Route
-                  exact
-                  path="/1PROJ"
-                  render={() => <HomePage1PROJ currentUser={currentUser} />}
-                />{" "}
-                <Route
-                  exact
-                  path="/2PROJ"
-                  render={() => <HomePage2PROJ currentUser={currentUser} />}
-                />{" "}
-                <Route
-                  exact
-                  path="/3PROJ"
-                  render={() => <HomePage3PROJ currentUser={currentUser} />}
-                />
-                <Route
-                  exact
-                  path="/manage-users"
-                  render={() => (
-                    <ManageUsers
-                      users={users}
-                      currentUser={currentUser}
-                      SetLog={SetLog}
-                    />
-                  )}
-                />
-                <Route
-                  path="/user/:id"
-                  render={(props) => (
-                    <UserSettings {...props} userList={users} SetLog={SetLog} />
-                  )}
-                />
+                <Route exact path="/" render={() => <HomePage currentUser={currentUser} />} />
+                <Route exact path="/1PROJ" render={() => <HomePage1PROJ currentUser={currentUser} />} />{" "}
+                <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} />} />{" "}
+                <Route exact path="/3PROJ" render={() => <HomePage3PROJ currentUser={currentUser} />} />
+                <Route exact path="/manage-users" render={() => <ManageUsers users={users} currentUser={currentUser} SetLog={SetLog} />} />
+                <Route path="/user/:id" render={(props) => <UserSettings {...props} userList={users} SetLog={SetLog} />} />
                 <Route component={PageNotFound}></Route>
               </Switch>
             </div>

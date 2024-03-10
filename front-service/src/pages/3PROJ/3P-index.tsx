@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 import UserModel from "../../models/user-model";
+import "./3P-style.scss";
 
 type Props = {
   currentUser: UserModel;

@@ -7,11 +7,11 @@
     "start": "electron .",
     "package": "electron-packager ."
   },
-  
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^29.1.0"
+    "electron": "^29.1.0",
+    "electron-reload": "^2.0.0-alpha.1"
   }
 }

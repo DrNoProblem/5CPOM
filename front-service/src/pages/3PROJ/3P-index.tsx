@@ -94,9 +94,6 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
 
               </li>
             ) : null)) : null}
-
-
-
           </ul>
           <div className='flex-row flex-bet normal-bg-h cta mrauto blue-h' onClick={() => setAddActive(!AddActive)}>
             <span className='add-user flex-row flex-center-align flex-start-justify g15'>
@@ -136,9 +133,6 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
 
               </li>
             ) : null)) : null}
-
-
-
           </ul>
 
         </div>

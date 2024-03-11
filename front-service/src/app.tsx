@@ -104,7 +104,7 @@ const App: FunctionComponent = () => {
                 <Route exact path="/" render={() => <HomePage currentUser={currentUser} />} />
                 <Route exact path="/1PROJ" render={() => <HomePage1PROJ currentUser={currentUser} />} />{" "}
                 <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} />} />{" "}
-                <Route exact path="/3PROJ" render={() => <HomePage3PROJ currentUser={currentUser} />} />
+                <Route exact path="/3PROJ" render={() => <HomePage3PROJ currentUser={currentUser} SetLog={SetLog} />} />
                 <Route exact path="/manage-users" render={() => <ManageUsers users={users} currentUser={currentUser} SetLog={SetLog} />} />
                 <Route path="/user/:id" render={(props) => <UserSettings {...props} userList={users} SetLog={SetLog} />} />
                 <Route component={PageNotFound}></Route>

@@ -68,17 +68,17 @@ const UserHeader: FunctionComponent<Props> = ({ ValidLogIn }) => {
             />
           </div>
 
-{/*           <div className="button flex-col w100">
-            <Link to="/recover" className="forget mb25">
+          <div className="button flex-col w100">
+{/*             <Link to="/recover" className="forget mb25">
               <span>Foreget password ?</span>
-            </Link>
+            </Link> */}
             <div
               className="cta mlrauto cta-blue"
               onClick={() => signIn(email, password)}
             >
               Sign In
             </div>
-          </div> */}
+          </div>
         </form>
       </div>
     </div>

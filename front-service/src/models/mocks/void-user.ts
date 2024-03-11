@@ -1,11 +1,12 @@
 import UserModel from '../user-model';
 
 export const voidUser: UserModel = {
+    '_id': "",
     'pseudo': "no-display",
     'email': "",
     'password': "",
     'role': "",
-    '_id': "",
+    'draws': [],
 }
 
 export default voidUser;

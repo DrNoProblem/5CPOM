@@ -62,7 +62,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
   return (
     <div className="main p20 flex-col relative flex-end-align g25">
       <div className="flex-col g25 w100">
-
+        <Link to={`/`} className='cta cta-blue'><span>Back</span></Link>
         <h2 className="m0">3PROJ :</h2>
         <div className="table-list flex-col p50 dark-bg big-dark-container display-from-left">
           <h2>List of owned room :</h2>
@@ -121,7 +121,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
                 <i className={`material-icons mtbauto`}>expand_more</i>
               </div>
             </li>
-            {OwnerRoom ? OwnerRoom.map((room: RoomModel) => (room.owner !== currentUser._id || room.co_owner !== currentUser._id  ? (
+            {OwnerRoom ? OwnerRoom.map((room: RoomModel) => (room.owner !== currentUser._id || room.co_owner !== currentUser._id ? (
               <li key={room.id + "userlist"}>
                 <div className='flex-row flex-bet'>
                   <div className='flex-row flex-start-align flex-start-justify w80'>

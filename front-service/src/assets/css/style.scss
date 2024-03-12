@@ -771,6 +771,7 @@ input.error-input {
 }
 
 .home-tile:hover {
+  cursor: pointer;
   border-radius: 8px;
   border: 2px solid var(--color-blue);
 

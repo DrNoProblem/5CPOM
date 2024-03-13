@@ -39,6 +39,11 @@ import User from "./models/user-model";
 //? mocks
 import displayStatusRequest from "./helpers/display-status-request";
 import voidUser from "./models/mocks/void-user";
+import DrawnListPage from "./pages/3PROJ/3PROJ-pages/draw-list-pages";
+import DrawPage from "./pages/3PROJ/3PROJ-pages/draw-page";
+import RoomPageById from "./pages/3PROJ/3PROJ-pages/room-page-by-id";
+import RoomPageManagementById from "./pages/3PROJ/3PROJ-pages/room-page-management-by-id";
+import RoomTaskPageById from "./pages/3PROJ/3PROJ-pages/room-taks-detail";
 
 const App: FunctionComponent = () => {
   const [isLog, setIsLog] = useState<string | Boolean>(false);
@@ -104,6 +109,11 @@ const App: FunctionComponent = () => {
                 <Route exact path="/" render={() => <HomePage currentUser={currentUser} />} />
                 <Route exact path="/1PROJ" render={() => <HomePage1PROJ currentUser={currentUser} />} />{" "}
                 <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} />} />{" "}
+                <Route path="/3PROJ/room/:roomid/task/:taskid" render={(props) => <RoomTaskPageById {...props} currentUser={currentUser} SetLog={SetLog} />} />
+                <Route path="/3PROJ/room/:roomid/manage" render={(props) => <RoomPageManagementById {...props} currentUser={currentUser} SetLog={SetLog} />} />
+                <Route path="/3PROJ/room/:roomid" render={(props) => <RoomPageById {...props} currentUser={currentUser} SetLog={SetLog} />} />
+                <Route path="/3PROJ/draw/" render={(props) => <DrawPage currentUser={currentUser} SetLog={SetLog} />} />
+                <Route path="/3PROJ/draw-history/" render={(props) => <DrawnListPage currentUser={currentUser} SetLog={SetLog} />} />
                 <Route exact path="/3PROJ" render={() => <HomePage3PROJ currentUser={currentUser} SetLog={SetLog} />} />
                 <Route exact path="/manage-users" render={() => <ManageUsers users={users} currentUser={currentUser} SetLog={SetLog} />} />
                 <Route path="/user/:id" render={(props) => <UserSettings {...props} userList={users} SetLog={SetLog} />} />

@@ -1,5 +1,3 @@
-
-
 export default class TasksModel {
       id: string;
       title: string;

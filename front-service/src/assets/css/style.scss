@@ -246,12 +246,40 @@ i {
   cursor: grab;
 }
 
+.cta-light {
+  background-color: var(--color-light-bg);
+  border: 2px solid var(--color-light-bg);
+  * {
+    color: var(--color-lightgrey);
+  }
+}
+
+.cta-normal {
+  background-color: var(--color-normal-bg);
+  border: 2px solid var(--color-normal-bg);
+  * {
+    color: var(--color-lightgrey);
+  }
+}
+
+.cta-dark {
+  background-color: var(--color-dark-bg);
+  border: 2px solid var(--color-dark-bg);
+  * {
+    color: var(--color-lightgrey);
+  }
+}
+
 .cta {
-  display: inline-block;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   padding: 8px 25px;
   transition: all ease-out 0.1s;
   cursor: pointer;
   border-radius: 8px;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -264,7 +292,6 @@ i {
 .cta-blue {
   background-color: #0084ff20;
   border: 2px solid var(--color-blue);
-
   * {
     color: var(--color-blue);
   }
@@ -273,7 +300,6 @@ i {
 .cta-red {
   background-color: #ff276820;
   border: 2px solid var(--color-red);
-
   * {
     color: var(--color-red);
   }
@@ -282,7 +308,6 @@ i {
 .cta-green {
   background-color: #0d822520;
   border: 2px solid var(--color-green);
-
   * {
     color: var(--color-green);
   }
@@ -291,7 +316,6 @@ i {
 .cta-disable {
   background-color: rgba(255, 39, 104, 0.1254901961);
   border: 2px solid var(--color-red);
-
   * {
     color: var(--color-red);
   }
@@ -300,7 +324,6 @@ i {
 .cta-blue:hover {
   background-color: var(--color-blue);
   border: 2px solid var(--color-blue);
-
   * {
     color: var(--color-white);
   }
@@ -309,7 +332,6 @@ i {
 .cta-red:hover {
   background-color: var(--color-red);
   border: 2px solid var(--color-red);
-
   * {
     color: var(--color-white);
   }
@@ -318,7 +340,6 @@ i {
 .cta-green:hover {
   background-color: var(--color-green);
   border: 2px solid var(--color-green);
-
   * {
     color: var(--color-white);
   }
@@ -328,10 +349,52 @@ i {
   cursor: not-allowed;
   background-color: #ff276820;
   border: 2px solid var(--color-red);
-
   * {
     color: var(--color-red);
   }
+}
+
+.cta-blue-h:hover {
+  border: 2px solid var(--color-blue);
+  * {
+    color: var(--color-blue);
+  }
+}
+
+.cta-red-h:hover {
+  border: 2px solid var(--color-red);
+  * {
+    color: var(--color-red);
+  }
+}
+
+.cta-green-h:hover {
+  border: 2px solid var(--color-green);
+  * {
+    color: var(--color-green);
+  }
+}
+
+.add-item-popup {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 9;
+  gap: 50px;
+}
+
+.dark-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: #00000088;
 }
 
 select {
@@ -501,7 +564,6 @@ a.icon {
 .blue-h:hover > .add-user {
   cursor: pointer;
   color: var(--color-blue);
-
   * {
     color: var(--color-blue);
   }
@@ -511,7 +573,6 @@ a.icon {
   .item {
     border-radius: 8px;
     margin-top: 10px;
-
     i {
       margin-left: auto;
       margin-right: 15px;
@@ -617,7 +678,6 @@ a.icon {
   padding: 50px;
   background: #00000088;
   right: 0;
-
   .giant-card-media {
     width: 70%;
     height: 69vh;
@@ -640,7 +700,6 @@ a.icon {
     .url-filed {
       width: 100%;
       overflow: hidden;
-
       span {
         overflow-x: scroll;
         padding-right: 30px;
@@ -671,7 +730,6 @@ a.icon {
 
 .toogle-footer-header {
   right: 20px;
-
   .cta {
     background-color: var(--color-dark-bg);
     border: 2px solid var(--color-dark-bg);
@@ -695,7 +753,6 @@ a.icon {
 
 .edit-menu-list-item {
   border-top: 1px solid var(--color-light-bg);
-
   input,
   select {
     padding: 15px;
@@ -741,7 +798,6 @@ input.error-input {
 .wysiwyg-field-input {
   transition: 0s all ease-in-out;
   gap: 5px;
-
   .text-zone-field-input {
     transition: 0s all ease-in-out;
     height: 200px;
@@ -774,7 +830,6 @@ input.error-input {
   cursor: pointer;
   border-radius: 8px;
   border: 2px solid var(--color-blue);
-
   span {
     color: var(--color-blue);
   }
@@ -795,7 +850,6 @@ input.error-input {
 
 .edit-title-button:hover {
   border: solid 2px var(--color-blue);
-
   i {
     color: var(--color-blue);
   }
@@ -819,7 +873,6 @@ input.error-input {
 .refuse-button:hover {
   border: solid 2px var(--color-red);
   background-color: #ff276820;
-
   i {
     color: var(--color-red);
   }
@@ -828,7 +881,6 @@ input.error-input {
 .accept-button:hover {
   border: solid 2px var(--color-blue);
   background-color: #0084ff20;
-
   i {
     color: var(--color-blue);
   }
@@ -848,4 +900,98 @@ input.error-input {
 
 .w80-tab.side-menu-mini {
   width: 100%;
+}
+
+.users-list-to-add {
+  max-height: 150px;
+  overflow-y: scroll;
+  margin-bottom: 20px;
+
+  li:hover i {
+    color: var(--color-normal-bg);
+  }
+
+  li {
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    width: calc(100% - 30px);
+
+    i {
+      color: var(--color-dark-bg);
+    }
+    i:hover {
+      color: var(--color-red);
+    }
+    span {
+      overflow-x: hidden;
+    }
+  }
+}
+
+.users-list-to-add li:has(i:hover) span {
+  color: var(--color-red);
+}
+.users-list-to-add.viewnoscrool {
+  li i:hover {
+    color: var(--color-blue);
+  }
+  li:has(i:hover) span {
+    color: var(--color-blue);
+  }
+}
+
+.users-list-to-add::-webkit-scrollbar {
+  width: 5px;
+  display: block;
+}
+
+/* Track */
+.users-list-to-add::-webkit-scrollbar-track {
+  background: var(--color-normal-bg);
+  border-radius: 100px;
+}
+
+/* Handle */
+.users-list-to-add::-webkit-scrollbar-thumb {
+  background: var(--color-blue);
+  border-radius: 100px;
+}
+
+.viewnoscrool {
+  overflow: hidden;
+}
+
+.SelectUsersWindow {
+  position: absolute;
+  max-height: calc(100% - 150px);
+  right: 0;
+  top: 0;
+  margin: 50px 0;
+  transform: translateX(calc(100% + 50px));
+}
+.ChooseUserWindow {
+  position: absolute;
+  max-height: calc(100% - 150px);
+  left: 0;
+  top: 0;
+  margin: 50px 0;
+  transform: translateX(calc(-100% - 50px));
+}
+
+.add-item-popup .big-dark-container {
+  top: 20%;
+  overflow: unset;
+  min-width: 480px;
+}
+
+.SelectUsersList {
+  margin: 0;
+
+  li {
+    cursor: pointer;
+    margin: 0;
+    padding: 5px 0;
+    user-select: none;
+  }
 }

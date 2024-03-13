@@ -1,12 +1,13 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import "./3P-style.scss";
-import { Link, match } from "react-router-dom";
+import "../3P-style.scss";
+import { Link, RouteComponentProps, match } from "react-router-dom";
 import UserModel from "../../../models/user-model";
 import TasksModel from "../../../models/tasks-model";
 import voidTask from "../../../models/mocks/void-task";
 
-type Props = {
+interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> { 
   currentUser: UserModel;
+  SetLog: Function;
 };
 
 const RoomTaskPageById: FunctionComponent<Props> = ({ currentUser }) => {

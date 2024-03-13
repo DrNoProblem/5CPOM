@@ -1,10 +1,11 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import "./3P-style.scss";
+import "../3P-style.scss";
 import { Link, match } from "react-router-dom";
 import UserModel from "../../../models/user-model";
 
 type Props = {
   currentUser: UserModel;
+  SetLog: Function;
 };
 
 const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {

@@ -1,13 +1,14 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import "./3P-style.scss";
+import "../3P-style.scss";
 import { Link, match } from "react-router-dom";
 import UserModel from "../../../models/user-model";
 
 type Props = {
   currentUser: UserModel;
+  SetLog: Function;
 };
 
-const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {
+const DrawnListPage: FunctionComponent<Props> = ({ currentUser }) => {
   const [user, setUser] = useState<UserModel>(currentUser);
 
   return (
@@ -26,6 +27,7 @@ const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {
             <li className="legend">
               <div className="flex-row flex-bet">
                 <div className="flex-row flex-start-align flex-start-justify w80">
+                  <p className="w20">PREVIEW</p>
                   <p className="w20">DATE</p>
                   <p className="w20">SCRIPT</p>
                 </div>
@@ -56,4 +58,4 @@ const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {
   );
 };
 
-export default DrawPage;
+export default DrawnListPage;

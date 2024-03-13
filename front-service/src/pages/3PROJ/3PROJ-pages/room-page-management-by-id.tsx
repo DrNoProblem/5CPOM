@@ -1,13 +1,14 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import "./3P-style.scss";
-import { Link, match } from "react-router-dom";
+import "../3P-style.scss";
+import { Link, RouteComponentProps, match } from "react-router-dom";
 import UserModel from "../../../models/user-model";
 
-type Props = {
+interface Props extends RouteComponentProps<{ roomid: string }> { 
   currentUser: UserModel;
+  SetLog: Function;
 };
 
-const RoomPageById: FunctionComponent<Props> = ({ currentUser }) => {
+const RoomPageManagementById: FunctionComponent<Props> = ({ currentUser }) => {
   const [user, setUser] = useState<UserModel>(currentUser);
 
   return (
@@ -17,7 +18,7 @@ const RoomPageById: FunctionComponent<Props> = ({ currentUser }) => {
           <Link to={`/3PROJ`} className="cta cta-blue">
             <span>Back</span>
           </Link>
-          <h2 className="m0">Room {currentUser.pseudo} :</h2>
+          <h2 className="m0">3PROJ :</h2>
         </div>
         <div className="flex-wrap g25 w80 mb15 flex-center-align"></div>
       </div>
@@ -25,4 +26,4 @@ const RoomPageById: FunctionComponent<Props> = ({ currentUser }) => {
   );
 };
 
-export default RoomPageById;
+export default RoomPageManagementById;

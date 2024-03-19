@@ -14,15 +14,19 @@ type Props = {
   SetLog: Function;
 };
 
-const UserList: MiniUserModel[] = [
-  { id: "0", name: "test0" },
-  { id: "1", name: "test1" },
-  { id: "2", name: "test2" },
-  { id: "3", name: "test3" },
-];
-
 const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
-  const [OwnerRooms, setOwnerRooms] = useState<RoomModel[]>();
+  const UserList: MiniUserModel[] = [
+    { id: "0", name: "test0" },
+    { id: "1", name: "test1" },
+    { id: "2", name: "test2" },
+    { id: "3", name: "test3" },
+  ];
+
+  const roomList: RoomModel[] = [
+    { id: "0", name: "room0", owner: currentUser!._id, co_owner: "0", users: ["1", "2"], tasks: ["0"] },
+    { id: "1", name: "room1", owner: "0", co_owner: "1", users: ["2", "3"], tasks: ["1", "2"] },
+  ];
+  const [RoomList, setRoomList] = useState<RoomModel[]>(roomList);
 
   const [AddActive, setAddActive] = useState<Boolean>(false);
   const [SelectUsersActive, setSelectUsersActive] = useState<Boolean>(false);
@@ -80,7 +84,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
           </Link>
           <h2 className="m0">3PROJ :</h2>
         </div>
-        <div className="flex-col big-dark-container display-from-left">
+        <div className="flex-col small-dark-container display-from-left">
           <div className="flex-wrap g25">
             <Link className="cta cta-normal cta-blue-h" to={"/3PROJ/draw/"}>
               <i className="material-icons">gesture</i>
@@ -114,8 +118,8 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
           </div>
         </div>
         {OwnedRoomActive ? (
-          <div className="table-list flex-col p50 dark-bg big-dark-container display-from-left">
-            <h2>List of owned rooms :</h2>
+          <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
+            <h2 className="mb10">List of owned rooms :</h2>
             <ul className="table-list flex-col mb0">
               <li className="legend">
                 <div className="flex-row flex-bet">
@@ -123,28 +127,25 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
                     <p className="w20">ROOM NAME</p>
                     <p className="w20">OWNER</p>
                     <p className="w20">CO-OWNER</p>
-                    <p className="w10">USERS COUNT</p>
-                    <p className="w10">TASKS COUNT</p>
+                    <p className="w20">USERS COUNT</p>
+                    <p className="w20">TASKS COUNT</p>
                   </div>
                   <i className={`material-icons mtbauto`}>expand_more</i>
                 </div>
               </li>
-              {OwnerRooms
-                ? OwnerRooms.map((room: RoomModel) =>
+              {RoomList
+                ? RoomList.map((room: RoomModel) =>
                     room.owner === currentUser._id || room.co_owner === currentUser._id ? (
                       <li key={room.id + "userlist"}>
-                        <div className="flex-row flex-bet">
+                        <Link to={`/3PROJ/room/` + room.id} className="flex-row flex-bet">
                           <div className="flex-row flex-start-align flex-start-justify w80">
                             <p className="w20">{room.name}</p>
                             <p className="w20">{room.owner}</p>
                             <p className="w20">{room.co_owner}</p>
-                            <p className="w10">{room.users.length}</p>
-                            <p className="w10">{room.tasks.length}</p>
+                            <p className="w20">{room.users.length}</p>
+                            <p className="w20">{room.tasks.length}</p>
                           </div>
-                          <Link to={`/room/` + room.id} className="icon">
-                            <i className="material-icons ml10 blue-h">edit</i>
-                          </Link>
-                        </div>
+                        </Link>
                       </li>
                     ) : null
                   )
@@ -154,8 +155,8 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
         ) : null}
 
         {Roomctive ? (
-          <div className="table-list flex-col p50 dark-bg big-dark-container display-from-left">
-            <h2>List of all rooms :</h2>
+          <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
+            <h2 className="mb10">List of all rooms :</h2>
             <ul className="table-list flex-col mb0">
               <li className="legend">
                 <div className="flex-row flex-bet">
@@ -163,28 +164,25 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
                     <p className="w20">ROOM NAME</p>
                     <p className="w20">OWNER</p>
                     <p className="w20">CO-OWNER</p>
-                    <p className="w10">USERS COUNT</p>
-                    <p className="w10">TASKS COUNT</p>
+                    <p className="w20">USERS COUNT</p>
+                    <p className="w20">TASKS COUNT</p>
                   </div>
                   <i className={`material-icons mtbauto`}>expand_more</i>
                 </div>
               </li>
-              {OwnerRooms
-                ? OwnerRooms.map((room: RoomModel) =>
+              {RoomList
+                ? RoomList.map((room: RoomModel) =>
                     room.owner !== currentUser._id || room.co_owner !== currentUser._id ? (
                       <li key={room.id + "userlist"}>
-                        <div className="flex-row flex-bet">
+                        <Link to={`/3PROJ/room/` + room.id} className="flex-row flex-bet">
                           <div className="flex-row flex-start-align flex-start-justify w80">
                             <p className="w20">{room.name}</p>
                             <p className="w20">{room.owner}</p>
                             <p className="w20">{room.co_owner}</p>
-                            <p className="w10">{room.users.length}</p>
-                            <p className="w10">{room.tasks.length}</p>
+                            <p className="w20">{room.users.length}</p>
+                            <p className="w20">{room.tasks.length}</p>
                           </div>
-                          <Link to={`/room/` + room.id} className="icon">
-                            <i className="material-icons ml10 blue-h">edit</i>
-                          </Link>
-                        </div>
+                        </Link>
                       </li>
                     ) : null
                   )
@@ -199,13 +197,17 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
               className="dark-background"
               onClick={() => {
                 setAddActive(false);
+                setChooseCoOwnerActive(false);
+                setSelectUsersActive(false);
               }}
             ></div>
-            <div className="big-dark-container flex-col w25 relative display-from-left zi2">
+            <div className="small-dark-container flex-col w25 relative display-from-left zi2">
               <i
                 className="material-icons red-h absolute r0 mr50"
                 onClick={() => {
                   setAddActive(false);
+                  setChooseCoOwnerActive(false);
+                  setSelectUsersActive(false);
                 }}
               >
                 close

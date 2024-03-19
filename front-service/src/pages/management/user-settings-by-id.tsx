@@ -128,7 +128,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
                     <Link to='/manage-users' className='cta cta-blue '><span>Back to users list</span></Link>
                 </div>
                 <div className="flex-row g50">
-                    <div className='big-dark-container flex-col flex-start-align flex-start-justify w35 display-from-left zi2'>
+                    <div className='small-dark-container flex-col flex-start-align flex-start-justify w35 display-from-left zi2'>
                         <h2 className='mt0'>Edit user :</h2>
                         <div className="flex-col w100">
                             <div className="item flex-row flex-center-align normal-bg-h">
@@ -159,7 +159,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
                         <div className="cta cta-red mt25" onClick={() => setEditMode('deleteUser')}><span>Delete this user</span></div>
                     </div>
                     {EditMode ? (
-                        <div className="edit-mode big-dark-container flex-col flex-start-align flex-bet w35 relative display-from-left">
+                        <div className="edit-mode small-dark-container flex-col flex-start-align flex-bet w35 relative display-from-left">
                             <div className='mb20'>
                                 <i className='material-icons red-h absolute r0 mr50' onClick={() => setEditMode(false)}>close</i>
                                 {EditMode !== 'deleteUser' ? (

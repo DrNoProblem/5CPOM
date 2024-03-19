@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const User = require("../models/task.model");
+const User = require("./user.model");
 
 
 

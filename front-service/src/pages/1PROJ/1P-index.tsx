@@ -468,7 +468,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
     <div className={`main p20 flex-col relative flex-end-align g25`}>
       <div className="flex-col g25 w100">
         <h1
-          className={`big-dark-container scores flex-center g50  playerTurn${PlayerTurn}`}
+          className={`small-dark-container scores flex-center g50  playerTurn${PlayerTurn}`}
           onClick={() => console.log(VirtualBoardRender)} //!
         >
           <i className="material-icons blue" onClick={() => setMenuOpen("red win")}>
@@ -481,7 +481,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
             flag
           </i>
         </h1>
-        <div className={`board-container flex-col flex-center g25 big-dark-container `}>
+        <div className={`board-container flex-col flex-center g25 small-dark-container `}>
           <div className={`board playerTurn${PlayerTurn}`}>
             {VirtualBoardRender.map((e, ei) =>
               e.map((f, fi) => (

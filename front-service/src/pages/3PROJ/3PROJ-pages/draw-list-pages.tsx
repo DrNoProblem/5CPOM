@@ -21,8 +21,8 @@ const DrawnListPage: FunctionComponent<Props> = ({ currentUser }) => {
           <h2 className="m0">Draw list :</h2>
         </div>
 
-        <div className="table-list flex-col p50 dark-bg big-dark-container display-from-left">
-          <h2>List of script saved online :</h2>
+        <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
+          <h2 className="mb10">List of script saved online :</h2>
           <ul className="table-list flex-col mb0">
             <li className="legend">
               <div className="flex-row flex-bet">

@@ -7,7 +7,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const config = require("./config");
 
-const userRoutes = require("./routes/user.routes");
+const userRoutes = require("./user.routes");
 
 const app = express();
 

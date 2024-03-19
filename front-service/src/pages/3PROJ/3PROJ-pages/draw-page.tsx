@@ -63,7 +63,7 @@ const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {
                 setParamsActive(false);
               }}
             ></div>
-            <div className="flex-col p50 dark-bg big-dark-container display-from-left g15">
+            <div className="flex-col p50 dark-bg small-dark-container display-from-left g15">
               <h2 className="mt0">
                 Settings :
                 <i

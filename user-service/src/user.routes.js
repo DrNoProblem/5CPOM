@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/user.controller");
-const authController = require("../controllers/auth.controller");
+const userController = require("./user.controller");
+const authController = require("./auth.controller");
 const { body, param } = require("express-validator");
 
 //! public route for creating a new user

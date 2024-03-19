@@ -7,8 +7,8 @@ const helmet = require("helmet");
 const compression = require("compression");
 const config = require("./config");
 
-const roomRoutes = require("./routes/room.routes");
-const taskRoutes = require("./routes/task.routes");
+const roomRoutes = require("./rooms/room.routes");
+const taskRoutes = require("./tasks/task.routes");
 
 const app = express();
 

@@ -404,13 +404,20 @@ select {
   border-radius: 8px;
 }
 
-input {
+input,
+textarea {
   padding: 15px;
   background: var(--color-normal-bg);
   border: var(--color-normal-bg) 2px solid;
   border-radius: 8px;
-  width: calc(100% - 30px);
+  width: calc(100% - 34px);
   outline: unset;
+}
+
+textarea {
+  width: 345px;
+  
+  height: 107px;
 }
 
 .arrow-external::after {
@@ -446,7 +453,7 @@ input {
   border-top: 2px solid var(--color-blue);
 }
 
-.big-dark-container {
+.small-dark-container {
   padding: 50px;
   background-color: var(--color-dark-bg);
   border-radius: 15px;
@@ -979,7 +986,7 @@ input.error-input {
   transform: translateX(calc(-100% - 50px));
 }
 
-.add-item-popup .big-dark-container {
+.add-item-popup .small-dark-container {
   top: 20%;
   overflow: unset;
   min-width: 480px;

@@ -43,7 +43,7 @@ const UserHeader: FunctionComponent<Props> = ({ ValidLogIn }) => {
 
   return (
     <div className="user-login flex-center">
-      <div className="bloc w20 big-dark-container">
+      <div className="bloc w20 small-dark-container">
         <div className="flex-col flex-start-justify g25 flex-center mb25">
           <Logo sizeblocs={1} hover={false} />
           <div className="flex-center  flex-start-align flex-col">

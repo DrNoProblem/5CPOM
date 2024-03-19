@@ -56,6 +56,14 @@ exports.getAllUsers = async (req, res, next) => {
     next(err);
   }
 };
+exports.getAllMiniUsers = async (req, res, next) => {
+  try {
+    const users = await User.find().select("_id pseudo");
+    res.json(users);
+  } catch (err) {
+    next(err);
+  }
+};
 
 exports.updateUser = async (req, res, next) => {
   try {

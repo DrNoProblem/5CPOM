@@ -45,6 +45,11 @@ router.get(
   userController.getCurrentUser
 );
 
+//! public route for getting all users
+router.get(
+  "/mini",
+  userController.getAllMiniUsers
+);
 //! private route for getting current user's info
 router.get(
   "/:id",
@@ -73,11 +78,15 @@ router.delete(
   userController.deleteCurrentUser
 );
 
+
 //! admin route for getting all users
 router.get(
   "/",
   userController.getAllUsers
 );
+
+
+
 
 //! admin route for updating user's info
 router.patch(

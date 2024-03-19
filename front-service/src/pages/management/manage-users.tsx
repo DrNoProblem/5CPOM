@@ -74,7 +74,7 @@ const ManageUsers: FunctionComponent<Props> = ({ users, currentUser, SetLog }) =
 
     const register = (body: any) => {
         console.log(body)
-        SignUp(body.email, body.pseudo, body.password, body.role).then(result => {
+        SignUp(body.email, body.name, body.password, body.role).then(result => {
             if (isHttpStatusValid(result.status)) {
                 displayStatusRequest("user added successfully", false)
                 SetLog();
@@ -105,7 +105,7 @@ const ManageUsers: FunctionComponent<Props> = ({ users, currentUser, SetLog }) =
                                 <li key={user._id + "userlist"}>
                                     <div className='flex-row flex-bet'>
                                         <div className='flex-row flex-start-align flex-start-justify w80'>
-                                            <p className='w15'>{user.pseudo}</p>
+                                            <p className='w15'>{user.name}</p>
                                             <p className='w15'>{user.role}</p>
                                             <p className='w30'>{user.email}</p>
                                             <p className='w30'>{user._id}</p>

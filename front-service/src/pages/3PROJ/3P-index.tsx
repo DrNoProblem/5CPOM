@@ -62,7 +62,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
   const AddNewRoom = (body: any) => {
     console.log(body);
     if (areAllPropertiesEmpty(body)) {
-      SignUp(body.email, body.pseudo, body.password, body.role).then((result) => {
+      SignUp(body.email, body.name, body.password, body.role).then((result) => {
         if (isHttpStatusValid(result.status)) {
           displayStatusRequest("user added successfully", false);
           SetLog();

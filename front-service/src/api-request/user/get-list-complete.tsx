@@ -1,7 +1,7 @@
 
-async function getUsersList(token: string | undefined) {
+async function getCompleteUsersList(token: string | undefined) {
     var data: any = []
-    const response = await fetch("http://localhost:4000/users/mini", {
+    const response = await fetch("http://localhost:4000/users/", {
         method: "GET",
         headers: { "Content-Type": "application/json", "authorization": "Bearer " + token }
     });
@@ -9,4 +9,4 @@ async function getUsersList(token: string | undefined) {
     return data
 }
 
-export default getUsersList;
+export default getCompleteUsersList;

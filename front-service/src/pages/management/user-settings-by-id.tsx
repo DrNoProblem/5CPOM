@@ -133,7 +133,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
                         <div className="flex-col w100">
                             <div className="item flex-row flex-center-align normal-bg-h">
                                 <p className='pr10 txt-end w25'>username :</p>
-                                <p className=''>{user.pseudo}</p>
+                                <p className=''>{user.name}</p>
                                 <i className='material-icons blue-h mlauto mr15' onClick={() => setEditMode('username')}>edit</i>
                             </div>
 

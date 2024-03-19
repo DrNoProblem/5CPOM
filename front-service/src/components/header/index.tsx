@@ -22,7 +22,7 @@ const Header5CPOM: FunctionComponent<Props> = ({ currentUser, log_out, isLog }) 
         {isLog ? (
           <div className="header__user-part flex-row w60-tab flex-center g25 blue-h ">
             <h3 className="m0 flex-center g15">
-              <Link to={`/user/${currentUser._id}`}>{currentUser.pseudo}</Link>
+              <Link to={`/user/${currentUser._id}`}>{currentUser.name}</Link>
               <i className="material-icons">account_circle</i>
             </h3>
 
@@ -36,7 +36,7 @@ const Header5CPOM: FunctionComponent<Props> = ({ currentUser, log_out, isLog }) 
       </nav>
       {/* 
       <div className="absolute small-normal-container t0 r0 m15">
-        <p className='mt0'></p>{currentUser.pseudo}</p>
+        <p className='mt0'></p>{currentUser.name}</p>
         <Link to={`/user/${currentUser._id}`}>view profile</Link>
         <p className="flex-center g15">
           Logout

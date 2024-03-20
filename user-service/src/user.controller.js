@@ -26,9 +26,9 @@ exports.getUserbyId = async (req, res) => {
 exports.updateCurrentUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
-    const { email, pseudo, password } = req.body;
+    const { email, name, password } = req.body;
     if (email) user.email = email;
-    if (pseudo) user.pseudo = pseudo;
+    if (name) user.name = name;
     if (password) {
       user.password = await bcrypt.hash(password, 10);
     }
@@ -58,7 +58,7 @@ exports.getAllUsers = async (req, res, next) => {
 };
 exports.getAllMiniUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select("_id pseudo");
+    const users = await User.find().select("_id name");
     res.json(users);
   } catch (err) {
     next(err);
@@ -68,7 +68,7 @@ exports.getAllMiniUsers = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { email, pseudo, password, role } = req.body;
+    const { email, name, password, role } = req.body;
 
     const user = await User.findById(id);
     if (!user) {
@@ -76,7 +76,7 @@ exports.updateUser = async (req, res, next) => {
     }
 
     if (email) user.email = email;
-    if (pseudo) user.pseudo = pseudo;
+    if (name) user.name = name;
     if (password) {
       user.password = await bcrypt.hash(password, 10);
     }

@@ -144,17 +144,19 @@ const App: FunctionComponent = () => {
                   render={(props) => <DrawnListPage currentUser={currentUser} SetLog={SetLog} />}
                 />
                 <Route exact path="/3PROJ" render={() => <HomePage3PROJ currentUser={currentUser} SetLog={SetLog} />} />
-                <Route
-                  exact
-                  path="/manage-users"
-                  render={() => {
-                    currentUser.role === "user" ? (
-                      <Unauthorized />
-                    ) : (
-                      <ManageUsers users={CompleteUsersList} currentUser={currentUser} SetLog={SetLog} />
-                    );
-                  }}
-                />
+                {currentUser ? (
+                  <Route
+                    exact
+                    path="/manage-users"
+                    render={() =>
+                      currentUser.role === "user" ? (
+                        <Unauthorized />
+                      ) : (
+                        <ManageUsers users={CompleteUsersList} currentUser={currentUser} SetLog={SetLog} />
+                      )
+                    }
+                  />
+                ) : null}
                 <Route
                   path="/user/:id"
                   render={(props) => (

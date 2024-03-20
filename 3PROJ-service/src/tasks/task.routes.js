@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const taskController = require("../tasks/task.controller");
+const taskController = require("./task.controller.js");
 const { body, param } = require("express-validator");
 
 /// create a Task

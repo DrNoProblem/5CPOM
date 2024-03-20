@@ -19,7 +19,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
 
     useEffect(() => {
         userList.forEach(element => {
-            if (element._id == match.params.id) {
+            if (element._id === match.params.id) {
                 setUser(element)
             }
         });
@@ -51,6 +51,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
     }
     useEffect(() => {
         setValueToSend((isCorrectPassword(objPassWord.password, objPassWord.validpassword)) ? objPassWord.password : false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [SelectPassword, SelectValidpassword])
 
     const [EditUserName, setEditUserName] = useState<string>("");
@@ -88,6 +89,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
         if (CorrectCode !== randomNumber) {
             setCorrectCode(false)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [CorrectCode])
 
     const SendRequestDeleteUser = (id: string) => {

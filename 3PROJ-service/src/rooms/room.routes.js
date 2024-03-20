@@ -7,35 +7,35 @@ const { body, param } = require("express-validator");
 router.post(
   "/add",
   [],
-  taskController.AddRoom
+  roomController.AddRoom
 );// no protection
 
 /// get list of all Room
 router.get(
   "/",
   [],
-  taskController.GetAllRoom
+  roomController.GetAllRoom
 );// no protection
 
 /// get Room by id
 router.get(
   "/:roomId",
   [param("roomId").isMongoId().withMessage("Invalid room ID"),],
-  taskController.GetRoomById
+  roomController.GetRoomById
 );// no protection
 
 /// update Room by id
 router.patch(
   "/updateRoom/:roomId",
   [param("roomId").isMongoId().withMessage("Invalid room ID"),],
-  taskController.updateRoomById
+  roomController.updateRoomById
 );// Owner + co-Owner
 
 /// delete Room by id
 router.delete(
   "/deleteRoom/:roomId",
   [param("roomId").isMongoId().withMessage("Invalid room ID"),],
-  taskController.deleteRoomById
+  roomController.deleteRoomById
 );// Owner + co-Owner
 
 module.exports = router;

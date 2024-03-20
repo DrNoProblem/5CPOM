@@ -9,7 +9,7 @@ router.post(
   "/signup",
   [
     body("email").isEmail().withMessage("Email must be valid"),
-    body("pseudo").notEmpty().withMessage("Pseudo is required"),
+    body("name").notEmpty().withMessage("name is required"),
     body("password")
       .isLength({ min: 8 })
       .withMessage("Password must be at least 8 characters"),
@@ -61,7 +61,7 @@ router.patch(
   "/updateMe",
   [
     body("email").optional().isEmail().withMessage("Email must be valid"),
-    body("pseudo").optional().notEmpty().withMessage("Pseudo is required"),
+    body("name").optional().notEmpty().withMessage("name is required"),
     body("password")
       .optional()
       .isLength({ min: 8 })
@@ -94,7 +94,7 @@ router.patch(
   [
     param("id").isMongoId().withMessage("Invalid user ID"),
     body("email").optional().isEmail().withMessage("Email must be valid"),
-    body("pseudo").optional().notEmpty().withMessage("Pseudo is required"),
+    body("name").optional().notEmpty().withMessage("name is required"),
     body("password")
       .optional()
       .isLength({ min: 8 })

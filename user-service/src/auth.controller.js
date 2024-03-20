@@ -13,17 +13,17 @@ const signToken = (id) => {
 
 exports.signup = async (req, res, next) => {
   try {
-    const { email, pseudo, password, role } = req.body;
+    const { email, name, password, role } = req.body;
 
     let existingUser;
     try {
-      existingUser = await User.findOne({ $or: [{ email }, { pseudo }] });
+      existingUser = await User.findOne({ $or: [{ email }, { name }] });
     } catch (err) {
       return next(err);
     }
 
     if (existingUser) {
-      throw new AppError('Email or pseudo already in use', 400);
+      throw new AppError('Email or name already in use', 400);
     }
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -33,7 +33,7 @@ exports.signup = async (req, res, next) => {
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const newUser = await User.create({ email, pseudo, password: hashedPassword, role });
+    const newUser = await User.create({ email, name, password: hashedPassword, role });
 
     const token = signToken(newUser._id);
 

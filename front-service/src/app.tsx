@@ -143,7 +143,7 @@ const App: FunctionComponent = () => {
                   path="/3PROJ/draw-history/"
                   render={(props) => <DrawnListPage currentUser={currentUser} SetLog={SetLog} />}
                 />
-                <Route exact path="/3PROJ" render={() => <HomePage3PROJ currentUser={currentUser} SetLog={SetLog} />} />
+                <Route exact path="/3PROJ" render={() => <HomePage3PROJ currentUser={currentUser} usersList={usersList} SetLog={SetLog} />} />
                 {currentUser ? (
                   <Route
                     exact

@@ -1,10 +1,11 @@
 const Room = require("./room.model");
+const Task = require("../tasks/task.model");
 const { promisify } = require("util");
 const AppError = require("../utils/appError");
 
 exports.AddRoom = async (req, res, next) => {
   try {
-    const { name, owner, co_owner, users, tasks } = req.body;
+    const { name, owner, co_owner, users } = req.body;
 
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
@@ -71,8 +72,21 @@ exports.updateRoomById = async (req, res, next) => {
 
 exports.deleteRoomById = async (req, res, next) => {
   try {
-    const room = "";
-    res.json(room);
+    const { id } = req.params;
+    let message = "";
+    const room = await Room.findByIdAndDelete(id);
+    if (!room) return res.status(404).json({ message: "Room not found" });
+    room.tasks.forEach(async (task) => {
+      try {
+        const deleteTask = await Task.findByIdAndDelete(task._id);
+        if (!deleteTask) message += `\n Task with id : '${task._id}' not found`;
+        else message += `\n Task with id : '${task._id}' deleted successfully`;
+      } catch (err) {
+        next(err);
+      }
+    });
+    message += `\n Room deleted successfully`;
+    res.json({ message: message });
   } catch (err) {
     next(err);
   }

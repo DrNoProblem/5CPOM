@@ -1,26 +1,26 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const roomSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   owner: {
     type: String,
-    required: true
+    required: true,
   },
   co_owner: {
     type: String,
-    required: true
+    required: true,
   },
   users: {
     type: String,
-    required: true
+    required: true,
   },
   tasks: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
-module.exports = mongoose.model('Rooms', roomSchema);
+module.exports = mongoose.model("Rooms", roomSchema);

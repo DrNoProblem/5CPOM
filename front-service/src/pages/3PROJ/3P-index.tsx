@@ -8,13 +8,16 @@ import "./3P-style.scss";
 import RoomModel from "../../models/room-model";
 import MiniUserModel from "../../models/mini-user-model";
 import { runInThisContext } from "vm";
+import getNameById from "../../helpers/getNameById";
+import TasksModel from "../../models/tasks-model";
 
 type Props = {
   currentUser: UserModel;
   SetLog: Function;
+  usersList: MiniUserModel[];
 };
 
-const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
+const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersList }) => {
   const UserList: MiniUserModel[] = [
     { id: "0", name: "test0" },
     { id: "1", name: "test1" },
@@ -105,16 +108,6 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
               <i className="material-icons">add</i>
               <span>Create room</span>
             </div>
-            {/*
-            <div className="cta cta-normal cta-blue-h" onClick={() => setOwnedRoomActive(!OwnedRoomActive)}>
-              <i className="material-icons">engineering</i>
-              <span>Show owned room</span>
-            </div>
-            <div className="cta cta-normal cta-blue-h" onClick={() => setRoomctive(!Roomctive)}>
-              <i className="material-icons">groups</i>
-              <span>Show all room</span>
-            </div> 
-            */}
           </div>
         </div>
         {OwnedRoomActive ? (
@@ -140,8 +133,8 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
                         <Link to={`/3PROJ/room/` + room.id} className="flex-row flex-bet">
                           <div className="flex-row flex-start-align flex-start-justify w80">
                             <p className="w20">{room.name}</p>
-                            <p className="w20">{room.owner}</p>
-                            <p className="w20">{room.co_owner}</p>
+                            <p className="w20">{getNameById(room.owner, usersList)}</p>
+                            <p className="w20">{getNameById(room.co_owner, usersList)}</p>
                             <p className="w20">{room.users.length}</p>
                             <p className="w20">{room.tasks.length}</p>
                           </div>
@@ -153,6 +146,60 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
             </ul>
           </div>
         ) : null}
+
+        <div className="flex-between flex-row g25">
+          <div className="small-dark-container table-list w40">
+            <h2 className="mb10 mt0">List of renders :</h2>
+
+            <ul className="table-list flex-col mb0">
+              <li className="legend">
+                <div className="flex-row">
+                  <div className="flex-row flex-start-align flex-bet w90">
+                    <p className="w30">ROOM</p>
+                    <p className="w30">TASK</p>
+                    <p className="w30">DATE</p>
+                  </div>
+                  <i className={`material-icons mtbauto w10 flex-center`}>expand_more</i>
+                </div>
+              </li>
+
+              {RoomList
+                ? RoomList.map((room: RoomModel) =>
+                    room.owner !== currentUser._id || room.co_owner !== currentUser._id
+                      ? room.tasks.map((taskid) => (
+                          <li key={taskid}>
+                            <Link to="" className="flex-row flex-bet">
+                              <div className="flex-row flex-start-align flex-bet w100">
+                                <p className="w30">ROOM</p>
+                                <p className="w30">TASK</p>
+                                <p className="w30">DATE</p>
+                              </div>
+                              <i className={`material-icons mtbauto flex-center blue-h`}>task_alt</i>
+                            </Link>
+                          </li>
+                        ))
+                      : null
+                  )
+                : null}
+            </ul>
+          </div>
+          <div className="small-dark-container table-list w60">
+            <h2 className="mb10 mt0">List of all rooms :</h2>
+            <ul className="table-list flex-col mb0">
+              <li className="legend">
+                <div className="flex-row flex-bet">
+                  <div className="flex-row flex-start-align flex-start-justify">
+                    <p className="w20">ROOM NAME</p>
+                    <p className="w20">OWNER</p>
+                    <p className="w20">CO-OWNER</p>
+                    <p className="w20">USERS COUNT</p>
+                    <p className="w20">TASKS COUNT</p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
 
         {Roomctive ? (
           <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
@@ -177,8 +224,8 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog }) => {
                         <Link to={`/3PROJ/room/` + room.id} className="flex-row flex-bet">
                           <div className="flex-row flex-start-align flex-start-justify w80">
                             <p className="w20">{room.name}</p>
-                            <p className="w20">{room.owner}</p>
-                            <p className="w20">{room.co_owner}</p>
+                            <p className="w20">{getNameById(room.owner, usersList)}</p>
+                            <p className="w20">{getNameById(room.co_owner, usersList)}</p>
                             <p className="w20">{room.users.length}</p>
                             <p className="w20">{room.tasks.length}</p>
                           </div>

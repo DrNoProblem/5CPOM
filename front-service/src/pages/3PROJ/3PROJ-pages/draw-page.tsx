@@ -46,7 +46,7 @@ const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {
           <Link to={`/3PROJ`} className="cta cta-blue">
             <span>Back</span>
           </Link>
-          <h2 className="m0">Draw :</h2>
+          <h2 className="">Draw :</h2>
           <i className="material-icons" onClick={() => setParamsActive(true)}>
             settings
           </i>
@@ -64,7 +64,7 @@ const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {
               }}
             ></div>
             <div className="flex-col p50 dark-bg small-dark-container display-from-left g15">
-              <h2 className="mt0">
+              <h2 className="">
                 Settings :
                 <i
                   className="material-icons red-h absolute r0 mr50"
@@ -77,7 +77,7 @@ const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {
               </h2>
               <div className="drag-drop-container" onDrop={handleDrop} onDragOver={handleDragOver}>
                 <div className="big-normal-container flex-center flex-col " onClick={() => handleUploadButtonClick()}>
-                  <h2 className="mt0 flex-center-justify w100">
+                  <h2 className=" flex-center-justify w100">
                     <span className="mr25 w30 txt-end">Drag & Drop</span>|<span className="ml25 w30">Click here</span>
                   </h2>
                   <span>to import a media file</span>

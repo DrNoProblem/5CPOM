@@ -18,11 +18,11 @@ const DrawnListPage: FunctionComponent<Props> = ({ currentUser }) => {
           <Link to={`/3PROJ`} className="cta cta-blue">
             <span>Back</span>
           </Link>
-          <h2 className="m0">Draw list :</h2>
+          <h2 className="">Draw list :</h2>
         </div>
 
         <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
-          <h2 className="mb10">List of script saved online :</h2>
+          <h2 className="">List of script saved online :</h2>
           <ul className="table-list flex-col mb0">
             <li className="legend">
               <div className="flex-row flex-bet">

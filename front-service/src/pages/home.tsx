@@ -12,7 +12,7 @@ const HomePage: FunctionComponent<Props> = ({ currentUser }) => {
   return (
     <div className="main p20 flex-col relative flex-end-align g25">
       <div className="flex-col g25 w100">
-        <h2 className="m0">Projects :</h2>
+        <h2 className="">Projects :</h2>
         <div className="flex-wrap g25 w80 mb15 flex-center-align">
           <Link className="home-tile small-dark-container" to={"/1PROJ"}>
             <span className="ml15 mr15">1PROJ</span>
@@ -30,7 +30,7 @@ const HomePage: FunctionComponent<Props> = ({ currentUser }) => {
 
       {user && user.role === "admin" ? (
         <div className="flex-col g25 w100">
-          <h2 className="m0">Admin management :</h2>
+          <h2 className="">Admin management :</h2>
           <div className="flex-wrap g25 w80">
             <Link
               className="home-tile small-dark-container"

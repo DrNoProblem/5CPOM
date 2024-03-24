@@ -18,7 +18,7 @@ const RoomPageById: FunctionComponent<Props> = ({ currentUser }) => {
           <Link to={`/3PROJ`} className="cta cta-blue">
             <span>Back</span>
           </Link>
-          <h2 className="m0">Room {currentUser.name} :</h2>
+          <h2 className="">Room {currentUser.name} :</h2>
         </div>
         <div className="flex-wrap g25 w80 mb15 flex-center-align"></div>
       </div>

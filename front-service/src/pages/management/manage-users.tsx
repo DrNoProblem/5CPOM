@@ -87,7 +87,7 @@ const ManageUsers: FunctionComponent<Props> = ({ users, currentUser, SetLog }) =
         <div className='main p20 flex-col relative flex-end-align '>
             <div className="flex-col g10 w100" >
                 <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
-                    <h2 className="mb10">List of users :</h2>
+                    <h2 className="">List of users :</h2>
                     <ul className='table-list flex-col mb0'>
                         <li className='legend' onClick={() => setTableActive(!TableActive)}>
                             <div className='flex-row flex-bet'>

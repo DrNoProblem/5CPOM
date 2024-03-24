@@ -31,6 +31,11 @@ i {
   cursor: pointer;
 }
 
+h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
 .op0 {
   opacity: 0;
 }
@@ -517,6 +522,7 @@ a.icon {
   li:hover > a,
   li:hover > div {
     background-color: var(--color-normal-bg);
+    transition: all 0.05s ease-in-out
   }
 
   li a:hover {
@@ -525,6 +531,7 @@ a.icon {
 
   li.legend {
     padding-bottom: 0px;
+    border-bottom: solid 2px var(--color-blue);
   }
 
   li.legend * {

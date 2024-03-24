@@ -72,9 +72,8 @@ exports.updateRoomById = async (req, res, next) => {
 
 exports.deleteRoomById = async (req, res, next) => {
   try {
-    const { id } = req.params;
     let message = "";
-    const room = await Room.findByIdAndDelete(id);
+    const room = await Room.findByIdAndDelete(req.params.id);
     if (!room) return res.status(404).json({ message: "Room not found" });
     room.tasks.forEach(async (task) => {
       try {

@@ -47,8 +47,8 @@ const UserHeader: FunctionComponent<Props> = ({ ValidLogIn }) => {
         <div className="flex-col flex-start-justify g25 flex-center mb25">
           <Logo sizeblocs={1} hover={false} />
           <div className="flex-center  flex-start-align flex-col">
-            <h2 className="m0 blue">5CPOM </h2>
-            <h2 className="m0">Log In</h2>
+            <h2 className="blue">5CPOM </h2>
+            <h2 className="">Log In</h2>
           </div>
         </div>
 

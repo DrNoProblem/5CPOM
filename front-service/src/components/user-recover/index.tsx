@@ -10,8 +10,8 @@ const UserHeader: FunctionComponent = () => {
         <div className="flex-col flex-start-justify g25 flex-center mb25 mt25">
           <Logo sizeblocs={1} hover={false} />
           <div className="flex-center  flex-start-align flex-col">
-            <h2 className="m0 blue">5CPOM</h2>
-            <h2 className="m0">Recover password</h2>
+            <h2 className=" blue">5CPOM</h2>
+            <h2 className="">Recover password</h2>
           </div>
         </div>
 

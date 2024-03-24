@@ -496,7 +496,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           {MenuOpen ? (
             <div className="menu-pop-up absolute zi5 flex-center">
               <div className="small-normal-container">
-                <h2 className="m0 mb25 blue txt-center">Game Menu</h2>
+                <h2 className=" blue txt-center">Game Menu</h2>
                 {MenuOpen === "blue win" ? <h2 className={`winner${PlayerTurn}`}>CONGRATULATION BLUE PLAYER</h2> : null}
                 {MenuOpen === "red win" ? <h2 className={`winner${PlayerTurn}`}>CONGRATULATION RED PLAYER</h2> : null}
                 {MenuOpen === "equality" ? <h2 className={`winner${PlayerTurn}`}>EQUALITY</h2> : null}

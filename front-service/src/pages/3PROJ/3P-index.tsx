@@ -3,13 +3,12 @@ import { Link } from "react-router-dom";
 import SignUp from "../../api-request/user/sign-up";
 import isHttpStatusValid from "../../helpers/check-status";
 import displayStatusRequest from "../../helpers/display-status-request";
+import getNameById from "../../helpers/getNameById";
+import MiniUserModel from "../../models/mini-user-model";
+import RoomModel from "../../models/room-model";
+import TasksModel from "../../models/tasks-model";
 import UserModel from "../../models/user-model";
 import "./3P-style.scss";
-import RoomModel from "../../models/room-model";
-import MiniUserModel from "../../models/mini-user-model";
-import { runInThisContext } from "vm";
-import getNameById from "../../helpers/getNameById";
-import TasksModel from "../../models/tasks-model";
 
 type Props = {
   currentUser: UserModel;
@@ -17,19 +16,80 @@ type Props = {
   usersList: MiniUserModel[];
 };
 
+interface renderModel {
+  taskId: string;
+  roomName: string;
+  taskTitle: string;
+  taskDate: Date;
+  renderStatus: boolean;
+}
+
+const RenderTableComponent: FunctionComponent<{ limite: number; tableList: renderModel[] }> = ({ limite, tableList }) => {
+  return (
+    <div className="small-dark-container table-list w75">
+      <h2>
+        List of renders :<i className="material-icons absolute r0 mr25 blue-h">open_in_new</i>
+      </h2>
+
+      <ul className="table-list flex-col mb0">
+        <li className="legend">
+          <div className="flex-row">
+            <div className="flex-row flex-start-align flex-bet w100">
+              <p className="w30">ROOM</p>
+              <p className="w30">TASK</p>
+              <p className="w30">DATE</p>
+            </div>
+            <i className={`material-icons mtbauto flex-center`}>expand_more</i>
+          </div>
+        </li>
+
+        {tableList
+          ? tableList.map((e, index) =>
+              index < limite ? (
+                <li key={e.taskId}>
+                  <Link to="" className="flex-row flex-bet">
+                    <div className="flex-row flex-start-align flex-bet w100">
+                      <p className="w30">ROOM</p>
+                      <p className="w30">TASK</p>
+                      <p className="w30">DATE</p>
+                    </div>
+                    <i className={`material-icons mtbauto flex-center`}>task_alt</i>
+                  </Link>
+                </li>
+              ) : null
+            )
+          : null}
+      </ul>
+    </div>
+  );
+};
+const OwnerTableComponent: FunctionComponent = ({}) => {
+  return <div></div>;
+};
+
 const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersList }) => {
-  const UserList: MiniUserModel[] = [
+  const tempoTaskList: TasksModel[] = [
+    { id: "idtak0", title: "task0", details: "it task 0", renders: [{ user: currentUser!._id, script: "this is render 0" }], datelimit: new Date(0), correction: "",    },
+    { id: "idtak1", title: "task1", details: "it task 1", renders: [], datelimit: new Date(0), correction: "" },
+    { id: "idtak2", title: "task2", details: "it task 2", renders: [], datelimit: new Date(0), correction: "" },
+    { id: "idtak3", title: "task3", details: "it task 3", renders: [], datelimit: new Date(0), correction: "" },
+    { id: "idtak4", title: "task4", details: "it task 4", renders: [{ user: currentUser!._id, script: "this is render 4" }], datelimit: new Date(0), correction: ""},
+  ];
+
+  const tempoUserList: MiniUserModel[] = [
     { id: "0", name: "test0" },
     { id: "1", name: "test1" },
     { id: "2", name: "test2" },
     { id: "3", name: "test3" },
   ];
 
-  const roomList: RoomModel[] = [
-    { id: "0", name: "room0", owner: currentUser!._id, co_owner: "0", users: ["1", "2"], tasks: ["0"] },
-    { id: "1", name: "room1", owner: "0", co_owner: "1", users: ["2", "3"], tasks: ["1", "2"] },
+  const tempoRoomList: RoomModel[] = [
+    { id: "0", name: "room0", owner: currentUser!._id, co_owner: "0", users: ["1", "2"], tasks: ["idtak0"] },
+    { id: "1", name: "room1", owner: "0", co_owner: "1", users: ["2", "3"], tasks: ["idtak1", "idtak2"] },
+    { id: "2", name: "room2", owner: "0", co_owner: "1", users: ["currentUser!._id", "3"], tasks: ["idtak3", "idtak4", "idtak5"] },
   ];
-  const [RoomList, setRoomList] = useState<RoomModel[]>(roomList);
+  const [RoomList, setRoomList] = useState<RoomModel[]>(tempoRoomList);
+  const [TaskList, setTaskList] = useState<TasksModel[]>(tempoTaskList);
 
   const [AddActive, setAddActive] = useState<Boolean>(false);
   const [SelectUsersActive, setSelectUsersActive] = useState<Boolean>(false);
@@ -78,6 +138,27 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
   function IsSelectedUser(id: string) {
     return SelectUsers.some((user) => user.id === id);
   }
+
+  const renderList: renderModel[] = RoomList.flatMap((room: RoomModel) =>
+    room.owner === currentUser._id || room.co_owner === currentUser._id
+      ? room.tasks.map((taskid) => {
+          const task = TaskList.find((e) => e.id === taskid);
+          if (!task) {
+            // Handle the case where the task is not found
+            console.error(`Task with id ${taskid} not found`);
+            return null;
+          }
+          return {
+            taskId: taskid,
+            roomName: room.name,
+            taskTitle: task.title,
+            taskDate: task.datelimit,
+            renderStatus: !!task.renders.find((r) => r.user === currentUser._id),
+          };
+        })
+      : []
+  ).filter((item) => item !== null) as renderModel[]; // Add a type assertion here
+
   return (
     <div className="main p20 flex-col flex-end-align g25">
       <div className="flex-col g25 w100">
@@ -85,34 +166,116 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
           <Link to={`/`} className="cta cta-blue">
             <span>Back</span>
           </Link>
-          <h2 className="m0">3PROJ :</h2>
+          <h2 className="">3PROJ :</h2>
         </div>
-        <div className="flex-col small-dark-container display-from-left">
-          <div className="flex-wrap g25">
-            <Link className="cta cta-normal cta-blue-h" to={"/3PROJ/draw/"}>
-              <i className="material-icons">gesture</i>
-              <span>Draw</span>
-            </Link>
-            <Link className="cta cta-normal cta-blue-h" to={"/3PROJ/draw-history"}>
-              <i className="material-icons">history</i>
-              <span>Draw history</span>
-            </Link>
-            <div
-              className="cta cta-normal cta-blue-h"
-              onClick={() => {
-                setAddActive(!AddActive);
-                setSelectCoOwner(null);
-                setSelectUsers([]);
-              }}
-            >
-              <i className="material-icons">add</i>
-              <span>Create room</span>
+
+        <div className="flex-between flex-row g25">
+          <div className="flex-col small-dark-container display-from-left w25">
+            <div className="flex-wrap g15 rapid-tool mb15">
+              <Link className="cta cta-normal cta-blue-h" to={"/3PROJ/draw/"}>
+                <i className="material-icons">gesture</i>
+                <span>Draw</span>
+              </Link>
+              <Link className="cta cta-normal cta-blue-h" to={"/3PROJ/draw-history"}>
+                <i className="material-icons">history</i>
+                <span>Draw history</span>
+              </Link>
+              <div
+                className="cta cta-normal cta-blue-h"
+                onClick={() => {
+                  setAddActive(!AddActive);
+                  setSelectCoOwner(null);
+                  setSelectUsers([]);
+                }}
+              >
+                <i className="material-icons">add</i>
+                <span>Create room</span>
+              </div>
+            </div>
+
+            <h2>Open complete List :</h2>
+
+            <div className="flex-wrap g15">
+              <div
+                className="cta cta-normal cta-blue-h"
+                onClick={() => {
+                  setAddActive(!AddActive);
+                  setSelectCoOwner(null);
+                  setSelectUsers([]);
+                }}
+              >
+                <i className="material-icons">open_in_new</i>
+                <span>Renders</span>
+              </div>
+              <div
+                className="cta cta-normal cta-blue-h"
+                onClick={() => {
+                  setAddActive(!AddActive);
+                  setSelectCoOwner(null);
+                  setSelectUsers([]);
+                }}
+              >
+                <i className="material-icons">open_in_new</i>
+                <span>All rooms</span>
+              </div>
+              <div
+                className="cta cta-normal cta-blue-h"
+                onClick={() => {
+                  setAddActive(!AddActive);
+                  setSelectCoOwner(null);
+                  setSelectUsers([]);
+                }}
+              >
+                <i className="material-icons">open_in_new</i>
+                <span>Owned rooms</span>
+              </div>
             </div>
           </div>
+          <RenderTableComponent limite={6} tableList={renderList} />
+          <div className="small-dark-container table-list w75">
+            <h2>
+              List of renders :<i className="material-icons absolute r0 mr25 blue-h">open_in_new</i>
+            </h2>
+
+            <ul className="table-list flex-col mb0">
+              <li className="legend">
+                <div className="flex-row">
+                  <div className="flex-row flex-start-align flex-bet w100">
+                    <p className="w30">ROOM</p>
+                    <p className="w30">TASK</p>
+                    <p className="w30">DATE</p>
+                  </div>
+                  <i className={`material-icons mtbauto flex-center`}>expand_more</i>
+                </div>
+              </li>
+
+              {RoomList
+                ? RoomList.map((room: RoomModel) =>
+                    room.owner !== currentUser._id || room.co_owner !== currentUser._id
+                      ? room.tasks.map((taskid) => (
+                          <li key={taskid}>
+                            <Link to="" className="flex-row flex-bet">
+                              <div className="flex-row flex-start-align flex-bet w100">
+                                <p className="w30">ROOM</p>
+                                <p className="w30">TASK</p>
+                                <p className="w30">DATE</p>
+                              </div>
+                              <i className={`material-icons mtbauto flex-center`}>task_alt</i>
+                            </Link>
+                          </li>
+                        ))
+                      : null
+                  )
+                : null}
+            </ul>
+          </div>
         </div>
+
         {OwnedRoomActive ? (
           <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
-            <h2 className="mb10">List of owned rooms :</h2>
+            <h2 className="">
+              List of owned rooms :<i className="material-icons absolute r0 mr25 blue-h">open_in_new</i>
+            </h2>
             <ul className="table-list flex-col mb0">
               <li className="legend">
                 <div className="flex-row flex-bet">
@@ -147,63 +310,11 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
           </div>
         ) : null}
 
-        <div className="flex-between flex-row g25">
-          <div className="small-dark-container table-list w40">
-            <h2 className="mb10 mt0">List of renders :</h2>
-
-            <ul className="table-list flex-col mb0">
-              <li className="legend">
-                <div className="flex-row">
-                  <div className="flex-row flex-start-align flex-bet w90">
-                    <p className="w30">ROOM</p>
-                    <p className="w30">TASK</p>
-                    <p className="w30">DATE</p>
-                  </div>
-                  <i className={`material-icons mtbauto w10 flex-center`}>expand_more</i>
-                </div>
-              </li>
-
-              {RoomList
-                ? RoomList.map((room: RoomModel) =>
-                    room.owner !== currentUser._id || room.co_owner !== currentUser._id
-                      ? room.tasks.map((taskid) => (
-                          <li key={taskid}>
-                            <Link to="" className="flex-row flex-bet">
-                              <div className="flex-row flex-start-align flex-bet w100">
-                                <p className="w30">ROOM</p>
-                                <p className="w30">TASK</p>
-                                <p className="w30">DATE</p>
-                              </div>
-                              <i className={`material-icons mtbauto flex-center blue-h`}>task_alt</i>
-                            </Link>
-                          </li>
-                        ))
-                      : null
-                  )
-                : null}
-            </ul>
-          </div>
-          <div className="small-dark-container table-list w60">
-            <h2 className="mb10 mt0">List of all rooms :</h2>
-            <ul className="table-list flex-col mb0">
-              <li className="legend">
-                <div className="flex-row flex-bet">
-                  <div className="flex-row flex-start-align flex-start-justify">
-                    <p className="w20">ROOM NAME</p>
-                    <p className="w20">OWNER</p>
-                    <p className="w20">CO-OWNER</p>
-                    <p className="w20">USERS COUNT</p>
-                    <p className="w20">TASKS COUNT</p>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-
         {Roomctive ? (
           <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
-            <h2 className="mb10">List of all rooms :</h2>
+            <h2 className="">
+              List of all rooms :<i className="material-icons absolute r0 mr25 blue-h">open_in_new</i>
+            </h2>
             <ul className="table-list flex-col mb0">
               <li className="legend">
                 <div className="flex-row flex-bet">
@@ -259,7 +370,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               >
                 close
               </i>
-              <h2 className="mt0">Add new User :</h2>
+              <h2 className="">Add new User :</h2>
               <div className="flex-col">
                 <p className="m0 mb20 mt20">Room name :</p>
                 <input
@@ -374,8 +485,8 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                     </i>
                   </p>
                   <ul className="SelectUsersList">
-                    {UserList
-                      ? UserList.map((user) =>
+                    {tempoUserList
+                      ? tempoUserList.map((user) =>
                           user.id !== (SelectCoOwner ? SelectCoOwner.id : null) ? (
                             IsSelectedUser(user.id) ? (
                               <li
@@ -412,8 +523,8 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                     </i>
                   </p>
                   <ul className="SelectUsersList">
-                    {UserList
-                      ? UserList.map((user) =>
+                    {tempoUserList
+                      ? tempoUserList.map((user) =>
                           SelectCoOwner && user.id === SelectCoOwner.id ? (
                             <li key={user.id} className="blue flex-center-align" onClick={() => setSelectCoOwner(null)}>
                               <i className="material-icons blue mr10">done</i>

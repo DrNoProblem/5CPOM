@@ -19,7 +19,7 @@ const RoomTaskPageById: FunctionComponent<Props> = ({ currentUser }) => {
           <Link to={`/3PROJ`} className="cta cta-blue">
             <span>Back</span>
           </Link>
-          <h2 className="m0">tasks {Tasks.title} :</h2>
+          <h2 className="">tasks {Tasks.title} :</h2>
         </div>
         <div className="big-normal-container flex-col display-from-left">
           <div className="task-detail">{Tasks.details}</div>

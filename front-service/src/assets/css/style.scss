@@ -382,8 +382,9 @@ h2 {
 
 .add-item-popup {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content:  flex-start;
+  align-items: center;
   position: absolute;
   top: 0;
   left: 0;
@@ -996,7 +997,10 @@ input.error-input {
 .add-item-popup .small-dark-container {
   top: 20%;
   overflow: unset;
-  min-width: 480px;
+  max-width: 75%;
+}
+.add-item-popup .small-dark-container:has(.adding-room) {
+  width: 480px;
 }
 
 .SelectUsersList {

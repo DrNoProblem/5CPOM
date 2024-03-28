@@ -24,56 +24,126 @@ interface renderModel {
   renderStatus: boolean;
 }
 
-const RenderTableComponent: FunctionComponent<{ limite: number; tableList: renderModel[] }> = ({ limite, tableList }) => {
+const RenderTableComponent: FunctionComponent<{
+  limite: number;
+  tableList: renderModel[];
+}> = ({ limite, tableList }) => {
   return (
-    <div className="small-dark-container table-list w75">
-      <h2>
-        List of renders :<i className="material-icons absolute r0 mr25 blue-h">open_in_new</i>
-      </h2>
-
-      <ul className="table-list flex-col mb0">
-        <li className="legend">
-          <div className="flex-row">
-            <div className="flex-row flex-start-align flex-bet w100">
-              <p className="w30">ROOM</p>
-              <p className="w30">TASK</p>
-              <p className="w30">DATE</p>
-            </div>
-            <i className={`material-icons mtbauto flex-center`}>expand_more</i>
+    <ul className="table-list flex-col mb0 ">
+      <li className="legend">
+        <div className="flex-row">
+          <div className="flex-row flex-start-align flex-bet w100">
+            <p className="w40">ROOM</p>
+            <p className="w40">TASK</p>
+            <p className="w20">DATE</p>
           </div>
-        </li>
+          <i className={`material-icons mtbauto flex-center op0`}>expand_more</i>
+        </div>
+      </li>
 
-        {tableList
-          ? tableList.map((e, index) =>
-              index < limite ? (
-                <li key={e.taskId}>
-                  <Link to="" className="flex-row flex-bet">
-                    <div className="flex-row flex-start-align flex-bet w100">
-                      <p className="w30">ROOM</p>
-                      <p className="w30">TASK</p>
-                      <p className="w30">DATE</p>
-                    </div>
-                    <i className={`material-icons mtbauto flex-center`}>task_alt</i>
-                  </Link>
-                </li>
-              ) : null
-            )
-          : null}
-      </ul>
-    </div>
+      {tableList
+        ? tableList.map((e, index) =>
+            index < limite ? (
+              <li key={e.taskId}>
+                <Link to="" className="flex-row flex-bet">
+                  <div className="flex-row flex-start-align flex-bet w100">
+                    <p className="w40">{e.roomName}</p>
+                    <p className="w40">{e.taskTitle}</p>
+                    <p className="w20">{e.taskDate instanceof Date ? e.taskDate.toLocaleDateString() : e.taskDate}</p>
+                  </div>
+                  <i className={`material-icons mtbauto flex-center`}>task_alt</i>
+                </Link>
+              </li>
+            ) : null
+          )
+        : null}
+    </ul>
   );
 };
-const OwnerTableComponent: FunctionComponent = ({}) => {
-  return <div></div>;
+
+const RoomsTableViewComponent: FunctionComponent<{
+  limite: number;
+  RoomList: RoomModel[];
+  usersList: MiniUserModel[];
+  currentUser: UserModel;
+  owner: boolean;
+}> = ({ limite, RoomList, usersList, currentUser, owner }) => {
+  let count: number = 0;
+  return (
+    <ul className="table-list flex-col mb0">
+      <li className="legend">
+        <div className="flex-row flex-bet">
+          <div className="flex-row flex-start-align flex-start-justify w100">
+            <p className="w20">ROOM NAME</p>
+            <p className="w20">OWNER</p>
+            <p className="w20">CO-OWNER</p>
+            <p className="w20">USERS COUNT</p>
+            <p className="w20">TASKS COUNT</p>
+          </div>
+        </div>
+      </li>
+      {RoomList &&
+        RoomList.map((room: RoomModel) => {
+          if ((room.owner === currentUser._id || room.co_owner === currentUser._id) && count < limite && owner) {
+            count++;
+            return (
+              <li key={room.id + "userlist"}>
+                <Link to={`/3PROJ/room/` + room.id} className="flex-row flex-bet">
+                  <div className="flex-row flex-start-align flex-start-justify w100">
+                    <p className="w20">{room.name}</p>
+                    <p className="w20">{getNameById(room.owner, usersList)}</p>
+                    <p className="w20">{getNameById(room.co_owner, usersList)}</p>
+                    <p className="w20">{room.users.length}</p>
+                    <p className="w20">{room.tasks.length}</p>
+                  </div>
+                </Link>
+              </li>
+            );
+          }
+
+          if ((room.owner !== currentUser._id || room.co_owner !== currentUser._id) && count < limite && !owner) {
+            count++;
+            return (
+              <li key={room.id + "userlist"}>
+                <Link to={`/3PROJ/room/` + room.id} className="flex-row flex-bet">
+                  <div className="flex-row flex-start-align flex-start-justify w100">
+                    <p className="w20">{room.name}</p>
+                    <p className="w20">{getNameById(room.owner, usersList)}</p>
+                    <p className="w20">{getNameById(room.co_owner, usersList)}</p>
+                    <p className="w20">{room.users.length}</p>
+                    <p className="w20">{room.tasks.length}</p>
+                  </div>
+                </Link>
+              </li>
+            );
+          }
+          return null; // Retourner null si les conditions ne sont pas remplies
+        })}
+    </ul>
+  );
 };
 
 const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersList }) => {
   const tempoTaskList: TasksModel[] = [
-    { id: "idtak0", title: "task0", details: "it task 0", renders: [{ user: currentUser!._id, script: "this is render 0" }], datelimit: new Date(0), correction: "",    },
+    {
+      id: "idtak0",
+      title: "task0",
+      details: "it task 0",
+      renders: [{ user: currentUser!._id, script: "this is render 0" }],
+      datelimit: new Date(0),
+      correction: "",
+    },
     { id: "idtak1", title: "task1", details: "it task 1", renders: [], datelimit: new Date(0), correction: "" },
     { id: "idtak2", title: "task2", details: "it task 2", renders: [], datelimit: new Date(0), correction: "" },
     { id: "idtak3", title: "task3", details: "it task 3", renders: [], datelimit: new Date(0), correction: "" },
-    { id: "idtak4", title: "task4", details: "it task 4", renders: [{ user: currentUser!._id, script: "this is render 4" }], datelimit: new Date(0), correction: ""},
+    {
+      id: "idtak4",
+      title: "task4",
+      details: "it task 4",
+      renders: [{ user: currentUser!._id, script: "this is render 4" }],
+      datelimit: new Date(0),
+      correction: "",
+    },
   ];
 
   const tempoUserList: MiniUserModel[] = [
@@ -86,12 +156,19 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
   const tempoRoomList: RoomModel[] = [
     { id: "0", name: "room0", owner: currentUser!._id, co_owner: "0", users: ["1", "2"], tasks: ["idtak0"] },
     { id: "1", name: "room1", owner: "0", co_owner: "1", users: ["2", "3"], tasks: ["idtak1", "idtak2"] },
-    { id: "2", name: "room2", owner: "0", co_owner: "1", users: ["currentUser!._id", "3"], tasks: ["idtak3", "idtak4", "idtak5"] },
+    {
+      id: "2",
+      name: "room2",
+      owner: "0",
+      co_owner: "1",
+      users: ["currentUser!._id", "3"],
+      tasks: ["idtak3", "idtak4", "idtak5"],
+    },
   ];
   const [RoomList, setRoomList] = useState<RoomModel[]>(tempoRoomList);
   const [TaskList, setTaskList] = useState<TasksModel[]>(tempoTaskList);
 
-  const [AddActive, setAddActive] = useState<Boolean>(false);
+  const [PopUpActive, setPopUpActive] = useState<false | { check: string; title: string; second: false | string }>(false);
   const [SelectUsersActive, setSelectUsersActive] = useState<Boolean>(false);
   const [ChooseCoOwnerActive, setChooseCoOwnerActive] = useState<Boolean>(false);
 
@@ -129,7 +206,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
         if (isHttpStatusValid(result.status)) {
           displayStatusRequest("user added successfully", false);
           SetLog();
-          setAddActive(false);
+          setPopUpActive(false);
         } else displayStatusRequest("error " + result.status + " : " + result.response.message, true);
       });
     } else displayStatusRequest("error : ", true);
@@ -183,7 +260,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               <div
                 className="cta cta-normal cta-blue-h"
                 onClick={() => {
-                  setAddActive(!AddActive);
+                  setPopUpActive({ title: "Create new room", check: "add_room", second: false });
                   setSelectCoOwner(null);
                   setSelectUsers([]);
                 }}
@@ -199,7 +276,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               <div
                 className="cta cta-normal cta-blue-h"
                 onClick={() => {
-                  setAddActive(!AddActive);
+                  setPopUpActive({ check: "render", title: "List of tasks rendered", second: "list of task to render" });
                   setSelectCoOwner(null);
                   setSelectUsers([]);
                 }}
@@ -210,7 +287,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               <div
                 className="cta cta-normal cta-blue-h"
                 onClick={() => {
-                  setAddActive(!AddActive);
+                  setPopUpActive({ check: "all_room", title: "List of all rooms", second: false });
                   setSelectCoOwner(null);
                   setSelectUsers([]);
                 }}
@@ -221,7 +298,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               <div
                 className="cta cta-normal cta-blue-h"
                 onClick={() => {
-                  setAddActive(!AddActive);
+                  setPopUpActive({ check: "owner_room", title: "List of owned rooms", second: false });
                   setSelectCoOwner(null);
                   setSelectUsers([]);
                 }}
@@ -231,251 +308,214 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               </div>
             </div>
           </div>
-          <RenderTableComponent limite={6} tableList={renderList} />
+
           <div className="small-dark-container table-list w75">
             <h2>
-              List of renders :<i className="material-icons absolute r0 mr25 blue-h">open_in_new</i>
+              List of renders :
+              <i
+                className="material-icons absolute r0 mr25 blue-h"
+                onClick={() => {
+                  setPopUpActive({ check: "render", title: "List of tasks rendered", second: "list of task to render" });
+                  setSelectCoOwner(null);
+                  setSelectUsers([]);
+                }}
+              >
+                open_in_new
+              </i>
             </h2>
-
-            <ul className="table-list flex-col mb0">
-              <li className="legend">
-                <div className="flex-row">
-                  <div className="flex-row flex-start-align flex-bet w100">
-                    <p className="w30">ROOM</p>
-                    <p className="w30">TASK</p>
-                    <p className="w30">DATE</p>
-                  </div>
-                  <i className={`material-icons mtbauto flex-center`}>expand_more</i>
-                </div>
-              </li>
-
-              {RoomList
-                ? RoomList.map((room: RoomModel) =>
-                    room.owner !== currentUser._id || room.co_owner !== currentUser._id
-                      ? room.tasks.map((taskid) => (
-                          <li key={taskid}>
-                            <Link to="" className="flex-row flex-bet">
-                              <div className="flex-row flex-start-align flex-bet w100">
-                                <p className="w30">ROOM</p>
-                                <p className="w30">TASK</p>
-                                <p className="w30">DATE</p>
-                              </div>
-                              <i className={`material-icons mtbauto flex-center`}>task_alt</i>
-                            </Link>
-                          </li>
-                        ))
-                      : null
-                  )
-                : null}
-            </ul>
+            <RenderTableComponent limite={3} tableList={renderList} />
           </div>
         </div>
 
-        {OwnedRoomActive ? (
-          <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
-            <h2 className="">
-              List of owned rooms :<i className="material-icons absolute r0 mr25 blue-h">open_in_new</i>
-            </h2>
-            <ul className="table-list flex-col mb0">
-              <li className="legend">
-                <div className="flex-row flex-bet">
-                  <div className="flex-row flex-start-align flex-start-justify w80">
-                    <p className="w20">ROOM NAME</p>
-                    <p className="w20">OWNER</p>
-                    <p className="w20">CO-OWNER</p>
-                    <p className="w20">USERS COUNT</p>
-                    <p className="w20">TASKS COUNT</p>
-                  </div>
-                  <i className={`material-icons mtbauto`}>expand_more</i>
-                </div>
-              </li>
-              {RoomList
-                ? RoomList.map((room: RoomModel) =>
-                    room.owner === currentUser._id || room.co_owner === currentUser._id ? (
-                      <li key={room.id + "userlist"}>
-                        <Link to={`/3PROJ/room/` + room.id} className="flex-row flex-bet">
-                          <div className="flex-row flex-start-align flex-start-justify w80">
-                            <p className="w20">{room.name}</p>
-                            <p className="w20">{getNameById(room.owner, usersList)}</p>
-                            <p className="w20">{getNameById(room.co_owner, usersList)}</p>
-                            <p className="w20">{room.users.length}</p>
-                            <p className="w20">{room.tasks.length}</p>
-                          </div>
-                        </Link>
-                      </li>
-                    ) : null
-                  )
-                : null}
-            </ul>
-          </div>
-        ) : null}
+        <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
+          <h2 className="">
+            List of owned rooms :
+            <i
+              className="material-icons absolute r0 mr25 blue-h"
+              onClick={() => {
+                setPopUpActive({ check: "owner_room", title: "List of owned rooms", second: false });
+                setSelectCoOwner(null);
+                setSelectUsers([]);
+              }}
+            >
+              open_in_new
+            </i>
+          </h2>
+          <RoomsTableViewComponent limite={3} RoomList={RoomList} usersList={usersList} currentUser={currentUser} owner={true} />
+        </div>
 
-        {Roomctive ? (
-          <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
-            <h2 className="">
-              List of all rooms :<i className="material-icons absolute r0 mr25 blue-h">open_in_new</i>
-            </h2>
-            <ul className="table-list flex-col mb0">
-              <li className="legend">
-                <div className="flex-row flex-bet">
-                  <div className="flex-row flex-start-align flex-start-justify w80">
-                    <p className="w20">ROOM NAME</p>
-                    <p className="w20">OWNER</p>
-                    <p className="w20">CO-OWNER</p>
-                    <p className="w20">USERS COUNT</p>
-                    <p className="w20">TASKS COUNT</p>
-                  </div>
-                  <i className={`material-icons mtbauto`}>expand_more</i>
-                </div>
-              </li>
-              {RoomList
-                ? RoomList.map((room: RoomModel) =>
-                    room.owner !== currentUser._id || room.co_owner !== currentUser._id ? (
-                      <li key={room.id + "userlist"}>
-                        <Link to={`/3PROJ/room/` + room.id} className="flex-row flex-bet">
-                          <div className="flex-row flex-start-align flex-start-justify w80">
-                            <p className="w20">{room.name}</p>
-                            <p className="w20">{getNameById(room.owner, usersList)}</p>
-                            <p className="w20">{getNameById(room.co_owner, usersList)}</p>
-                            <p className="w20">{room.users.length}</p>
-                            <p className="w20">{room.tasks.length}</p>
-                          </div>
-                        </Link>
-                      </li>
-                    ) : null
-                  )
-                : null}
-            </ul>
-          </div>
-        ) : null}
+        <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
+          <h2 className="">
+            List of all rooms :
+            <i
+              className="material-icons absolute r0 mr25 blue-h"
+              onClick={() => {
+                setPopUpActive({ check: "all_room", title: "List of all rooms", second: false });
+                setSelectCoOwner(null);
+                setSelectUsers([]);
+              }}
+            >
+              open_in_new
+            </i>
+          </h2>
+          <RoomsTableViewComponent limite={3} RoomList={RoomList} usersList={usersList} currentUser={currentUser} owner={false} />
+        </div>
 
-        {AddActive ? (
+        {!PopUpActive ? null : (
           <div className="add-item-popup">
             <div
               className="dark-background"
               onClick={() => {
-                setAddActive(false);
+                setPopUpActive(false);
                 setChooseCoOwnerActive(false);
                 setSelectUsersActive(false);
               }}
             ></div>
-            <div className="small-dark-container flex-col w25 relative display-from-left zi2">
+            <div className="small-dark-container flex-col relative display-from-left zi2 w100">
               <i
                 className="material-icons red-h absolute r0 mr50"
                 onClick={() => {
-                  setAddActive(false);
+                  setPopUpActive(false);
                   setChooseCoOwnerActive(false);
                   setSelectUsersActive(false);
                 }}
               >
                 close
               </i>
-              <h2 className="">Add new User :</h2>
-              <div className="flex-col">
-                <p className="m0 mb20 mt20">Room name :</p>
-                <input
-                  className="input"
-                  name="username"
-                  type="text"
-                  autoComplete="no-chrome-autofill"
-                  onChange={(e) => setSelectRoomName(e.target.value)}
-                />
+              <h2 className="">{PopUpActive.title} :</h2>
 
-                <div className="flex-bet mb25">
-                  <div className="flex-col w50">
-                    <p className="m0 mb20 mt20 flex-center-align">
-                      <i className="material-icons mr10">person</i>
-                      Co-Owner :
-                    </p>
-                    {SelectCoOwner ? (
-                      <ul className="m0 users-list-to-add viewnoscrool">
-                        {SelectCoOwner ? (
-                          <li>
-                            <span title={SelectCoOwner.name}>{SelectCoOwner.name}</span>
-                            <i
-                              className="material-icons mlauto"
-                              onClick={() => {
-                                setChooseCoOwnerActive(true);
-                                setSelectUsersActive(false);
-                              }}
-                            >
-                              sync_alt
-                            </i>
-                          </li>
-                        ) : null}
-                      </ul>
-                    ) : null}
-                    {SelectCoOwner ? null : (
-                      <div
-                        className="cta cta-normal cta-blue-h mrauto"
-                        onClick={() => {
-                          setChooseCoOwnerActive(!ChooseCoOwnerActive);
-                          setSelectUsersActive(false);
-                        }}
-                      >
-                        <i className="material-icons">person_add_alt_1</i>
-                        <span>Choose user</span>
-                      </div>
-                    )}
+              {PopUpActive.check === "add_room" ? (
+                <div className="flex-col adding-room">
+                  <p className="m0 mb20 mt20">Room name :</p>
+                  <input
+                    className="input"
+                    name="username"
+                    type="text"
+                    autoComplete="no-chrome-autofill"
+                    onChange={(e) => setSelectRoomName(e.target.value)}
+                  />
+
+                  <div className="flex-bet mb25">
+                    <div className="flex-col w50">
+                      <p className="m0 mb20 mt20 flex-center-align">
+                        <i className="material-icons mr10">person</i>
+                        Co-Owner :
+                      </p>
+                      {SelectCoOwner ? (
+                        <ul className="m0 users-list-to-add viewnoscrool">
+                          {SelectCoOwner ? (
+                            <li>
+                              <span title={SelectCoOwner.name}>{SelectCoOwner.name}</span>
+                              <i
+                                className="material-icons mlauto"
+                                onClick={() => {
+                                  setChooseCoOwnerActive(true);
+                                  setSelectUsersActive(false);
+                                }}
+                              >
+                                sync_alt
+                              </i>
+                            </li>
+                          ) : null}
+                        </ul>
+                      ) : null}
+                      {SelectCoOwner ? null : (
+                        <div
+                          className="cta cta-normal cta-blue-h mrauto"
+                          onClick={() => {
+                            setChooseCoOwnerActive(!ChooseCoOwnerActive);
+                            setSelectUsersActive(false);
+                          }}
+                        >
+                          <i className="material-icons">person_add_alt_1</i>
+                          <span>Choose user</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex-col w50">
+                      <p className="m0 mb20 mt20 flex-center-align">
+                        <i className="material-icons mr10">groups</i>
+                        Users :
+                      </p>
+                      {SelectUsers.length !== 0 ? (
+                        <ul className="m0 users-list-to-add">
+                          {SelectUsers.map((user) => (
+                            <li key={user.id}>
+                              <span title={user.name}>{user.name}</span>
+                              <i
+                                className="material-icons mlauto"
+                                onClick={() => setSelectUsers(SelectUsers.filter((e) => e.id !== user.id))}
+                              >
+                                delete
+                              </i>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+
+                      {SelectUsers.length !== 0 ? (
+                        <div
+                          className="cta cta-normal cta-blue-h mrauto"
+                          onClick={() => {
+                            setSelectUsersActive(!SelectUsersActive);
+                            setChooseCoOwnerActive(false);
+                          }}
+                        >
+                          <i className="material-icons">person_add_alt_1</i>
+                          <span>Add users</span>
+                        </div>
+                      ) : (
+                        <div
+                          className="cta cta-normal cta-blue-h mrauto"
+                          onClick={() => {
+                            setSelectUsersActive(!SelectUsersActive);
+                            setChooseCoOwnerActive(false);
+                          }}
+                        >
+                          <i className="material-icons">person_add_alt_1</i>
+                          <span>Choose users</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-
-                  <div className="flex-col w50">
-                    <p className="m0 mb20 mt20 flex-center-align">
-                      <i className="material-icons mr10">groups</i>
-                      Users :
-                    </p>
-                    {SelectUsers.length !== 0 ? (
-                      <ul className="m0 users-list-to-add">
-                        {SelectUsers.map((user) => (
-                          <li key={user.id}>
-                            <span title={user.name}>{user.name}</span>
-                            <i
-                              className="material-icons mlauto"
-                              onClick={() => setSelectUsers(SelectUsers.filter((e) => e.id !== user.id))}
-                            >
-                              delete
-                            </i>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null}
-
-                    {SelectUsers.length !== 0 ? (
-                      <div
-                        className="cta cta-normal cta-blue-h mrauto"
-                        onClick={() => {
-                          setSelectUsersActive(!SelectUsersActive);
-                          setChooseCoOwnerActive(false);
-                        }}
-                      >
-                        <i className="material-icons">person_add_alt_1</i>
-                        <span>Add users</span>
-                      </div>
-                    ) : (
-                      <div
-                        className="cta cta-normal cta-blue-h mrauto"
-                        onClick={() => {
-                          setSelectUsersActive(!SelectUsersActive);
-                          setChooseCoOwnerActive(false);
-                        }}
-                      >
-                        <i className="material-icons">person_add_alt_1</i>
-                        <span>Choose users</span>
-                      </div>
-                    )}
-                  </div>
+                  {ReadyToSend ? (
+                    <div className="cta mtauto mlauto cta-blue to-right-bottom" onClick={() => AddNewRoom(objectFiledAddUser)}>
+                      <span>CREATE ROOM</span>
+                    </div>
+                  ) : (
+                    <div className="cta mtauto mlauto cta-disable to-right-bottom">
+                      <span>CREATE ROOM</span>
+                    </div>
+                  )}
                 </div>
-                {ReadyToSend ? (
-                  <div className="cta mtauto mlauto cta-blue to-right-bottom" onClick={() => AddNewRoom(objectFiledAddUser)}>
-                    <span>CREATE ROOM</span>
-                  </div>
-                ) : (
-                  <div className="cta mtauto mlauto cta-disable to-right-bottom">
-                    <span>CREATE ROOM</span>
-                  </div>
-                )}
-              </div>
+              ) : null}
 
+              {PopUpActive.check === "owner_room" ? (
+                <RoomsTableViewComponent
+                  limite={9999999999}
+                  RoomList={RoomList}
+                  usersList={usersList}
+                  currentUser={currentUser}
+                  owner={true}
+                />
+              ) : null}
+              {PopUpActive.check === "all_room" ? (
+                <RoomsTableViewComponent
+                  limite={9999999999}
+                  RoomList={RoomList}
+                  usersList={usersList}
+                  currentUser={currentUser}
+                  owner={false}
+                />
+              ) : null}
+              {PopUpActive.check === "render" ? (
+                <div className="flex-col">
+                  <RenderTableComponent limite={9999999999} tableList={renderList} />
+                  <h2 className="mt30">{PopUpActive.second} :</h2>
+                  <RenderTableComponent limite={9999999999} tableList={renderList} />
+                </div>
+              ) : null}
               {SelectUsersActive ? (
                 <div className="SelectUsersWindow small-dark-container w50">
                   <p className="mt0 flex-center flex-bet">
@@ -513,7 +553,6 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                   </ul>
                 </div>
               ) : null}
-
               {ChooseCoOwnerActive ? (
                 <div className="SelectUsersWindow small-dark-container w50">
                   <p className="mt0 flex-center flex-bet">
@@ -551,7 +590,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               ) : null}
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );

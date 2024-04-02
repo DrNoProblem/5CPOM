@@ -2,10 +2,14 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import "../3P-style.scss";
 import { Link, RouteComponentProps, match } from "react-router-dom";
 import UserModel from "../../../models/user-model";
+import RoomModel from "../../../models/room-model";
+import TaskModel from "../../../models/tasks-model";
 
 interface Props extends RouteComponentProps<{ roomid: string }> { 
   currentUser: UserModel;
   SetLog: Function;
+  rooms: RoomModel[];
+  tasks: TaskModel[];
 };
 
 const RoomPageManagementById: FunctionComponent<Props> = ({ currentUser }) => {

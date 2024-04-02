@@ -2,9 +2,8 @@ const Task = require("./task.model");
 const Room = require("../rooms/room.model");
 const { promisify } = require("util");
 const AppError = require("../utils/appError");
-const { validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
-
+const { validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
 
 exports.AddTask = async (req, res, next) => {
   try {
@@ -18,7 +17,6 @@ exports.AddTask = async (req, res, next) => {
     const room = await Room.findById(roomId);
     if (!room) return res.status(404).json({ message: "Room not found" });
 
-    
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
@@ -26,7 +24,7 @@ exports.AddTask = async (req, res, next) => {
     if (!token) {
       return next(new AppError("You are not logged in! Please log in to get access.", 401));
     }
-    
+
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
     if (decoded.id !== room.owner && decoded.id !== room.co_owner) return res.status(404).json({ message: "Not permitted" });
@@ -76,9 +74,43 @@ exports.updateTaskById = async (req, res, next) => {
 
 exports.deleteTaskById = async (req, res, next) => {
   try {
-    const task = await Task.findByIdAndDelete(req.params.id);
+    const task = await Task.findByIdAndDelete(req.params.taskId);
     if (!task) return res.status(404).json({ message: "Task not found" });
     res.json({ message: "Task deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.AddRender = async (req, res, next) => {
+  try {
+    const { render, roomId } = req.body;
+
+    const room = await Room.findById(roomId);
+    if (!room) return res.status(404).json({ message: "Room not found" });
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer"))
+      token = req.headers.authorization.split(" ")[1];
+
+    if (!token) return next(new AppError("You are not logged in! Please log in to get access.", 401));
+
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    if (decoded.id === room.owner || decoded.id === room.co_owner)
+      return res.status(404).json({ message: "You can not submit a render as owner or co-owner for this room" });
+
+    const task = await Task.findById(req.params.taskId);
+    if (!task) return res.status(404).json({ message: "Task not found" });
+    task.renders = [...task.renders, { id: decoded.id, script: render }];
+
+    if (task.renders.some((render) => render.id === decoded.id))
+      return res.status(400).json({ message: "Render already submit" });
+    
+    task.renders = [...task.renders, { id: decoded.id, script: render }];
+    await task.save();
+
+    res.status(201).json({
+      status: "success",
+    });
   } catch (err) {
     next(err);
   }

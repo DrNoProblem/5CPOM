@@ -1,6 +1,6 @@
-import TasksModel from '../tasks-model';
+import TaskModel from '../tasks-model';
 
-export const voidTask: TasksModel = {
+export const voidTask: TaskModel = {
     'id': '',
     'title': '',
     'details': '',

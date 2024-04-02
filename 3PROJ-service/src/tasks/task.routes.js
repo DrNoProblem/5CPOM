@@ -25,7 +25,7 @@ router.get(
 );// Owner + co-Owner + User
 
 /// update Task by id
-router.patch(
+router.post(
   "/updateTask/:taskId",
   [param("taskId").isMongoId().withMessage("Invalid task ID"),],
   taskController.updateTaskById
@@ -40,14 +40,14 @@ router.delete(
 
 
 /// update by adding render
-router.patch(
+router.post(
   "/addRender/:taskId",
   [param("taskId").isMongoId().withMessage("Invalid task ID"),],
-  taskController.updateTaskById
+  taskController.AddRender
 );// User
 
 /// update by adding correction
-router.patch(
+router.post(
   "/addCorrection/:taskId",
   [param("taskId").isMongoId().withMessage("Invalid task ID"),],
   taskController.updateTaskById

@@ -6,7 +6,7 @@ import displayStatusRequest from "../../helpers/display-status-request";
 import getNameById from "../../helpers/getNameById";
 import MiniUserModel from "../../models/mini-user-model";
 import RoomModel from "../../models/room-model";
-import TasksModel from "../../models/tasks-model";
+import TaskModel from "../../models/tasks-model";
 import UserModel from "../../models/user-model";
 import "./3P-style.scss";
 
@@ -14,6 +14,8 @@ type Props = {
   currentUser: UserModel;
   SetLog: Function;
   usersList: MiniUserModel[];
+  rooms: RoomModel[];
+  tasks: TaskModel[];
 };
 
 interface renderModel {
@@ -87,8 +89,8 @@ const RoomsTableViewComponent: FunctionComponent<{
           if ((room.owner === currentUser._id || room.co_owner === currentUser._id) && count < limite && owner) {
             count++;
             return (
-              <li key={room.id + "userlist"}>
-                <Link to={`/3PROJ/room/` + room.id} className="flex-row flex-bet">
+              <li key={room._id + "userlist"}>
+                <Link to={`/3PROJ/room/` + room._id} className="flex-row flex-bet">
                   <div className="flex-row flex-start-align flex-start-justify w100">
                     <p className="w20">{room.name}</p>
                     <p className="w20">{getNameById(room.owner, usersList)}</p>
@@ -104,8 +106,8 @@ const RoomsTableViewComponent: FunctionComponent<{
           if ((room.owner !== currentUser._id || room.co_owner !== currentUser._id) && count < limite && !owner) {
             count++;
             return (
-              <li key={room.id + "userlist"}>
-                <Link to={`/3PROJ/room/` + room.id} className="flex-row flex-bet">
+              <li key={room._id + "userlist"}>
+                <Link to={`/3PROJ/room/` + room._id} className="flex-row flex-bet">
                   <div className="flex-row flex-start-align flex-start-justify w100">
                     <p className="w20">{room.name}</p>
                     <p className="w20">{getNameById(room.owner, usersList)}</p>
@@ -123,50 +125,9 @@ const RoomsTableViewComponent: FunctionComponent<{
   );
 };
 
-const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersList }) => {
-  const tempoTaskList: TasksModel[] = [
-    {
-      id: "idtak0",
-      title: "task0",
-      details: "it task 0",
-      renders: [{ user: currentUser!._id, script: "this is render 0" }],
-      datelimit: new Date(0),
-      correction: "",
-    },
-    { id: "idtak1", title: "task1", details: "it task 1", renders: [], datelimit: new Date(0), correction: "" },
-    { id: "idtak2", title: "task2", details: "it task 2", renders: [], datelimit: new Date(0), correction: "" },
-    { id: "idtak3", title: "task3", details: "it task 3", renders: [], datelimit: new Date(0), correction: "" },
-    {
-      id: "idtak4",
-      title: "task4",
-      details: "it task 4",
-      renders: [{ user: currentUser!._id, script: "this is render 4" }],
-      datelimit: new Date(0),
-      correction: "",
-    },
-  ];
-
-  const tempoUserList: MiniUserModel[] = [
-    { id: "0", name: "test0" },
-    { id: "1", name: "test1" },
-    { id: "2", name: "test2" },
-    { id: "3", name: "test3" },
-  ];
-
-  const tempoRoomList: RoomModel[] = [
-    { id: "0", name: "room0", owner: currentUser!._id, co_owner: "0", users: ["1", "2"], tasks: ["idtak0"] },
-    { id: "1", name: "room1", owner: "0", co_owner: "1", users: ["2", "3"], tasks: ["idtak1", "idtak2"] },
-    {
-      id: "2",
-      name: "room2",
-      owner: "0",
-      co_owner: "1",
-      users: ["currentUser!._id", "3"],
-      tasks: ["idtak3", "idtak4", "idtak5"],
-    },
-  ];
-  const [RoomList, setRoomList] = useState<RoomModel[]>(tempoRoomList);
-  const [TaskList, setTaskList] = useState<TasksModel[]>(tempoTaskList);
+const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersList, tasks, rooms }) => {
+  const [RoomList, setRoomList] = useState<RoomModel[]>(rooms);
+  const [TaskList, setTaskList] = useState<TaskModel[]>(tasks);
 
   const [PopUpActive, setPopUpActive] = useState<false | { check: string; title: string; second: false | string }>(false);
   const [SelectUsersActive, setSelectUsersActive] = useState<Boolean>(false);
@@ -217,11 +178,12 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
   }
 
   const renderList: renderModel[] = RoomList.flatMap((room: RoomModel) =>
-    room.owner === currentUser._id || room.co_owner === currentUser._id
+    room.users.some((user) => user === currentUser._id)
       ? room.tasks.map((taskid) => {
           const task = TaskList.find((e) => e.id === taskid);
+          console.log(room);
+          console.log(task);
           if (!task) {
-            // Handle the case where the task is not found
             console.error(`Task with id ${taskid} not found`);
             return null;
           }
@@ -230,7 +192,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
             roomName: room.name,
             taskTitle: task.title,
             taskDate: task.datelimit,
-            renderStatus: !!task.renders.find((r) => r.user === currentUser._id),
+            renderStatus: !!task.renders.find((r) => r.id === currentUser._id),
           };
         })
       : []
@@ -243,7 +205,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
           <Link to={`/`} className="cta cta-blue">
             <span>Back</span>
           </Link>
-          <h2 className="">3PROJ :</h2>
+          <h2 className="mb0">3PROJ :</h2>
         </div>
 
         <div className="flex-between flex-row g25">
@@ -525,8 +487,8 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                     </i>
                   </p>
                   <ul className="SelectUsersList">
-                    {tempoUserList
-                      ? tempoUserList.map((user) =>
+                    {usersList
+                      ? usersList.map((user) =>
                           user.id !== (SelectCoOwner ? SelectCoOwner.id : null) ? (
                             IsSelectedUser(user.id) ? (
                               <li
@@ -562,8 +524,8 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                     </i>
                   </p>
                   <ul className="SelectUsersList">
-                    {tempoUserList
-                      ? tempoUserList.map((user) =>
+                    {usersList
+                      ? usersList.map((user) =>
                           SelectCoOwner && user.id === SelectCoOwner.id ? (
                             <li key={user.id} className="blue flex-center-align" onClick={() => setSelectCoOwner(null)}>
                               <i className="material-icons blue mr10">done</i>

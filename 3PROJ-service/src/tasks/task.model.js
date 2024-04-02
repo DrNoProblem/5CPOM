@@ -7,7 +7,7 @@ const taskSchema = new mongoose.Schema({
   },
   details: {
     type: String,
-    required: true,
+    required: false,
   },
   datelimit: {
     type: Date,
@@ -15,11 +15,11 @@ const taskSchema = new mongoose.Schema({
   },
   renders: {
     type: String,
-    required: true,
+    required: false,
   },
   correction: {
     type: String,
-    required: true,
+    required: false,
   },
 });
 

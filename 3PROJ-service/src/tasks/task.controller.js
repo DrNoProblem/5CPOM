@@ -1,9 +1,14 @@
 const Task = require("./task.model");
-const Room = require("..rooms/room.model");
+const Room = require("../rooms/room.model");
+const { promisify } = require("util");
+const AppError = require("../utils/appError");
+const { validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
+
 
 exports.AddTask = async (req, res, next) => {
   try {
-    const { title, details, datelimit, roomId } = req.body;
+    const { title, details, datelimit, correction, roomId } = req.body;
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -13,15 +18,28 @@ exports.AddTask = async (req, res, next) => {
     const room = await Room.findById(roomId);
     if (!room) return res.status(404).json({ message: "Room not found" });
 
-    const newTask = await Task.create({ title, details, datelimit });
+    
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+    if (!token) {
+      return next(new AppError("You are not logged in! Please log in to get access.", 401));
+    }
+    
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-    room.task += `${room.task === "" ? "" : ","}${newTask._id}`;
+    if (decoded.id !== room.owner && decoded.id !== room.co_owner) return res.status(404).json({ message: "Not permitted" });
+
+    const newTask = await Task.create({ title, details, datelimit, correction, render: [] });
+
+    room.tasks = [...room.tasks, newTask.id];
     await room.save();
 
     res.status(201).json({
       status: "success",
       data: {
-        user: newTask,
+        task: newTask,
       },
     });
   } catch (error) {

@@ -14,12 +14,12 @@ const roomSchema = new mongoose.Schema({
     required: true,
   },
   users: {
-    type: String,
+    type: Array,
     required: true,
   },
   tasks: {
-    type: String,
-    required: true,
+    type: Array,
+    required: false,
   },
 });
 

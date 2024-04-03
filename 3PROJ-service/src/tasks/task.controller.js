@@ -100,11 +100,10 @@ exports.AddRender = async (req, res, next) => {
 
     const task = await Task.findById(req.params.taskId);
     if (!task) return res.status(404).json({ message: "Task not found" });
-    task.renders = [...task.renders, { id: decoded.id, script: render }];
-
-    if (task.renders.some((render) => render.id === decoded.id))
+    if (task.renders.some((render) => render.id === decoded.id)) {
       return res.status(400).json({ message: "Render already submit" });
-    
+    }
+
     task.renders = [...task.renders, { id: decoded.id, script: render }];
     await task.save();
 

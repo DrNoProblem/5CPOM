@@ -56,7 +56,7 @@ import getTasksList from "./api-request/task/get-list";
 
 const App: FunctionComponent = () => {
   const [isLog, setIsLog] = useState<string | Boolean>(false);
-  const [currentUser, setCurrentUser] = useState<UserModel>();
+  const [currentUser, setCurrentUser] = useState<UserModel>(voidUser);
   const [usersList, setUsersList] = useState<MiniUserModel[]>([]);
 
   const [CompleteUsersList, setCompleteUsersList] = useState<UserModel[]>([voidUser]);

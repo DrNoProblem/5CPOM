@@ -20,24 +20,36 @@ type Props = {
 
 interface renderModel {
   taskId: string;
+  roomId: string;
   roomName: string;
   taskTitle: string;
   taskDate: Date;
   renderStatus: boolean;
 }
 
+
+const options = { 
+  year: '2-digit', 
+  month: '2-digit', 
+  day: '2-digit', 
+  hour: '2-digit', 
+  minute: '2-digit',
+  hour12: false
+};
+
 const RenderTableComponent: FunctionComponent<{
   limite: number;
   tableList: renderModel[];
-}> = ({ limite, tableList }) => {
+  submit: boolean;
+}> = ({ limite, tableList, submit }) => {
   return (
     <ul className="table-list flex-col mb0 ">
       <li className="legend">
         <div className="flex-row">
           <div className="flex-row flex-start-align flex-bet w100">
-            <p className="w40">ROOM</p>
-            <p className="w40">TASK</p>
-            <p className="w20">DATE</p>
+            <p className="w30">ROOM</p>
+            <p className="w30">TASK</p>
+            <p className="w40">DATE</p>
           </div>
           <i className={`material-icons mtbauto flex-center op0`}>expand_more</i>
         </div>
@@ -45,15 +57,19 @@ const RenderTableComponent: FunctionComponent<{
 
       {tableList
         ? tableList.map((e, index) =>
-            index < limite ? (
+            index < limite && submit === e.renderStatus? (
               <li key={e.taskId}>
-                <Link to="" className="flex-row flex-bet">
+                <Link to={`/3PROJ/room/${e.roomId}/task/${e.taskId}`} className="flex-row flex-bet">
                   <div className="flex-row flex-start-align flex-bet w100">
-                    <p className="w40">{e.roomName}</p>
-                    <p className="w40">{e.taskTitle}</p>
-                    <p className="w20">{e.taskDate instanceof Date ? e.taskDate.toLocaleDateString() : e.taskDate}</p>
+                    <p className="w30">{e.roomName}</p>
+                    <p className="w30">{e.taskTitle}</p>
+                    <p className="w40">{(e.taskDate instanceof Date ? e.taskDate.toLocaleDateString() : e.taskDate)}</p>
                   </div>
-                  <i className={`material-icons mtbauto flex-center`}>task_alt</i>
+                  {e.renderStatus ? (
+                    <i className={`material-icons mtbauto flex-center`}>task_alt</i>
+                  ) : (
+                    <i className={`material-icons mtbauto flex-center`}>close</i>
+                  )}
                 </Link>
               </li>
             ) : null
@@ -176,25 +192,29 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
   function IsSelectedUser(id: string) {
     return SelectUsers.some((user) => user.id === id);
   }
-
   const renderList: renderModel[] = RoomList.flatMap((room: RoomModel) =>
     room.users.some((user) => user === currentUser._id)
       ? room.tasks.map((taskid) => {
-          const task = TaskList.find((e) => e.id === taskid);
+          const task = TaskList.find((e) => e._id === taskid);
+          console.log(room);
+          console.log(task);
           if (!task) {
             console.error(`Task with id ${taskid} not found`);
             return null;
           }
           return {
             taskId: taskid,
+            roomId: room._id,
             roomName: room.name,
             taskTitle: task.title,
             taskDate: task.datelimit,
-            renderStatus: !!task.renders.find((r) => r.id === currentUser._id),
+            renderStatus: task.renders.some((r) => r.id === currentUser._id),
           };
         })
       : []
   ).filter((item) => item !== null) as renderModel[]; // Add a type assertion here
+
+  console.log(renderList);
 
   return (
     <div className="main p20 flex-col flex-end-align g25">
@@ -271,7 +291,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
 
           <div className="small-dark-container table-list w75">
             <h2>
-              List of renders :
+              List of renders to submit :
               <i
                 className="material-icons absolute r0 mr25 blue-h"
                 onClick={() => {
@@ -283,7 +303,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                 open_in_new
               </i>
             </h2>
-            <RenderTableComponent limite={3} tableList={renderList} />
+            <RenderTableComponent limite={3} tableList={renderList} submit={false} />
           </div>
         </div>
 
@@ -471,9 +491,9 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               ) : null}
               {PopUpActive.check === "render" ? (
                 <div className="flex-col">
-                  <RenderTableComponent limite={9999999999} tableList={renderList} />
+                  <RenderTableComponent limite={9999999999} tableList={renderList} submit={true} />
                   <h2 className="mt30">{PopUpActive.second} :</h2>
-                  <RenderTableComponent limite={9999999999} tableList={renderList} />
+                  <RenderTableComponent limite={9999999999} tableList={renderList} submit={false}/>
                 </div>
               ) : null}
               {SelectUsersActive ? (

@@ -1,7 +1,7 @@
 import TaskModel from '../tasks-model';
 
 export const voidTask: TaskModel = {
-    'id': '',
+    '_id': '',
     'title': '',
     'details': '',
     'datelimit': new Date(0),

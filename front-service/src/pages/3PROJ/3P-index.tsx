@@ -181,8 +181,6 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
     room.users.some((user) => user === currentUser._id)
       ? room.tasks.map((taskid) => {
           const task = TaskList.find((e) => e.id === taskid);
-          console.log(room);
-          console.log(task);
           if (!task) {
             console.error(`Task with id ${taskid} not found`);
             return null;

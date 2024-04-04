@@ -166,7 +166,7 @@ const App: FunctionComponent = () => {
                 <Route
                   path="/3PROJ/room/:roomid"
                   render={(props) => (
-                    <RoomPageById {...props} currentUser={currentUser} SetLog={SetLog} tasks={TasksList} rooms={RoomsList} />
+                    <RoomPageById {...props} currentUser={currentUser} SetLog={SetLog} tasks={TasksList} rooms={RoomsList} usersList={usersList}/>
                   )}
                 />
                 <Route path="/3PROJ/draw/" render={(props) => <DrawPage currentUser={currentUser} SetLog={SetLog} />} />

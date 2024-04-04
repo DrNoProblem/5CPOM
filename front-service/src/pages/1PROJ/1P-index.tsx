@@ -465,10 +465,10 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
   };
 
   return (
-    <div className={`main p20 flex-col relative flex-end-align g25`}>
+    <div className="main p20 flex-col relative flex-end-align g25">
       <div className="flex-col g25 w100">
         <h1
-          className={`small-dark-container scores flex-center g50  playerTurn${PlayerTurn}`}
+          className={`dark-container scores flex-center g50  playerTurn${PlayerTurn}`}
           onClick={() => console.log(VirtualBoardRender)} //!
         >
           <i className="material-icons blue" onClick={() => setMenuOpen("red win")}>
@@ -481,7 +481,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
             flag
           </i>
         </h1>
-        <div className={`board-container flex-col flex-center g25 small-dark-container `}>
+        <div className="board-container flex-col flex-center g25 dark-container">
           <div className={`board playerTurn${PlayerTurn}`}>
             {VirtualBoardRender.map((e, ei) =>
               e.map((f, fi) => (
@@ -495,7 +495,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           </div>
           {MenuOpen ? (
             <div className="menu-pop-up absolute zi5 flex-center">
-              <div className="small-normal-container">
+              <div className="normal-container">
                 <h2 className=" blue txt-center">Game Menu</h2>
                 {MenuOpen === "blue win" ? <h2 className={`winner${PlayerTurn}`}>CONGRATULATION BLUE PLAYER</h2> : null}
                 {MenuOpen === "red win" ? <h2 className={`winner${PlayerTurn}`}>CONGRATULATION RED PLAYER</h2> : null}

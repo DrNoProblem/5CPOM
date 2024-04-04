@@ -51,7 +51,7 @@ const RenderTableComponent: FunctionComponent<{
             <p className="w30">TASK</p>
             <p className="w40">DATE</p>
           </div>
-          <i className={`material-icons mtbauto flex-center op0`}>expand_more</i>
+          <i className="material-icons mtbauto flex-center op0">expand_more</i>
         </div>
       </li>
 
@@ -66,9 +66,9 @@ const RenderTableComponent: FunctionComponent<{
                     <p className="w40">{(e.taskDate instanceof Date ? e.taskDate.toLocaleDateString() : e.taskDate)}</p>
                   </div>
                   {e.renderStatus ? (
-                    <i className={`material-icons mtbauto flex-center`}>task_alt</i>
+                    <i className="material-icons mtbauto flex-center">task_alt</i>
                   ) : (
-                    <i className={`material-icons mtbauto flex-center`}>close</i>
+                    <i className="material-icons mtbauto flex-center">close</i>
                   )}
                 </Link>
               </li>
@@ -227,7 +227,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
         </div>
 
         <div className="flex-between flex-row g25">
-          <div className="flex-col small-dark-container display-from-left w25">
+          <div className="flex-col dark-container display-from-left w25">
             <div className="flex-wrap g15 rapid-tool mb15">
               <Link className="cta cta-normal cta-blue-h" to={"/3PROJ/draw/"}>
                 <i className="material-icons">gesture</i>
@@ -289,7 +289,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
             </div>
           </div>
 
-          <div className="small-dark-container table-list w75">
+          <div className="dark-container table-list w75">
             <h2>
               List of renders to submit :
               <i
@@ -307,7 +307,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
           </div>
         </div>
 
-        <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
+        <div className="table-list flex-col p50 dark-bg dark-container display-from-left">
           <h2 className="">
             List of owned rooms :
             <i
@@ -324,7 +324,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
           <RoomsTableViewComponent limite={3} RoomList={RoomList} usersList={usersList} currentUser={currentUser} owner={true} />
         </div>
 
-        <div className="table-list flex-col p50 dark-bg small-dark-container display-from-left">
+        <div className="table-list flex-col p50 dark-bg dark-container display-from-left">
           <h2 className="">
             List of all rooms :
             <i
@@ -351,7 +351,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                 setSelectUsersActive(false);
               }}
             ></div>
-            <div className="small-dark-container flex-col relative display-from-left zi2 w100">
+            <div className="dark-container flex-col relative display-from-left zi2 w100">
               <i
                 className="material-icons red-h absolute r0 mr50"
                 onClick={() => {
@@ -497,7 +497,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                 </div>
               ) : null}
               {SelectUsersActive ? (
-                <div className="SelectUsersWindow small-dark-container w50">
+                <div className="SelectUsersWindow dark-container w50">
                   <p className="mt0 flex-center flex-bet">
                     Select users :
                     <i className="material-icons" onClick={() => setSelectUsersActive(!SelectUsersActive)}>
@@ -534,7 +534,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                 </div>
               ) : null}
               {ChooseCoOwnerActive ? (
-                <div className="SelectUsersWindow small-dark-container w50">
+                <div className="SelectUsersWindow dark-container w50">
                   <p className="mt0 flex-center flex-bet">
                     Choose a user :
                     <i className="material-icons" onClick={() => setChooseCoOwnerActive(!ChooseCoOwnerActive)}>

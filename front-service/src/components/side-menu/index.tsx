@@ -17,7 +17,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
 
   return (
     <div
-      className={`side-menu small-dark-container relative flex-col g5 ${
+      className={`side-menu dark-container relative flex-col g5 ${
         MiniMenu ? "mini-menu" : ""
       }`}
     >

@@ -35,7 +35,7 @@ const Header5CPOM: FunctionComponent<Props> = ({ currentUser, log_out, isLog }) 
         )}
       </nav>
       {/* 
-      <div className="absolute small-normal-container t0 r0 m15">
+      <div className="absolute normal-container t0 r0 m15">
         <p className='mt0'></p>{currentUser.name}</p>
         <Link to={`/user/${currentUser._id}`}>view profile</Link>
         <p className="flex-center g15">

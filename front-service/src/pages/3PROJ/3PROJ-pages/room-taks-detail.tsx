@@ -52,7 +52,7 @@ const RoomTaskPageById: FunctionComponent<Props> = ({ match, currentUser, SetLog
           </h2>
         </div>
         <div className="flex g25">
-          <div className="small-dark-container flex-col display-from-left w50">
+          <div className="dark-container flex-col display-from-left w50">
             {Task.details ? (
               <div className="task-detail">{Task.details}</div>
             ) : (
@@ -70,7 +70,7 @@ const RoomTaskPageById: FunctionComponent<Props> = ({ match, currentUser, SetLog
             )}
           </div>
           {Task.correction && currentUser._id === Room.co_owner && currentUser._id === Room.owner ? (
-            <div className="small-dark-container flex-bet display-from-left border-red">
+            <div className="dark-container flex-bet display-from-left border-red">
               <h2>YOU NEED TO ADD A CORRECTION FOR THIS TASK</h2>
               <div className="cta normal-bg-h blue-h">
                 <span className="add-user flex-row flex-center-align flex-start-justify g15">
@@ -79,7 +79,7 @@ const RoomTaskPageById: FunctionComponent<Props> = ({ match, currentUser, SetLog
               </div>
             </div>
           ) : (
-            <div className="small-dark-container display-from-left w50">
+            <div className="dark-container display-from-left w50">
               <h2>Correction has been rendered</h2>
               <div className="flex g25">
                 <div className="cta normal-bg blue-h">

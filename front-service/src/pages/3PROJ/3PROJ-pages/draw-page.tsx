@@ -63,7 +63,7 @@ const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {
                 setParamsActive(false);
               }}
             ></div>
-            <div className="flex-col p50 dark-bg small-dark-container display-from-left g15">
+            <div className="flex-col p50 dark-bg dark-container display-from-left g15">
               <h2 className="">
                 Settings :
                 <i
@@ -76,7 +76,7 @@ const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {
                 </i>
               </h2>
               <div className="drag-drop-container" onDrop={handleDrop} onDragOver={handleDragOver}>
-                <div className="big-normal-container flex-center flex-col " onClick={() => handleUploadButtonClick()}>
+                <div className="normal-container flex-center flex-col " onClick={() => handleUploadButtonClick()}>
                   <h2 className=" flex-center-justify w100">
                     <span className="mr25 w30 txt-end">Drag & Drop</span>|<span className="ml25 w30">Click here</span>
                   </h2>

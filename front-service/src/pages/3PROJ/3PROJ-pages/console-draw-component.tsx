@@ -10,7 +10,7 @@ const ConsoleDrawComponent: FunctionComponent<Props> = () => {
     console.log(ScriptValue);
   }, [ScriptValue]);
   return (
-    <div className="flex-col g15 dark-bg small-dark-container display-from-left">
+    <div className="flex-col g15 dark-bg dark-container display-from-left">
       <div id="viewDraft"></div>
       <div className="flex-center">
         <textarea name="draw-script" className="input" onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))} />

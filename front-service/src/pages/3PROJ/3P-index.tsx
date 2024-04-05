@@ -9,6 +9,9 @@ import RoomModel from "../../models/room-model";
 import TaskModel from "../../models/tasks-model";
 import UserModel from "../../models/user-model";
 import "./3P-style.scss";
+import voidUser from "../../models/mocks/void-user";
+import voidTask from "../../models/mocks/void-task";
+import voidRoom from "../../models/mocks/void-room";
 
 type Props = {
   currentUser: UserModel;
@@ -26,16 +29,6 @@ interface renderModel {
   taskDate: Date;
   renderStatus: boolean;
 }
-
-
-const options = { 
-  year: '2-digit', 
-  month: '2-digit', 
-  day: '2-digit', 
-  hour: '2-digit', 
-  minute: '2-digit',
-  hour12: false
-};
 
 const RenderTableComponent: FunctionComponent<{
   limite: number;
@@ -142,15 +135,21 @@ const RoomsTableViewComponent: FunctionComponent<{
 };
 
 const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersList, tasks, rooms }) => {
-  const [RoomList, setRoomList] = useState<RoomModel[]>(rooms);
-  const [TaskList, setTaskList] = useState<TaskModel[]>(tasks);
+
+  const [CurrentUser, setCurrentUser] = useState<UserModel>(voidUser);
+  const [RoomList, setRoomList] = useState<RoomModel[]>([voidRoom]);
+  const [TaskList, setTaskList] = useState<TaskModel[]>([voidTask]);
+
+  useEffect(() => {
+    setCurrentUser(currentUser);
+    setRoomList(rooms);
+    setTaskList(tasks);
+  }, [currentUser,tasks, rooms])
+
 
   const [PopUpActive, setPopUpActive] = useState<false | { check: string; title: string; second: false | string }>(false);
   const [SelectUsersActive, setSelectUsersActive] = useState<Boolean>(false);
   const [ChooseCoOwnerActive, setChooseCoOwnerActive] = useState<Boolean>(false);
-
-  const [OwnedRoomActive, setOwnedRoomActive] = useState<Boolean>(true);
-  const [Roomctive, setRoomctive] = useState<Boolean>(true);
 
   const [ReadyToSend, setReadyToSend] = useState<Boolean>(false);
 
@@ -160,7 +159,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
 
   var objectFiledAddUser: any = {
     name: SelectRoomName,
-    owner: currentUser._id,
+    owner: CurrentUser._id,
     co_owner: SelectCoOwner ? SelectCoOwner.name : null,
     users: SelectUsers.map((e) => e.id),
   };
@@ -193,7 +192,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
     return SelectUsers.some((user) => user.id === id);
   }
   const renderList: renderModel[] = RoomList.flatMap((room: RoomModel) =>
-    room.users.some((user) => user === currentUser._id)
+    room.users.some((user) => user === CurrentUser._id)
       ? room.tasks.map((taskid) => {
           const task = TaskList.find((e) => e._id === taskid);
           console.log(room);
@@ -208,7 +207,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
             roomName: room.name,
             taskTitle: task.title,
             taskDate: task.datelimit,
-            renderStatus: task.renders.some((r) => r.id === currentUser._id),
+            renderStatus: task.renders.some((r) => r.id === CurrentUser._id),
           };
         })
       : []
@@ -321,7 +320,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               open_in_new
             </i>
           </h2>
-          <RoomsTableViewComponent limite={3} RoomList={RoomList} usersList={usersList} currentUser={currentUser} owner={true} />
+          <RoomsTableViewComponent limite={3} RoomList={RoomList} usersList={usersList} currentUser={CurrentUser} owner={true} />
         </div>
 
         <div className="table-list flex-col p50 dark-bg dark-container display-from-left">
@@ -338,7 +337,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               open_in_new
             </i>
           </h2>
-          <RoomsTableViewComponent limite={3} RoomList={RoomList} usersList={usersList} currentUser={currentUser} owner={false} />
+          <RoomsTableViewComponent limite={3} RoomList={RoomList} usersList={usersList} currentUser={CurrentUser} owner={false} />
         </div>
 
         {!PopUpActive ? null : (
@@ -476,7 +475,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                   limite={9999999999}
                   RoomList={RoomList}
                   usersList={usersList}
-                  currentUser={currentUser}
+                  currentUser={CurrentUser}
                   owner={true}
                 />
               ) : null}
@@ -485,7 +484,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                   limite={9999999999}
                   RoomList={RoomList}
                   usersList={usersList}
-                  currentUser={currentUser}
+                  currentUser={CurrentUser}
                   owner={false}
                 />
               ) : null}

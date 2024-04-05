@@ -1,13 +1,18 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import UserModel from "../models/user-model";
+import voidUser from "../models/mocks/void-user";
 
 type Props = {
   currentUser: UserModel;
 };
 
 const HomePage: FunctionComponent<Props> = ({ currentUser }) => {
-  const [user, setUser] = useState<UserModel>(currentUser);
+  const [user, setUser] = useState<UserModel>(voidUser);
+
+  useEffect(() => {
+    setUser(currentUser);
+  }, [currentUser]);
 
   return (
     <div className="main p20 flex-col relative flex-end-align g25">
@@ -17,11 +22,11 @@ const HomePage: FunctionComponent<Props> = ({ currentUser }) => {
           <Link className="home-tile dark-container" to={"/1PROJ"}>
             <span className="ml15 mr15">1PROJ</span>
           </Link>
-          
+
           <Link className="home-tile dark-container" to={"/2PROJ"}>
             <span className="ml15 mr15">2PROJ</span>
           </Link>
-          
+
           <Link className="home-tile dark-container" to={"/3PROJ"}>
             <span className="ml15 mr15">3PROJ</span>
           </Link>
@@ -32,10 +37,7 @@ const HomePage: FunctionComponent<Props> = ({ currentUser }) => {
         <div className="flex-col g25 w100">
           <h2 className="">Admin management :</h2>
           <div className="flex-wrap g25 w80">
-            <Link
-              className="home-tile dark-container"
-              to={"/manage-users"}
-            >
+            <Link className="home-tile dark-container" to={"/manage-users"}>
               <span className="ml15 mr15">manage users</span>
             </Link>
           </div>

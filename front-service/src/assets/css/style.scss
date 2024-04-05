@@ -411,6 +411,7 @@ i.warning::after {
   border-radius: 8px;
   font-size: 12px;
   top: 80%;
+  right: -25%;
   opacity: 0;
 }
 
@@ -837,8 +838,6 @@ input.error-input {
   border-color: var(--color-red);
 }
 
-.group-field-item-field {
-}
 
 .text-zone-field-input {
   transition: 0s all ease-in-out;

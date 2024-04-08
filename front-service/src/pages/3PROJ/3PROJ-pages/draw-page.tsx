@@ -7,9 +7,10 @@ import ConsoleDrawComponent from "./console-draw-component";
 type Props = {
   currentUser: UserModel;
   SetLog: Function;
+  script: string;
 };
 
-const DrawPage: FunctionComponent<Props> = ({ currentUser }) => {
+const DrawPage: FunctionComponent<Props> = ({ currentUser, script, SetLog }) => {
   const [ParamsActive, setParamsActive] = useState<Boolean>(false);
   const [user, setUser] = useState<UserModel>(currentUser);
   const [SelectedFileToUpload, setSelectedFileToUpload] = useState<Array<File>>([]);

@@ -90,7 +90,7 @@ const App: FunctionComponent = () => {
                 setCompleteUsersList(users.response);
                 setUsersList(
                   users.response.map((user: UserModel) => ({
-                    id: user._id,
+                    _id: user._id,
                     name: user.name,
                   }))
                 );
@@ -148,7 +148,7 @@ const App: FunctionComponent = () => {
                 <Route
                   path="/3PROJ/room/:roomid/task/:taskid"
                   render={(props) => (
-                    <RoomTaskPageById {...props} currentUser={currentUser} SetLog={SetLog} tasks={TasksList} rooms={RoomsList} />
+                    <RoomTaskPageById {...props} currentUser={currentUser} SetLog={SetLog} tasks={TasksList} rooms={RoomsList} userList={usersList} />
                   )}
                 />
                 <Route
@@ -169,7 +169,7 @@ const App: FunctionComponent = () => {
                     <RoomPageById {...props} currentUser={currentUser} SetLog={SetLog} tasks={TasksList} rooms={RoomsList} usersList={usersList}/>
                   )}
                 />
-                <Route path="/3PROJ/draw/" render={(props) => <DrawPage currentUser={currentUser} SetLog={SetLog} />} />
+                <Route path="/3PROJ/draw/" render={(props) => <DrawPage currentUser={currentUser} SetLog={SetLog} script={""} />} />
                 <Route
                   path="/3PROJ/draw-history/"
                   render={(props) => <DrawnListPage currentUser={currentUser} SetLog={SetLog} />}

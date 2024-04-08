@@ -59,9 +59,9 @@ const RenderTableComponent: FunctionComponent<{
                     <p className="w40">{(e.taskDate instanceof Date ? e.taskDate.toLocaleDateString() : e.taskDate)}</p>
                   </div>
                   {e.renderStatus ? (
-                    <i className="material-icons mtbauto flex-center">task_alt</i>
+                    <i className="material-icons mtbauto flex-center green">task_alt</i>
                   ) : (
-                    <i className="material-icons mtbauto flex-center">close</i>
+                    <i className="material-icons mtbauto flex-center red">close</i>
                   )}
                 </Link>
               </li>
@@ -161,7 +161,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
     name: SelectRoomName,
     owner: CurrentUser._id,
     co_owner: SelectCoOwner ? SelectCoOwner.name : null,
-    users: SelectUsers.map((e) => e.id),
+    users: SelectUsers.map((e) => e._id),
   };
 
   useEffect(() => {
@@ -189,7 +189,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
   };
 
   function IsSelectedUser(id: string) {
-    return SelectUsers.some((user) => user.id === id);
+    return SelectUsers.some((user) => user._id === id);
   }
   const renderList: renderModel[] = RoomList.flatMap((room: RoomModel) =>
     room.users.some((user) => user === CurrentUser._id)
@@ -420,11 +420,11 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                       {SelectUsers.length !== 0 ? (
                         <ul className="m0 users-list-to-add">
                           {SelectUsers.map((user) => (
-                            <li key={user.id}>
+                            <li key={user._id}>
                               <span title={user.name}>{user.name}</span>
                               <i
                                 className="material-icons mlauto"
-                                onClick={() => setSelectUsers(SelectUsers.filter((e) => e.id !== user.id))}
+                                onClick={() => setSelectUsers(SelectUsers.filter((e) => e._id !== user._id))}
                               >
                                 delete
                               </i>
@@ -470,15 +470,6 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                 </div>
               ) : null}
 
-              {PopUpActive.check === "owner_room" ? (
-                <RoomsTableViewComponent
-                  limite={9999999999}
-                  RoomList={RoomList}
-                  usersList={usersList}
-                  currentUser={CurrentUser}
-                  owner={true}
-                />
-              ) : null}
               {PopUpActive.check === "all_room" ? (
                 <RoomsTableViewComponent
                   limite={9999999999}
@@ -488,11 +479,20 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                   owner={false}
                 />
               ) : null}
+              {PopUpActive.check === "owner_room" ? (
+                <RoomsTableViewComponent
+                  limite={9999999999}
+                  RoomList={RoomList}
+                  usersList={usersList}
+                  currentUser={CurrentUser}
+                  owner={true}
+                />
+              ) : null}
               {PopUpActive.check === "render" ? (
                 <div className="flex-col">
-                  <RenderTableComponent limite={9999999999} tableList={renderList} submit={true} />
+                  <RenderTableComponent limite={9999999999} tableList={renderList} submit={false} />
                   <h2 className="mt30">{PopUpActive.second} :</h2>
-                  <RenderTableComponent limite={9999999999} tableList={renderList} submit={false}/>
+                  <RenderTableComponent limite={9999999999} tableList={renderList} submit={true}/>
                 </div>
               ) : null}
               {SelectUsersActive ? (
@@ -506,19 +506,19 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                   <ul className="SelectUsersList">
                     {usersList
                       ? usersList.map((user) =>
-                          user.id !== (SelectCoOwner ? SelectCoOwner.id : null) ? (
-                            IsSelectedUser(user.id) ? (
+                          user._id !== (SelectCoOwner ? SelectCoOwner._id : null) ? (
+                            IsSelectedUser(user._id) ? (
                               <li
-                                key={user.id}
+                                key={user._id}
                                 className="blue flex-center-align"
-                                onClick={() => setSelectUsers(SelectUsers.filter((e) => e.id !== user.id))}
+                                onClick={() => setSelectUsers(SelectUsers.filter((e) => e._id !== user._id))}
                               >
                                 <i className="material-icons blue mr10">done</i>
                                 {user.name}
                               </li>
                             ) : (
                               <li
-                                key={user.id}
+                                key={user._id}
                                 className="flex-center-align"
                                 onClick={() => setSelectUsers([...SelectUsers, user])}
                               >
@@ -543,18 +543,18 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                   <ul className="SelectUsersList">
                     {usersList
                       ? usersList.map((user) =>
-                          SelectCoOwner && user.id === SelectCoOwner.id ? (
-                            <li key={user.id} className="blue flex-center-align" onClick={() => setSelectCoOwner(null)}>
+                          SelectCoOwner && user._id === SelectCoOwner._id ? (
+                            <li key={user._id} className="blue flex-center-align" onClick={() => setSelectCoOwner(null)}>
                               <i className="material-icons blue mr10">done</i>
                               {user.name}
                             </li>
                           ) : (
                             <li
-                              key={user.id}
+                              key={user._id}
                               className="flex-center-align"
                               onClick={() => {
                                 setSelectCoOwner(user);
-                                setSelectUsers(SelectUsers.filter((e) => e.id !== user.id));
+                                setSelectUsers(SelectUsers.filter((e) => e._id !== user._id));
                                 setChooseCoOwnerActive(false);
                               }}
                             >

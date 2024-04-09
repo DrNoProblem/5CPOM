@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import "../3P-style.scss";
 
 type Props = {};
 
-const ConsoleDrawComponent: FunctionComponent<Props> = () => {
+const ConsoleDrawComponent: FC<Props> = () => {
   const [ScriptValue, setScriptValue] = useState<string[]>();
 
   useEffect(() => {

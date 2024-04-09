@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FC, FunctionComponent, useEffect, useState } from "react";
 import "../3P-style.scss";
 import { Link, RouteComponentProps } from "react-router-dom";
 import UserModel from "../../../models/user-model";
@@ -15,7 +15,7 @@ interface Props extends RouteComponentProps<{ roomid: string }> {
   usersList: MiniUserModel[];
 }
 
-const RoomPageById: FunctionComponent<Props> = ({ match, currentUser, rooms, tasks, usersList }) => {
+const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList }) => {
   const [Room, setRoom] = useState<RoomModel>();
 
   const isTaskProblem = (task: TaskModel) => {

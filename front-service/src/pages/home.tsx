@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FC, FunctionComponent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import UserModel from "../models/user-model";
 import voidUser from "../models/mocks/void-user";
@@ -7,7 +7,7 @@ type Props = {
   currentUser: UserModel;
 };
 
-const HomePage: FunctionComponent<Props> = ({ currentUser }) => {
+const HomePage: FC<Props> = ({ currentUser }) => {
   const [user, setUser] = useState<UserModel>(voidUser);
 
   useEffect(() => {

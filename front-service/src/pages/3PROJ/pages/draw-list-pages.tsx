@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FC, FunctionComponent, useEffect, useState } from "react";
 import "../3P-style.scss";
 import { Link, match } from "react-router-dom";
 import UserModel from "../../../models/user-model";
@@ -8,7 +8,7 @@ type Props = {
   SetLog: Function;
 };
 
-const DrawnListPage: FunctionComponent<Props> = ({ currentUser }) => {
+const DrawnListPage: FC<Props> = ({ currentUser }) => {
   const [user, setUser] = useState<UserModel>(currentUser);
 
   return (

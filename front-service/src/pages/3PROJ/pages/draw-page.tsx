@@ -1,8 +1,8 @@
-import React, { FunctionComponent, useRef, useState } from "react";
+import React, { FC, FunctionComponent, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
-import ConsoleDrawComponent from "./console-draw-component";
+import ConsoleDrawComponent from "../components/console-draw";
 
 type Props = {
   currentUser: UserModel;
@@ -10,7 +10,7 @@ type Props = {
   script: string;
 };
 
-const DrawPage: FunctionComponent<Props> = ({ currentUser, script, SetLog }) => {
+const DrawPage: FC<Props> = ({ currentUser, script, SetLog }) => {
   const [ParamsActive, setParamsActive] = useState<Boolean>(false);
   const [user, setUser] = useState<UserModel>(currentUser);
   const [SelectedFileToUpload, setSelectedFileToUpload] = useState<Array<File>>([]);
@@ -54,7 +54,7 @@ const DrawPage: FunctionComponent<Props> = ({ currentUser, script, SetLog }) => 
         </div>
 
         <div className="flex-row g50">
-          <ConsoleDrawComponent />
+          <ConsoleDrawComponent/>
         </div>
         {ParamsActive ? (
           <div className="add-item-popup">

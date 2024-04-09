@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FC, FunctionComponent } from "react";
 import { Link } from "react-router-dom";
 import UserModel from "../../models/user-model";
 import Logo from "../logo-grid";
@@ -10,7 +10,7 @@ type Props = {
   isLog: string | Boolean;
 };
 
-const Header5CPOM: FunctionComponent<Props> = ({ currentUser, log_out, isLog }) => {
+const Header5CPOM: FC<Props> = ({ currentUser, log_out, isLog }) => {
   return currentUser ? (
     <div>
       <nav className="header flex-bet flex-row flex-center zi9">

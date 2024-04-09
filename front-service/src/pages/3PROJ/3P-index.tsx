@@ -1,17 +1,19 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SignUp from "../../api-request/user/sign-up";
 import isHttpStatusValid from "../../helpers/check-status";
 import displayStatusRequest from "../../helpers/display-status-request";
-import getNameById from "../../helpers/getNameById";
 import MiniUserModel from "../../models/mini-user-model";
+import voidRoom from "../../models/mocks/void-room";
+import voidTask from "../../models/mocks/void-task";
+import voidUser from "../../models/mocks/void-user";
 import RoomModel from "../../models/room-model";
 import TaskModel from "../../models/tasks-model";
 import UserModel from "../../models/user-model";
 import "./3P-style.scss";
-import voidUser from "../../models/mocks/void-user";
-import voidTask from "../../models/mocks/void-task";
-import voidRoom from "../../models/mocks/void-room";
+
+import TableRenderSubmitStatusComp from './components/table-render-submit-status';
+import TableRoomUsersComp from './components/table-room-users';
 
 type Props = {
   currentUser: UserModel;
@@ -30,112 +32,7 @@ interface renderModel {
   renderStatus: boolean;
 }
 
-const RenderTableComponent: FunctionComponent<{
-  limite: number;
-  tableList: renderModel[];
-  submit: boolean;
-}> = ({ limite, tableList, submit }) => {
-  return (
-    <ul className="table-list flex-col mb0 ">
-      <li className="legend">
-        <div className="flex-row">
-          <div className="flex-row flex-start-align flex-bet w100">
-            <p className="w30">ROOM</p>
-            <p className="w30">TASK</p>
-            <p className="w40">DATE</p>
-          </div>
-          <i className="material-icons mtbauto flex-center op0">expand_more</i>
-        </div>
-      </li>
-
-      {tableList
-        ? tableList.map((e, index) =>
-            index < limite && submit === e.renderStatus? (
-              <li key={e.taskId}>
-                <Link to={`/3PROJ/room/${e.roomId}/task/${e.taskId}`} className="flex-row flex-bet">
-                  <div className="flex-row flex-start-align flex-bet w100">
-                    <p className="w30">{e.roomName}</p>
-                    <p className="w30">{e.taskTitle}</p>
-                    <p className="w40">{(e.taskDate instanceof Date ? e.taskDate.toLocaleDateString() : e.taskDate)}</p>
-                  </div>
-                  {e.renderStatus ? (
-                    <i className="material-icons mtbauto flex-center green">task_alt</i>
-                  ) : (
-                    <i className="material-icons mtbauto flex-center red">close</i>
-                  )}
-                </Link>
-              </li>
-            ) : null
-          )
-        : null}
-    </ul>
-  );
-};
-
-const RoomsTableViewComponent: FunctionComponent<{
-  limite: number;
-  RoomList: RoomModel[];
-  usersList: MiniUserModel[];
-  currentUser: UserModel;
-  owner: boolean;
-}> = ({ limite, RoomList, usersList, currentUser, owner }) => {
-  let count: number = 0;
-  return (
-    <ul className="table-list flex-col mb0">
-      <li className="legend">
-        <div className="flex-row flex-bet">
-          <div className="flex-row flex-start-align flex-start-justify w100">
-            <p className="w20">ROOM NAME</p>
-            <p className="w20">OWNER</p>
-            <p className="w20">CO-OWNER</p>
-            <p className="w20">USERS COUNT</p>
-            <p className="w20">TASKS COUNT</p>
-          </div>
-        </div>
-      </li>
-      {RoomList &&
-        RoomList.map((room: RoomModel) => {
-          if ((room.owner === currentUser._id || room.co_owner === currentUser._id) && count < limite && owner) {
-            count++;
-            return (
-              <li key={room._id + "userlist"}>
-                <Link to={`/3PROJ/room/` + room._id} className="flex-row flex-bet">
-                  <div className="flex-row flex-start-align flex-start-justify w100">
-                    <p className="w20">{room.name}</p>
-                    <p className="w20">{getNameById(room.owner, usersList)}</p>
-                    <p className="w20">{getNameById(room.co_owner, usersList)}</p>
-                    <p className="w20">{room.users.length}</p>
-                    <p className="w20">{room.tasks.length}</p>
-                  </div>
-                </Link>
-              </li>
-            );
-          }
-
-          if ((room.owner !== currentUser._id || room.co_owner !== currentUser._id) && count < limite && !owner) {
-            count++;
-            return (
-              <li key={room._id + "userlist"}>
-                <Link to={`/3PROJ/room/` + room._id} className="flex-row flex-bet">
-                  <div className="flex-row flex-start-align flex-start-justify w100">
-                    <p className="w20">{room.name}</p>
-                    <p className="w20">{getNameById(room.owner, usersList)}</p>
-                    <p className="w20">{getNameById(room.co_owner, usersList)}</p>
-                    <p className="w20">{room.users.length}</p>
-                    <p className="w20">{room.tasks.length}</p>
-                  </div>
-                </Link>
-              </li>
-            );
-          }
-          return null; // Retourner null si les conditions ne sont pas remplies
-        })}
-    </ul>
-  );
-};
-
-const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersList, tasks, rooms }) => {
-
+const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms }) => {
   const [CurrentUser, setCurrentUser] = useState<UserModel>(voidUser);
   const [RoomList, setRoomList] = useState<RoomModel[]>([voidRoom]);
   const [TaskList, setTaskList] = useState<TaskModel[]>([voidTask]);
@@ -144,8 +41,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
     setCurrentUser(currentUser);
     setRoomList(rooms);
     setTaskList(tasks);
-  }, [currentUser,tasks, rooms])
-
+  }, [currentUser, tasks, rooms]);
 
   const [PopUpActive, setPopUpActive] = useState<false | { check: string; title: string; second: false | string }>(false);
   const [SelectUsersActive, setSelectUsersActive] = useState<Boolean>(false);
@@ -302,7 +198,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                 open_in_new
               </i>
             </h2>
-            <RenderTableComponent limite={3} tableList={renderList} submit={false} />
+            <TableRenderSubmitStatusComp limite={3} tableList={renderList} submit={false} />
           </div>
         </div>
 
@@ -320,7 +216,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               open_in_new
             </i>
           </h2>
-          <RoomsTableViewComponent limite={3} RoomList={RoomList} usersList={usersList} currentUser={CurrentUser} owner={true} />
+          <TableRoomUsersComp limite={3} RoomList={RoomList} usersList={usersList} currentUser={CurrentUser} owner={true} />
         </div>
 
         <div className="table-list flex-col p50 dark-bg dark-container display-from-left">
@@ -337,7 +233,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               open_in_new
             </i>
           </h2>
-          <RoomsTableViewComponent limite={3} RoomList={RoomList} usersList={usersList} currentUser={CurrentUser} owner={false} />
+          <TableRoomUsersComp limite={3} RoomList={RoomList} usersList={usersList} currentUser={CurrentUser} owner={false} />
         </div>
 
         {!PopUpActive ? null : (
@@ -366,13 +262,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
               {PopUpActive.check === "add_room" ? (
                 <div className="flex-col adding-room">
                   <p className="m0 mb20 mt20">Room name :</p>
-                  <input
-                    className="input"
-                    name="username"
-                    type="text"
-                    autoComplete="no-chrome-autofill"
-                    onChange={(e) => setSelectRoomName(e.target.value)}
-                  />
+                  <input className="input" name="username" type="text" autoComplete="no-chrome-autofill" onChange={(e) => setSelectRoomName(e.target.value)} />
 
                   <div className="flex-bet mb25">
                     <div className="flex-col w50">
@@ -422,10 +312,7 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                           {SelectUsers.map((user) => (
                             <li key={user._id}>
                               <span title={user.name}>{user.name}</span>
-                              <i
-                                className="material-icons mlauto"
-                                onClick={() => setSelectUsers(SelectUsers.filter((e) => e._id !== user._id))}
-                              >
+                              <i className="material-icons mlauto" onClick={() => setSelectUsers(SelectUsers.filter((e) => e._id !== user._id))}>
                                 delete
                               </i>
                             </li>
@@ -470,29 +357,13 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                 </div>
               ) : null}
 
-              {PopUpActive.check === "all_room" ? (
-                <RoomsTableViewComponent
-                  limite={9999999999}
-                  RoomList={RoomList}
-                  usersList={usersList}
-                  currentUser={CurrentUser}
-                  owner={false}
-                />
-              ) : null}
-              {PopUpActive.check === "owner_room" ? (
-                <RoomsTableViewComponent
-                  limite={9999999999}
-                  RoomList={RoomList}
-                  usersList={usersList}
-                  currentUser={CurrentUser}
-                  owner={true}
-                />
-              ) : null}
+              {PopUpActive.check === "all_room" ? <TableRoomUsersComp limite={9999999999} RoomList={RoomList} usersList={usersList} currentUser={CurrentUser} owner={false} /> : null}
+              {PopUpActive.check === "owner_room" ? <TableRoomUsersComp limite={9999999999} RoomList={RoomList} usersList={usersList} currentUser={CurrentUser} owner={true} /> : null}
               {PopUpActive.check === "render" ? (
                 <div className="flex-col">
-                  <RenderTableComponent limite={9999999999} tableList={renderList} submit={false} />
+                  <TableRenderSubmitStatusComp limite={9999999999} tableList={renderList} submit={false} />
                   <h2 className="mt30">{PopUpActive.second} :</h2>
-                  <RenderTableComponent limite={9999999999} tableList={renderList} submit={true}/>
+                  <TableRenderSubmitStatusComp limite={9999999999} tableList={renderList} submit={true} />
                 </div>
               ) : null}
               {SelectUsersActive ? (
@@ -508,20 +379,12 @@ const HomePage3PROJ: FunctionComponent<Props> = ({ currentUser, SetLog, usersLis
                       ? usersList.map((user) =>
                           user._id !== (SelectCoOwner ? SelectCoOwner._id : null) ? (
                             IsSelectedUser(user._id) ? (
-                              <li
-                                key={user._id}
-                                className="blue flex-center-align"
-                                onClick={() => setSelectUsers(SelectUsers.filter((e) => e._id !== user._id))}
-                              >
+                              <li key={user._id} className="blue flex-center-align" onClick={() => setSelectUsers(SelectUsers.filter((e) => e._id !== user._id))}>
                                 <i className="material-icons blue mr10">done</i>
                                 {user.name}
                               </li>
                             ) : (
-                              <li
-                                key={user._id}
-                                className="flex-center-align"
-                                onClick={() => setSelectUsers([...SelectUsers, user])}
-                              >
+                              <li key={user._id} className="flex-center-align" onClick={() => setSelectUsers([...SelectUsers, user])}>
                                 <i className="material-icons op0 mr10">done</i>
                                 {user.name}
                               </li>

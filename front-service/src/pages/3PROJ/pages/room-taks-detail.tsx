@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FC, FunctionComponent, useEffect, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import getNameById from "../../../helpers/getNameById";
 import MiniUserModel from "../../../models/mini-user-model";
@@ -15,7 +15,7 @@ interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> 
   userList: MiniUserModel[];
 }
 
-const RoomTaskPageById: FunctionComponent<Props> = ({ match, currentUser, SetLog, rooms, tasks, userList }) => {
+const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks, userList }) => {
   const [Task, setTask] = useState<TaskModel>();
   const [Room, setRoom] = useState<RoomModel>();
 
@@ -80,7 +80,7 @@ const RoomTaskPageById: FunctionComponent<Props> = ({ match, currentUser, SetLog
                     <i className="material-icons red mr25">warning</i>Details needed
                     <i className="material-icons red ml25">warning</i>
                   </h2>
-                  <div className="cta normal-bg blue-h">
+                  <div className="cta normal-bg blue-h mlauto mr15">
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">add</i>add a detail
                     </span>
@@ -89,9 +89,7 @@ const RoomTaskPageById: FunctionComponent<Props> = ({ match, currentUser, SetLog
               </div>
             ) : (
               <div className="dark-container flex-col display-from-left">
-                <div className="flex-center flex-col">
-                  <h2 className="red flex-center m0">No details yet</h2>
-                </div>
+                <h2 className="red flex-center m0">No details yet</h2>
               </div>
             )}
           </div>
@@ -119,14 +117,17 @@ const RoomTaskPageById: FunctionComponent<Props> = ({ match, currentUser, SetLog
               </div>
             ) : (
               <div className="dark-container display-from-left flex-col flex-start-justify">
-                <h2 className="red">You need to submit a render</h2>
-                <div className="flex-col">
-                  <div className="cta normal-bg-h blue-h mrauto">
+                <h2 className="red flex-center">
+                  <i className="material-icons red mr25">warning</i>You need to submit a render
+                  <i className="material-icons red ml25">warning</i>
+                </h2>
+                <div className="flex-col g15">
+                  <div className="cta normal-bg blue-h mrauto">
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">add</i>Add from new draw
                     </span>
                   </div>
-                  <div className="cta normal-bg-h blue-h mrauto">
+                  <div className="cta normal-bg blue-h mrauto">
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">add</i>Choose from your draws
                     </span>
@@ -135,7 +136,7 @@ const RoomTaskPageById: FunctionComponent<Props> = ({ match, currentUser, SetLog
               </div>
             )}
 
-            {Task.correction ? (
+            {Task.correction && Task.renders.some((e) => e.id === currentUser._id) ? (
               <div className="dark-container display-from-left flex-col flex-start-justify">
                 <h2>Correction for this task :</h2>
                 <div className="flex g25">
@@ -155,28 +156,22 @@ const RoomTaskPageById: FunctionComponent<Props> = ({ match, currentUser, SetLog
               </div>
             ) : IsOwner ? (
               <div className="dark-container display-from-left flex-col flex-start-justify">
-                {IsDatePassed ? (
-                  <h2 className="red flex-center ">
-                    <i className="material-icons red mr25">warning</i>Correction is needed
-                    <i className="material-icons red ml25">warning</i>
-                  </h2>
-                ) : (
-                  <h2>Correction is needed</h2>
-                )}
-                <div className={`flex g25 ${IsDatePassed ? "flex-center" : null}`}>
+                <h2 className="mb0">Note users's renders</h2>
+                <p className="fs14">then submit a correction</p>
+                <div className="flex g25 ">
                   <div className="cta normal-bg blue-h">
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                      <i className="material-icons">add</i>Add from new draw
-                    </span>
-                  </div>
-                  <div className="cta normal-bg blue-h">
-                    <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                      <i className="material-icons">add</i>Choose from your draws
+                      <i className="material-icons">add</i>Note renders
                     </span>
                   </div>
                 </div>
               </div>
-            ) : null}
+            ) : (
+              <div className="dark-container flex-col display-from-left">
+                <h2 className="m0">No corrections and notes delivered yet</h2>
+                <p className="ml25 mb5">Once the note is delivered, you will be able to see the correction</p>
+              </div>
+            )}
 
             {IsOwner ? (
               <div className="dark-container display-from-left flex-col flex-start-justify">

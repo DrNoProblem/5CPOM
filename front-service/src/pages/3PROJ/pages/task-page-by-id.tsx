@@ -1,4 +1,4 @@
-import React, { FC, FunctionComponent, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import getNameById from "../../../helpers/getNameById";
 import MiniUserModel from "../../../models/mini-user-model";
@@ -6,6 +6,7 @@ import RoomModel from "../../../models/room-model";
 import TaskModel from "../../../models/tasks-model";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
+import ConsoleDrawComponent from "../components/console-draw";
 
 interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
   currentUser: UserModel;
@@ -15,6 +16,12 @@ interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> 
   userList: MiniUserModel[];
 }
 
+type UserListNote = {
+  _id: string;
+  script: string;
+  note: number;
+};
+
 const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks, userList }) => {
   const [Task, setTask] = useState<TaskModel>();
   const [Room, setRoom] = useState<RoomModel>();
@@ -23,7 +30,9 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
 
   const [IsOwner, setIsOwner] = useState<boolean>(false);
   const [IsDatePassed, setIsDatePassed] = useState<boolean>(false);
+  const [WorkView, setWorkView] = useState<UserListNote>();
 
+  const [PopUpActive, setPopUpActive] = useState<boolean>(false);
   useEffect(() => {
     tasks.forEach((task) => {
       if (task._id === match.params.taskid) {
@@ -159,7 +168,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 <h2 className="mb0">Note users's renders</h2>
                 <p className="fs14">then submit a correction</p>
                 <div className="flex g25 ">
-                  <div className="cta normal-bg blue-h">
+                  <div className="cta normal-bg blue-h" onClick={() => setPopUpActive(true)}>
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">add</i>Note renders
                     </span>
@@ -208,6 +217,68 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
             ) : null}
           </div>
         </div>
+
+        {PopUpActive && IsOwner ? (
+          <div className="add-item-popup">
+            <div className="dark-background" onClick={() => setPopUpActive(false)}></div>
+
+            <div className="flex-center-justify g25 mt50 w100">
+              <div className="dark-container flex-col relative display-from-left zi2 w50">
+                <h2>
+                  List of Users : <span className="fs14"></span>
+                </h2>
+
+                <ul className="table-list flex-col mb0 w100">
+                  <li className="legend">
+                    <div className="flex-row">
+                      <div className="flex-row flex-center-align w100">
+                        <p className="w60">USER NAME</p>
+                        <p className="w40 txt-center">NOTE</p>
+                      </div>
+                    </div>
+                  </li>
+
+                  {Room.users.map((userId) => (
+                    <li key={userId} onClick={() => setWorkView({ _id: userId, script: "", note: 0 })}>
+                      <div className="flex-row flex-bet">
+                        <div className="flex-row flex-center-align w100">
+                          <p className="w60">{getNameById(userId, userList)}</p>
+                          {Task.renders.some((e) => e.id === userId) ? (
+                            <i className="material-icons flex-center green w40">task_alt</i>
+                          ) : (
+                            <i className="material-icons flex-center red w40">close</i>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex-col g25">
+                <ConsoleDrawComponent />
+                {WorkView ? (
+                  <div className="flex g25">
+                    <div className="dark-container flex relative display-from-left zi2 w100 flex-bet">
+                      <div className="flex-col">
+                        <h2 className="">Script of {getNameById(WorkView._id, userList)}</h2>
+                        <div className="cta cta-blue">
+                          <span className="flex-center g15">
+                            Valide note
+                            <i className="material-icons">done</i>
+                          </span>
+                        </div>
+                      </div>
+                      <span className="normal-container flex-center fs20 bold">
+                        <input type="number" name="note" className="fs20" max={100} min={0} />
+                        &nbsp;/&nbsp;100
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   ) : null;

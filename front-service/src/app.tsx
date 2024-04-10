@@ -34,7 +34,7 @@ import DrawnListPage from "./pages/3PROJ/pages/draw-list-pages";
 import DrawPage from "./pages/3PROJ/pages/draw-page";
 import RoomPageById from "./pages/3PROJ/pages/room-page-by-id";
 import RoomPageManagementById from "./pages/3PROJ/pages/room-page-management-by-id";
-import RoomTaskPageById from "./pages/3PROJ/pages/room-taks-detail";
+import RoomTaskPageById from "./pages/3PROJ/pages/task-page-by-id";
 import HomePage from "./pages/home";
 import ManageUsers from "./pages/management/manage-users";
 import UserSettings from "./pages/management/user-settings-by-id";

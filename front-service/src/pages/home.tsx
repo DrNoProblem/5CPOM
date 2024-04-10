@@ -1,7 +1,7 @@
-import React, { FC, FunctionComponent, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import UserModel from "../models/user-model";
 import voidUser from "../models/mocks/void-user";
+import UserModel from "../models/user-model";
 
 type Props = {
   currentUser: UserModel;

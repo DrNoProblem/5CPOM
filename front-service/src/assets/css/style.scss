@@ -429,19 +429,22 @@ i.warning:hover::after {
   position: fixed;
   top: 0;
   left: 0;
+  min-height: calc(100vh - 50px) !important;
+  min-width: calc(100vw - 50px) !important;
   height: 100vh;
   width: 100vw;
   z-index: 9;
   gap: 50px;
+  padding: 25px !important;
 }
 
 .dark-background {
   position: absolute;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100vw;
-  background: #00000088;
+  top: 0 !important;
+  left: 0 !important;
+  min-height: 100vh;
+  min-width: 100vw;
+  background: #00000088 !important;
 }
 
 select {
@@ -838,7 +841,6 @@ input.error-input {
   border-color: var(--color-red);
 }
 
-
 .text-zone-field-input {
   transition: 0s all ease-in-out;
   min-width: calc(100% - 30px);
@@ -1034,10 +1036,10 @@ input.error-input {
   transform: translateX(calc(-100% - 50px));
 }
 
-.add-item-popup .dark-container {
+.add-item-popup > div {
   top: 20%;
   overflow: unset;
-  max-width: 75%;
+  max-width: 85%;
 }
 .add-item-popup .dark-container:has(.adding-room) {
   width: 480px;
@@ -1052,4 +1054,33 @@ input.error-input {
     padding: 5px 0;
     user-select: none;
   }
+}
+
+input[name=note] {
+  width: 0px;
+  min-width: 35px;
+  text-align: end;
+  border: unset;
+  padding: 0;
+  color: var(--color-blue);
+  font-size: 20px;
+  font-weight: bold;
+  unicode-bidi: isolate;
+}
+
+input[name=note]::-webkit-inner-spin-button,
+input[name=note]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Pour Firefox */
+input[name=note] {
+  -moz-appearance: textfield;
+}
+
+/* Pour Internet Explorer */
+input[name=note]::-ms-clear,
+input[name=note]::-ms-reveal {
+  display: none;
 }

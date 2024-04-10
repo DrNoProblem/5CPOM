@@ -1,11 +1,11 @@
-import React, { FC, FunctionComponent, useEffect, useState } from "react";
-import "../3P-style.scss";
+import React, { FC, useEffect, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import UserModel from "../../../models/user-model";
-import RoomModel from "../../../models/room-model";
-import TaskModel from "../../../models/tasks-model";
 import getNameById from "../../../helpers/getNameById";
 import MiniUserModel from "../../../models/mini-user-model";
+import RoomModel from "../../../models/room-model";
+import TaskModel from "../../../models/tasks-model";
+import UserModel from "../../../models/user-model";
+import "../3P-style.scss";
 
 interface Props extends RouteComponentProps<{ roomid: string }> {
   currentUser: UserModel;

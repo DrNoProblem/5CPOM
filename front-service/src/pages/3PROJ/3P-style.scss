@@ -40,9 +40,8 @@ textarea::-webkit-scrollbar-thumb:hover {
   border-bottom: 1px solid lightgray;
 }
 
-
 i.pointer {
-  transform: translate(-50%, -50%);
+  transform-origin: top left;
 }
 
 input.color-input {
@@ -52,8 +51,8 @@ input.color-input {
   border: unset;
   border-radius: unset;
   background: unset;
-  transform: translateX(calc(-100% - 13px));
-  margin: 11px 15px 0 0;
+  transform: translateX(calc(-100% - 33px));
+  margin: 11px 0px 0 0;
   position: absolute;
   top: 0;
 }

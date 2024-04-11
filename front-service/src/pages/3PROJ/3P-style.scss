@@ -1,4 +1,4 @@
-#viewDraft {
+.canva-container {
   width: 450px;
   height: 450px;
   background-color: #fff;
@@ -38,4 +38,22 @@ textarea::-webkit-scrollbar-thumb:hover {
 .rapid-tool {
   padding-bottom: 25px;
   border-bottom: 1px solid lightgray;
+}
+
+
+i.pointer {
+  transform: translate(-50%, -50%);
+}
+
+input.color-input {
+  width: 31px;
+  height: 35px;
+  padding: 0;
+  border: unset;
+  border-radius: unset;
+  background: unset;
+  transform: translateX(calc(-100% - 13px));
+  margin: 11px 15px 0 0;
+  position: absolute;
+  top: 0;
 }

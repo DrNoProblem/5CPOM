@@ -42,17 +42,6 @@ textarea::-webkit-scrollbar-thumb:hover {
 
 i.pointer {
   transform-origin: top left;
-}
-
-input.color-input {
-  width: 31px;
-  height: 35px;
-  padding: 0;
-  border: unset;
-  border-radius: unset;
-  background: unset;
-  transform: translateX(calc(-100% - 33px));
-  margin: 11px 0px 0 0;
   position: absolute;
-  top: 0;
+  color: var(--color-blue);
 }

@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import "../3P-style.scss";
+import { Color } from "aws-sdk/clients/lookoutvision";
 
 interface ICommand {
   command: string;
@@ -11,25 +12,36 @@ interface IProcedure {
   body: string[];
 }
 
+interface RocketDataModel {
+  posX: number;
+  posY: number;
+  rotation: number;
+  draw: boolean;
+  visiblity: boolean;
+  tarceColor: Color
+}
 type Props = {};
 
 const ConsoleDrawComponent: FC<Props> = () => {
   const [ScriptValue, setScriptValue] = useState<string[]>();
+  const [RocketData, setRocketData] = useState<RocketDataModel>({
+    posX: 225,
+    posY: 225,
+    rotation: 0,
+    draw: true,
+    visiblity: true,
+    tarceColor: "#000"
+  });
 
-  let PosX = 225; // Position initiale x (au centre du canvas)
-  let PosY = 225; // Position initiale y (au centre du canvas)
-  let rotation = 0; // Angle initial en degrés
-  let draw = true;
-  let RocketVisible = true;
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const updateRocketPosition = () => {
+  const applyRocketDataFront = (newData: RocketDataModel) => {
     const rocketElement = document.getElementById("cursor");
     if (rocketElement) {
-      rocketElement.style.left = `${PosX}px`;
-      rocketElement.style.top = `${PosY}px`; // 450 est la hauteur du canvas, ajustez selon vos besoins
-      rocketElement.style.transform = `rotate(${-rotation}deg) translate(-50%, calc(-50% + 2px))`; // L'angle doit être négatif pour correspondre à la rotation dans le sens horaire
-      rocketElement.style.opacity = `${RocketVisible ? 1 : 0}`;
+      rocketElement.style.left = `${newData.posX}px`;
+      rocketElement.style.top = `${newData.posY}px`; 
+      rocketElement.style.transform = `rotate(${-newData.rotation}deg) translate(-50%, calc(-50% + 2px))`; 
+      rocketElement.style.opacity = `${newData.visiblity ? 1 : 0}`;
     }
   };
 
@@ -38,126 +50,149 @@ const ConsoleDrawComponent: FC<Props> = () => {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
         ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, 450, 450); // Initialise le fond du canvas en blanc
-        ctx.moveTo(PosX, PosY);
+        ctx.fillRect(0, 0, 450, 450); 
+        ctx.moveTo(RocketData.posX, RocketData.posY);
+        console.log("test");
+        applyRocketDataFront(RocketData);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const simulateRocket = (command: ICommand, ctx: CanvasRenderingContext2D | null) => {
-    if (!ctx) return;
+  const simulateRocket = (
+    command: ICommand,
+    ctx: CanvasRenderingContext2D | null,
+    TempoRocketData: RocketDataModel
+  ): RocketDataModel => {
+    if (!ctx) return TempoRocketData;
 
     switch (command.command) {
-      case "AV":
+      case "AV"://!
         console.log(`La tortue avance de ${command.params[0]} pixels`);
         const distance_AV = command.params[0];
-        const newX_AV = PosX - distance_AV * Math.sin((rotation * Math.PI) / 180);
-        const newY_AV = PosY - distance_AV * Math.cos((rotation * Math.PI) / 180);
+        const newX_AV = TempoRocketData.posX - distance_AV * Math.sin((TempoRocketData.rotation * Math.PI) / 180);
+        const newY_AV = TempoRocketData.posY - distance_AV * Math.cos((TempoRocketData.rotation * Math.PI) / 180);
         ctx.beginPath();
-        ctx.moveTo(PosX, PosY);
+        ctx.moveTo(TempoRocketData.posX, TempoRocketData.posY);
         ctx.lineTo(newX_AV, newY_AV);
         ctx.stroke();
-        PosX = newX_AV;
-        PosY = newY_AV;
-        updateRocketPosition();
+
+        TempoRocketData.posX = newX_AV;
+        TempoRocketData.posY = newY_AV;
+        applyRocketDataFront(TempoRocketData);
         break;
-      case "RE":
+      case "RE"://!
         console.log(`La tortue avance de ${command.params[0]} pixels`);
         const distance_RE = command.params[0];
-        const newX_RE = PosX + distance_RE * Math.sin((rotation * Math.PI) / 180);
-        const newY_RE = PosY + distance_RE * Math.cos((rotation * Math.PI) / 180);
+        const newX_RE = TempoRocketData.posX + distance_RE * Math.sin((TempoRocketData.rotation * Math.PI) / 180);
+        const newY_RE = TempoRocketData.posY + distance_RE * Math.cos((TempoRocketData.rotation * Math.PI) / 180);
         ctx.beginPath();
-        ctx.moveTo(PosX, PosY);
+        ctx.moveTo(TempoRocketData.posX, TempoRocketData.posY);
         ctx.lineTo(newX_RE, newY_RE);
         ctx.stroke();
-        PosX = newX_RE;
-        PosY = newY_RE;
-        updateRocketPosition();
+        TempoRocketData.posX = newX_RE;
+        TempoRocketData.posY = newY_RE;
+        applyRocketDataFront(TempoRocketData);
         break;
-      case "TD":
+      case "TD"://!
         console.log(`La tortue tourne à droite de ${command.params[0]} degrés`);
-        rotation -= command.params[0];
-        rotation = (rotation + 360) % 360;
-        updateRocketPosition();
+
+        let tempoRotationRight = TempoRocketData.rotation;
+        tempoRotationRight -= command.params[0];
+        tempoRotationRight = (tempoRotationRight + 360) % 360;
+        TempoRocketData.rotation = tempoRotationRight;
+        applyRocketDataFront(TempoRocketData);
         break;
-      case "TG":
+      case "TG"://!
         console.log(`La tortue tourne à gauche de ${command.params[0]} degrés`);
-        rotation += command.params[0];
-        rotation = rotation % 360;
-        updateRocketPosition();
+        let tempoRotationLeft = TempoRocketData.rotation;
+        tempoRotationLeft += command.params[0];
+        tempoRotationLeft = tempoRotationLeft % 360;
+        TempoRocketData.rotation = tempoRotationLeft;
+        applyRocketDataFront(TempoRocketData);
         break;
-      case "LC":
+      case "LC"://!
         console.log("La tortue ne laisse pas de trace");
-        updateRocketPosition();
+        TempoRocketData.draw = false;
+        applyRocketDataFront(TempoRocketData);
+
         break;
-      case "BC":
+      case "BC"://!
         console.log("La tortue laisse une trace");
-        updateRocketPosition();
+        TempoRocketData.draw = true;
+        applyRocketDataFront(TempoRocketData);
         break;
-      case "CT":
+      case "CT"://!
         console.log("La tortue est cachée");
-        updateRocketPosition();
-        RocketVisible = false;
+        TempoRocketData.visiblity = false;
+        applyRocketDataFront(TempoRocketData);
         break;
-      case "MT":
+      case "MT"://!
         console.log("La tortue est visible");
-        RocketVisible = true;
-        updateRocketPosition();
+        TempoRocketData.visiblity = true;
+        applyRocketDataFront(TempoRocketData);
         break;
-      case "VE":
+      case "VE"://!
         console.log("Efface l'écran et replace la tortue au centre");
-        ctx.fillRect(0, 0, 450, 450); // Initialise le fond du canvas en blanc
-        PosX = 225;
-        PosY = 225;
-        ctx.moveTo(PosX, PosY);
-        updateRocketPosition();
+        ctx.fillRect(0, 0, 450, 450); 
+        ctx.moveTo(225, 225);
+        
+        TempoRocketData.posX = 225;
+        TempoRocketData.posY = 225;
+        applyRocketDataFront(TempoRocketData);
         break;
-      case "NETTOIE":
+      case "NETTOIE"://!
         console.log("Efface l'écran sans changer la position de la tortue");
-        ctx.fillRect(0, 0, 450, 450); // Initialise le fond du canvas en blanc
-        ctx.moveTo(PosX, PosY);
+        ctx.fillRect(0, 0, 450, 450); 
+        ctx.moveTo(TempoRocketData.posX, TempoRocketData.posY);
         break;
-      case "ORIGINE":
+      case "ORIGINE"://!
         console.log("Replace la tortue au centre");
-        PosX = 225;
-        PosY = 225;
-        ctx.moveTo(PosX, PosY);
-        updateRocketPosition();
+        ctx.moveTo(225, 225);
+        
+        TempoRocketData.posX = 225;
+        TempoRocketData.posY = 225;
+        applyRocketDataFront(TempoRocketData);
         break;
       case "VT":
         console.log("Efface la console");
-        updateRocketPosition();
+        applyRocketDataFront(TempoRocketData);
         break;
       case "FCC":
         console.log(`Change la couleur du trait en ${command.params[0]}`);
-        updateRocketPosition();
+        applyRocketDataFront(TempoRocketData);
         break;
       case "FCB":
         console.log(`Change la couleur du fond en ${command.params[0]}`);
-        updateRocketPosition();
+        applyRocketDataFront(TempoRocketData);
         break;
       case "FCAP":
         console.log(`Fixe l'angle de la tortue à ${command.params[0]} degrés`);
-        updateRocketPosition();
+        applyRocketDataFront(TempoRocketData);
         break;
-      case "CAP":
+      case "CAP"://!
         console.log("Retourne l'angle de la tortue");
-        rotation += 180;
-        updateRocketPosition();
+        TempoRocketData.rotation += 180;
+        applyRocketDataFront(TempoRocketData);
         break;
       case "FPOS":
         console.log(`Positionne la tortue au point (${command.params[0]}, ${command.params[1]})`);
-        updateRocketPosition();
+        
+        TempoRocketData.posX = command.params[0];
+        TempoRocketData.posY = command.params[1];
+        applyRocketDataFront(TempoRocketData);
         break;
       case "POSITION":
       case "POS":
         console.log("Retourne la position de la tortue");
-        updateRocketPosition();
+        applyRocketDataFront(TempoRocketData);
         break;
       default:
         console.log(`Commande non reconnue: ${command.command}`);
-        updateRocketPosition();
+        applyRocketDataFront(TempoRocketData);
+        break;
     }
+    return TempoRocketData;
   };
 
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -169,8 +204,10 @@ const ConsoleDrawComponent: FC<Props> = () => {
 
     if (!ctx) return;
 
+    let TempoRocketData: RocketDataModel = RocketData;
+
     while (lineIndex < lines.length) {
-      await delay(250); // Délai de 0.25 seconde
+      await delay(250); //  0.25s
 
       let line = lines[lineIndex].toUpperCase().trim();
       const parts = line.split(/\s+/);
@@ -180,8 +217,6 @@ const ConsoleDrawComponent: FC<Props> = () => {
         lineIndex++;
         continue;
       }
-
-      // Remplacer les paramètres locaux par leurs valeurs
       parts.forEach((part, index) => {
         if (localParams[part] !== undefined) {
           parts[index] = localParams[part].toString();
@@ -189,7 +224,7 @@ const ConsoleDrawComponent: FC<Props> = () => {
       });
 
       if (command === "REPETE") {
-        const repetitions = parseInt(parts.shift() || "0");
+        const repeter = parseInt(parts.shift() || "0");
         const subCommands: string[] = [];
         let balance = 1;
 
@@ -201,12 +236,12 @@ const ConsoleDrawComponent: FC<Props> = () => {
           if (balance !== 0) subCommands.push(subLine);
         }
 
-        for (let i = 0; i < repetitions; i++) {
+        for (let i = 0; i < repeter; i++) {
           await parseAndExecuteLogoScript(subCommands, 0, localParams);
         }
       } else if (command === "POUR") {
         const procedureName = parts.shift();
-        const parameters = parts.filter((param) => param.startsWith(":")).map((param) => param.substring(1));
+        const param = parts.filter((param) => param.startsWith(":")).map((param) => param.substring(1));
         const body: string[] = [];
 
         lineIndex++;
@@ -218,7 +253,7 @@ const ConsoleDrawComponent: FC<Props> = () => {
         }
 
         if (procedureName) {
-          procedures[procedureName] = { parameters, body };
+          procedures[procedureName] = { parameters: param, body };
         }
       } else if (procedures[command]) {
         const procedure = procedures[command];
@@ -232,7 +267,8 @@ const ConsoleDrawComponent: FC<Props> = () => {
         await parseAndExecuteLogoScript(procedure.body, 0, localParams);
       } else {
         const params = parts.map(Number).filter((param) => !isNaN(param));
-        simulateRocket({ command, params }, ctx);
+        TempoRocketData = simulateRocket({ command, params }, ctx, TempoRocketData);
+        setRocketData(TempoRocketData);
       }
 
       lineIndex++;
@@ -240,9 +276,9 @@ const ConsoleDrawComponent: FC<Props> = () => {
   };
 
   return (
-    <div className="flex-col g15 dark-bg dark-container display-from-left">
+    <div className="flex-col g25 dark-bg dark-container display-from-left">
       <div className="canva-container relative">
-        <i className="material-icons absolute blue pointer" id="cursor">
+        <i className="material-icons pointer" id="cursor">
           rocket
         </i>
         <canvas ref={canvasRef} width="450" height="450" id="viewDraft" />
@@ -251,11 +287,12 @@ const ConsoleDrawComponent: FC<Props> = () => {
       <form className="flex-center">
         <textarea name="draw-script" className="input" onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))} />
         <div className="b0 flex-col flex-end-justify g15 p15 bg_black relative">
-          <input type="color" className="color-input " />
-          <div className="edit-title-button normal-bg" onClick={() => (ScriptValue ? parseAndExecuteLogoScript(ScriptValue) : null)}>
+          <div
+            className="edit-title-button normal-bg"
+            onClick={() => (ScriptValue ? parseAndExecuteLogoScript(ScriptValue) : null)}
+          >
             <i className="material-icons">publish</i>
           </div>
-
           <div className="edit-title-button normal-bg" onClick={() => console.log("reset script")}>
             <i className="material-icons">restart_alt</i>
           </div>

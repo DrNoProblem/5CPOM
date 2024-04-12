@@ -243,11 +243,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                       <div className="flex-row flex-bet">
                         <div className="flex-row flex-center-align w100">
                           <p className="w60">{getNameById(userId, userList)}</p>
-                          {Task.renders.some((e) => e.id === userId) ? (
-                            <i className="material-icons flex-center green w40">task_alt</i>
-                          ) : (
-                            <i className="material-icons flex-center red w40">close</i>
-                          )}
+                          {Task.renders.some((e) => e.id === userId) ? <i className="material-icons flex-center green w40">task_alt</i> : <i className="material-icons flex-center red w40">close</i>}
                         </div>
                       </div>
                     </li>
@@ -255,7 +251,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </ul>
               </div>
               <div className="flex-col g25">
-                <ConsoleDrawComponent />
+                <ConsoleDrawComponent DefaultScript={WorkView ? WorkView.script : ""} />
                 {WorkView ? (
                   <div className="flex g25">
                     <div className="dark-container flex relative display-from-left zi2 w100 flex-bet">

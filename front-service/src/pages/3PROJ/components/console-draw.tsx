@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import "../3P-style.scss";
 import { Color } from "aws-sdk/clients/lookoutvision";
+import FileManagementComponent from "./file-management";
 
 interface ICommand {
   command: string;
@@ -20,10 +21,19 @@ interface DrawPropertiesModel {
   visiblity: boolean;
   traceColor: Color;
   backgroundColor: Color;
+  speed: number;
 }
-type Props = {};
+type Props = {
+  DefaultScript: string;
+};
 
-const ConsoleDrawComponent: FC<Props> = () => {
+const ConsoleDrawComponent: FC<Props> = ({ DefaultScript }) => {
+  const [ZoneTXT, setZoneTXT] = useState<Boolean>(true);
+  const [ConsoleTXT, setConsoleTXT] = useState<string[]>(["> reset draw"]);
+
+  const [SpeedPopUp, setSpeedPopUp] = useState<Boolean>(false);
+  const [LoadPopUp, setLoadPopUp] = useState<Boolean>(false);
+
   const [ScriptValue, setScriptValue] = useState<string[]>();
   const [DrawProperties, setDrawProperties] = useState<DrawPropertiesModel>({
     posX: 225,
@@ -33,6 +43,7 @@ const ConsoleDrawComponent: FC<Props> = () => {
     visiblity: true,
     traceColor: "#000",
     backgroundColor: "#fff",
+    speed: 250,
   });
 
   const resetDraw = () => {
@@ -44,6 +55,7 @@ const ConsoleDrawComponent: FC<Props> = () => {
       visiblity: true,
       traceColor: "#000",
       backgroundColor: "#fff",
+      speed: 250,
     };
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
@@ -53,6 +65,7 @@ const ConsoleDrawComponent: FC<Props> = () => {
     }
     applyRocketDataFront(resetedValue);
     setDrawProperties(resetedValue);
+    setConsoleTXT([...ConsoleTXT, "reset draw"]);
   };
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -73,23 +86,34 @@ const ConsoleDrawComponent: FC<Props> = () => {
   };
 
   useEffect(() => {
+    if (document.getElementById("viewDraft")) {
+      document.getElementById("viewDraft")!.nodeValue = DefaultScript;
+    }
+
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
         ctx.moveTo(DrawProperties.posX, DrawProperties.posY);
-        console.log("test");
         applyRocketDataFront(DrawProperties);
       }
+    }
+    if (DefaultScript !== "") {
+      setScriptValue(DefaultScript.split(/\r?\n/));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const simulateRocket = (command: ICommand, ctx: CanvasRenderingContext2D | null, TempoDrawData: DrawPropertiesModel): DrawPropertiesModel => {
-    if (!ctx) return TempoDrawData;
+  const simulateRocket = (
+    command: ICommand,
+    ctx: CanvasRenderingContext2D | null,
+    TempoDrawData: DrawPropertiesModel,
+    TempoConsoleContent: string[]
+  ): { TempoDrawData: DrawPropertiesModel; TempoConsoleContent: string[] } => {
+    if (!ctx) return { TempoDrawData: TempoDrawData, TempoConsoleContent: TempoConsoleContent };
 
     switch (command.command) {
       case "AV": //!
-        console.log(`rocket advances by ${command.params[0]} pixels`);
+        TempoConsoleContent.push(`rocket advances by ${command.params[0]} pixels`);
         const distance_AV = command.params[0];
         const newX_AV = TempoDrawData.posX - distance_AV * Math.sin((TempoDrawData.rotation * Math.PI) / 180);
         const newY_AV = TempoDrawData.posY - distance_AV * Math.cos((TempoDrawData.rotation * Math.PI) / 180);
@@ -104,7 +128,7 @@ const ConsoleDrawComponent: FC<Props> = () => {
         applyRocketDataFront(TempoDrawData);
         break;
       case "RE": //!
-        console.log(`rocket moves back by ${command.params[0]} pixels`);
+        TempoConsoleContent.push(`rocket moves back by ${command.params[0]} pixels`);
         const distance_RE = command.params[0];
         const newX_RE = TempoDrawData.posX + distance_RE * Math.sin((TempoDrawData.rotation * Math.PI) / 180);
         const newY_RE = TempoDrawData.posY + distance_RE * Math.cos((TempoDrawData.rotation * Math.PI) / 180);
@@ -119,7 +143,7 @@ const ConsoleDrawComponent: FC<Props> = () => {
         applyRocketDataFront(TempoDrawData);
         break;
       case "TD": //!
-        console.log(`rocket turns right by ${command.params[0]} degrees`);
+        TempoConsoleContent.push(`rocket turns right by ${command.params[0]} degrees`);
 
         let tempoRotationRight = TempoDrawData.rotation;
         tempoRotationRight -= command.params[0];
@@ -128,7 +152,7 @@ const ConsoleDrawComponent: FC<Props> = () => {
         applyRocketDataFront(TempoDrawData);
         break;
       case "TG": //!
-        console.log(`rocket turns left by ${command.params[0]} degrees`);
+        TempoConsoleContent.push(`rocket turns left by ${command.params[0]} degrees`);
         let tempoRotationLeft = TempoDrawData.rotation;
         tempoRotationLeft += command.params[0];
         tempoRotationLeft = tempoRotationLeft % 360;
@@ -136,26 +160,26 @@ const ConsoleDrawComponent: FC<Props> = () => {
         applyRocketDataFront(TempoDrawData);
         break;
       case "LC": //!
-        console.log("rocket stops drawing");
+        TempoConsoleContent.push("rocket stops drawing");
         TempoDrawData.draw = false;
 
         break;
       case "BC": //!
-        console.log("rocket starts drawing");
+        TempoConsoleContent.push("rocket starts drawing");
         TempoDrawData.draw = true;
         break;
       case "CT": //!
-        console.log("rocket is hidden");
+        TempoConsoleContent.push("rocket is hidden");
         TempoDrawData.visiblity = false;
         applyRocketDataFront(TempoDrawData);
         break;
       case "MT": //!
-        console.log("rocket is visible");
+        TempoConsoleContent.push("rocket is visible");
         TempoDrawData.visiblity = true;
         applyRocketDataFront(TempoDrawData);
         break;
       case "VE": //!
-        console.log("rocket is repositioned at the center");
+        TempoConsoleContent.push("rocket is repositioned at the center");
         ctx.moveTo(225, 225);
 
         TempoDrawData.posX = 225;
@@ -163,7 +187,7 @@ const ConsoleDrawComponent: FC<Props> = () => {
         applyRocketDataFront(TempoDrawData);
         break;
       case "FCC": //!
-        console.log(`stroke color is set to ${command.params[0]}`);
+        TempoConsoleContent.push(`stroke color is set to ${command.params[0]}`);
         TempoDrawData.traceColor = command.params[0];
         if (ctx) {
           ctx.strokeStyle = command.params[0];
@@ -171,19 +195,19 @@ const ConsoleDrawComponent: FC<Props> = () => {
         applyRocketDataFront(TempoDrawData);
         break;
       case "FCB": //!
-        console.log(`background color is set to ${command.params[0]}`);
+        TempoConsoleContent.push(`background color is set to ${command.params[0]}`);
         TempoDrawData.backgroundColor = command.params[0];
         applyRocketDataFront(TempoDrawData);
         break;
       case "FCAP": //!
-        console.log(`Set the rocket's angle to ${command.params[0]} degrees`);
+        TempoConsoleContent.push(`Set the rocket's angle to ${command.params[0]} degrees`);
         let fixedAngle = command.params[0] % 360;
         if (fixedAngle < 0) fixedAngle += 360;
         TempoDrawData.rotation = fixedAngle;
         applyRocketDataFront(TempoDrawData);
         break;
       case "FPOS": //!
-        console.log("Clear the screen and reposition the rocket at the center");
+        TempoConsoleContent.push("Clear the screen and reposition the rocket at the center");
         ctx.clearRect(0, 0, 450, 450);
         ctx.moveTo(225, 225);
 
@@ -192,12 +216,12 @@ const ConsoleDrawComponent: FC<Props> = () => {
         applyRocketDataFront(TempoDrawData);
         break;
       case "NETTOIE": //!
-        console.log("Clear the screen without changing the rocket's position");
+        TempoConsoleContent.push("Clear the screen without changing the rocket's position");
         ctx.clearRect(0, 0, 450, 450);
         ctx.moveTo(TempoDrawData.posX, TempoDrawData.posY);
         break;
       case "ORIGINE": //!
-        console.log(`Position the rocket at the point (${command.params[0]}, ${command.params[1]})`);
+        TempoConsoleContent.push(`Position the rocket at the point (${command.params[0]}, ${command.params[1]})`);
         TempoDrawData.posX = command.params[0];
         TempoDrawData.posY = command.params[1];
         applyRocketDataFront(TempoDrawData);
@@ -207,20 +231,20 @@ const ConsoleDrawComponent: FC<Props> = () => {
         console.log("Return the rocket's position");
         applyRocketDataFront(TempoDrawData);
         break;
-      case "CAP": 
+      case "CAP":
         console.log("Return the rocket's angle");
         applyRocketDataFront(TempoDrawData);
         break;
       case "VT":
-        console.log("Clear the console");
+        TempoConsoleContent = ["> Clear the console"];
         applyRocketDataFront(TempoDrawData);
         break;
       default:
-        console.log(`UNKNOW command: ${command.command}`);
+        TempoConsoleContent.push(`UNKNOW command: ${command.command}`);
         applyRocketDataFront(TempoDrawData);
         break;
     }
-    return TempoDrawData;
+    return { TempoDrawData: TempoDrawData, TempoConsoleContent: TempoConsoleContent };
   };
 
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -233,9 +257,10 @@ const ConsoleDrawComponent: FC<Props> = () => {
     if (!ctx) return;
 
     let TempoDrawData: DrawPropertiesModel = DrawProperties;
+    let TempoConsoleContent: string[] = ConsoleTXT;
 
     while (lineIndex < lines.length) {
-      await delay(250); //  0.25s
+      await delay(DrawProperties.speed);
 
       let line = lines[lineIndex].toUpperCase().trim();
       const parts = line.split(/\s+/);
@@ -295,14 +320,15 @@ const ConsoleDrawComponent: FC<Props> = () => {
 
         await parseAndExecuteLogoScript(procedure.body, 0, localParams);
       } else {
-        console.log(parts); //!
         const params = parts.map((part) => {
           const num = Number(part);
           return isNaN(num) ? part : num;
         });
-        console.log(params); //!
-        TempoDrawData = simulateRocket({ command, params }, ctx, TempoDrawData);
+        let ResultValue = simulateRocket({ command, params }, ctx, TempoDrawData, TempoConsoleContent);
+        TempoDrawData = ResultValue.TempoDrawData;
+        TempoConsoleContent = ResultValue.TempoConsoleContent;
         setDrawProperties(TempoDrawData);
+        setConsoleTXT(TempoConsoleContent);
       }
 
       lineIndex++;
@@ -310,25 +336,63 @@ const ConsoleDrawComponent: FC<Props> = () => {
   };
 
   return (
-    <div className="flex-col g25 dark-bg dark-container display-from-left">
+    <div className="flex-col g5 dark-bg dark-container display-from-left">
       <div className="canva-container relative">
         <i className="material-icons pointer" id="cursor">
           rocket
         </i>
+        {SpeedPopUp ? (
+          <div className="speed-input absolute flex-center p10 w80 flex-bet">
+            <i className="material-icons mr10">speed</i>
+            <input
+              className="w60"
+              type="range"
+              defaultValue={DrawProperties.speed}
+              max={1000}
+              min={0}
+              step={50}
+              onChange={(e) => setDrawProperties({ ...DrawProperties, speed: parseInt(e.currentTarget.value) })}
+              onMouseUp={(e) => {
+                setSpeedPopUp(!SpeedPopUp);
+                setConsoleTXT([...ConsoleTXT, `Speed is set to ${e.currentTarget.value}ms`]);
+              }}
+            />
+            <span className="mlauto">{DrawProperties.speed}ms</span>
+          </div>
+        ) : null}
+
+        {LoadPopUp ? <div className="absolute b0">
+              <FileManagementComponent script={"test"}/></div> : null}
+
         <canvas ref={canvasRef} width="450" height="450" id="viewDraft" />
       </div>
 
-      <form className="flex-center">
-        <textarea name="draw-script" className="input" onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))} />
-        <div className="b0 flex-col flex-end-justify g15 p15 bg_black relative">
-          <div className="edit-title-button normal-bg" onClick={() => (ScriptValue ? parseAndExecuteLogoScript(ScriptValue) : null)}>
-            <i className="material-icons">publish</i>
-          </div>
-          <div className="edit-title-button normal-bg" onClick={() => resetDraw()}>
-            <i className="material-icons">restart_alt</i>
-          </div>
+      <div className="b0  flex-start-justify g5 relative flex-center-align ">
+        <div className={`mini-cta ${ZoneTXT ? "blue" : "blue-h"}`} onClick={() => setZoneTXT(true)}>
+          script
         </div>
-      </form>
+        <div className={`mini-cta ${ZoneTXT ? "blue-h" : "blue"}`} onClick={() => setZoneTXT(false)}>
+          console
+        </div>
+        <i className={`material-icons blue-h mlauto ${SpeedPopUp ? "blue" : "blue-h"}`} onClick={() => setSpeedPopUp(!SpeedPopUp)}>
+          speed
+        </i>
+        <i className={`material-icons ${LoadPopUp ? "blue" : "blue-h"}`} onClick={() => setLoadPopUp(!LoadPopUp)}>open_in_new</i>
+        <i className="material-icons blue-h" onClick={() => resetDraw()}>
+          restart_alt
+        </i>
+      </div>
+
+      <div className={`${ZoneTXT ? "" : "hidden"}`}>
+        <div className="flex-center mini-cta cta-blue absolute b0 r0 mb35 mr40" onClick={() => (ScriptValue ? parseAndExecuteLogoScript(ScriptValue) : console.log("No script to test"))}>
+          test script
+        </div>
+        <textarea name="draw-script" className="input" onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))} defaultValue={DefaultScript} />
+      </div>
+
+      <div className={`${ZoneTXT ? "hidden" : ""}`}>
+        <textarea name="console-script" className="input" disabled value={ConsoleTXT.join("\n> ")} />
+      </div>
     </div>
   );
 };

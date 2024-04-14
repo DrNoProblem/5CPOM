@@ -85,7 +85,42 @@ exports.AddRender = async (req, res, next) => {
     if (task.renders.some((render) => render.id === decoded.id)) {
       return res.status(400).json({ message: "Render already submit" });
     }
-    task.renders = [...task.renders, { id: decoded.id, script: render }];
+    task.renders = [...task.renders, { id: decoded.id, script: render, note: 0 }];
+    await task.save();
+    res.status(201).json({
+      status: "success",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.UpdateNoteRender = async (req, res, next) => {
+  try {
+    const { roomId, updates } = req.body;
+    const room = await Room.findById(roomId);
+    if (!room) return res.status(404).json({ message: "Room not found" });
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer"))
+      token = req.headers.authorization.split(" ")[1];
+    if (!token) return next(new AppError("You are not logged in! Please log in to get access.", 401));
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    if (decoded.id === room.owner || decoded.id === room.co_owner)
+      return res.status(404).json({ message: "You can not submit a render as owner or co-owner for this room" });
+    const task = await Task.findById(req.params.taskId);
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    updates.forEach((update) => {
+      const renderIndex = task.renders.findIndex((render) => render.id === update.userId);
+      if (renderIndex !== -1) task.renders[renderIndex].note = update.note;
+    });
+
+    room.users.forEach((userId) => {
+      if (!task.renders.some((render) => render.id === userId)) {
+        task.renders.push({ id: userId, script: "", note: 0 });
+      }
+    });
+
     await task.save();
     res.status(201).json({
       status: "success",

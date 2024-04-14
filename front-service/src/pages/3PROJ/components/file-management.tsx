@@ -35,39 +35,42 @@ const FileManagementComponent: FC<Props> = ({ script }) => {
 
   const downloadScript = () => {
     const element = document.createElement("a");
-    const file = new Blob([script], { type: "text/plain" });
-    element.href = URL.createObjectURL(file);
-    element.download = "script.txt";
-    document.body.appendChild(element); // Required for this to work in FireFox
-    element.click();
+    if (script !== "") {
+      const file = new Blob([script], { type: "text/plain" });
+      element.href = URL.createObjectURL(file);
+      element.download = "script.txt";
+      document.body.appendChild(element); // Required for this to work in FireFox
+      element.click();
+    }
   };
 
   return (
-    <div className="flex-col file-input g5">
+    <div className="flex-col file-input g15">
       <div className="drag-drop-container" onDrop={handleDrop} onDragOver={handleDragOver}>
-        <div className="normal-container flex-center flex-col " onClick={() => handleUploadButtonClick()}>
+        <div className="import-container flex-center flex-col " onClick={() => handleUploadButtonClick()}>
           <h2 className=" flex-center-justify w100">
-            <span className="mr25 w30 txt-end">Drag & Drop</span>|<span className="ml25 w30">Click here</span>
+            <span className="mr10 w50 txt-end">Drag & Drop</span>|<span className="ml10 w50">Click here</span>
           </h2>
-          <span>to import a media file</span>
-          <input type="file" accept="*" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
+          <span>to import a script file</span>
+          <input type="file" accept=".txt" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
         </div>
       </div>
 
-      <div className="flex-wrap g5">
-        <div className="cta cta-blue" onClick={() => console.log("import script")}>
-          <i className="material-icons">keyboard_tab</i>
-          <span>Import script</span>
-        </div>
+      <div className="flex-wrap g15 ">
 
         <div className="cta cta-blue" onClick={() => console.log("export script to clipboard")}>
-          <i className="material-icons">content_copy</i>
-          <span>Copy script on clipboard</span>
+          <i className="material-icons">save</i>
+          <span>Save script</span>
         </div>
 
         <div className="cta cta-blue" onClick={downloadScript}>
           <i className="material-icons">download</i>
           <span>Download script</span>
+        </div>
+
+        <div className="cta cta-blue" onClick={() => console.log("import script")}>
+          <i className="material-icons">keyboard_tab</i>
+          <span>Import script and apply</span>
         </div>
       </div>
     </div>

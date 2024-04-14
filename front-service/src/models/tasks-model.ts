@@ -3,14 +3,14 @@ export default class TaskModel {
       title: string;
       details: string;
       datelimit: Date;
-      renders: { id: string, script: string }[];
+      renders: { id: string, script: string, note: number }[];
       correction: string;
     constructor(
       _id: string,
       title: string,
       details: string,
       datelimit: Date,
-      renders: { id: string, script: string }[],
+      renders: { id: string, script: string, note: number }[],
       correction: string,
     ) {
         this._id = _id;

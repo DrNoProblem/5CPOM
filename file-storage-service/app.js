@@ -59,11 +59,6 @@ app.post('/upload', (req, res) => {
     });
 });
 
-
-
-
-
-
 app.delete('/delete', (req, res) => {
     const fileUrl = req.query.fileUrl; // Récupérer l'URL du fichier à supprimer depuis les paramètres de la requête
     if (!fileUrl) {

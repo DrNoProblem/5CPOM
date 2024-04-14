@@ -46,6 +46,13 @@ router.post(
   taskController.AddRender
 );// User
 
+/// update by adding render
+router.post(
+  "/updateNote/:taskId",
+  [param("taskId").isMongoId().withMessage("Invalid task ID"),],
+  taskController.UpdateNoteRender
+);// User
+
 /// update by adding correction
 router.post(
   "/addCorrection/:taskId",

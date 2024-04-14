@@ -37,7 +37,7 @@ h2 {
 }
 
 .op0 {
-  opacity: 0;
+  opacity: 0 !important;
 }
 
 .test-r {
@@ -85,6 +85,9 @@ h2 {
 
 .grey {
   color: var(--color-grey);
+}
+.normal {
+  color: var(--color-normal-bg);
 }
 
 .blue-h:hover {
@@ -568,6 +571,24 @@ a.icon {
     color: var(--color-blue);
   }
 
+  li.disabled-li > a,
+  li.disabled-li > div {
+    background-color: unset;
+    transition: all 0.05s ease-in-out;
+  }
+  li.disabled-li * {
+    color: var(--color-normal-bg) ;
+  }
+  
+  li.disabled-li:hover * {
+    color: var(--color-red) ;
+    cursor: not-allowed;
+  }
+  
+  li.disabled-li i {
+    color: var(--color-red) ;
+  }
+
   li.legend {
     padding-bottom: 0px;
     border-bottom: solid 2px var(--color-blue);
@@ -692,15 +713,15 @@ a.icon {
   cursor: pointer;
 }
 
-.drag-drop-container > .normal-container {
+.drag-drop-container > .import-container {
   border: 2px var(--color-normal-bg) dashed;
 }
 
-.drag-drop-container:hover > .normal-container {
+.drag-drop-container:hover > .import-container {
   border: 2px var(--color-blue) dashed;
 }
 
-.drag-drop-container:hover > .normal-container > h2 span {
+.drag-drop-container:hover > .import-container > h2 span {
   color: var(--color-blue);
 }
 
@@ -1050,7 +1071,7 @@ input.error-input {
   }
 }
 
-input[name=note] {
+input[name="note"] {
   width: 0px;
   min-width: 35px;
   text-align: end;
@@ -1062,19 +1083,19 @@ input[name=note] {
   unicode-bidi: isolate;
 }
 
-input[name=note]::-webkit-inner-spin-button,
-input[name=note]::-webkit-outer-spin-button {
+input[name="note"]::-webkit-inner-spin-button,
+input[name="note"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 /* Pour Firefox */
-input[name=note] {
+input[name="note"] {
   -moz-appearance: textfield;
 }
 
 /* Pour Internet Explorer */
-input[name=note]::-ms-clear,
-input[name=note]::-ms-reveal {
+input[name="note"]::-ms-clear,
+input[name="note"]::-ms-reveal {
   display: none;
 }

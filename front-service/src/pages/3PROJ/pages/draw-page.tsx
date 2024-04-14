@@ -14,7 +14,6 @@ const DrawPage: FC<Props> = ({ currentUser, script, SetLog }) => {
   const [ParamsActive, setParamsActive] = useState<Boolean>(false);
   const [user, setUser] = useState<UserModel>(currentUser);
 
-
   return (
     <div className="main p20 flex-col flex-end-align g25">
       <div className="flex-col g25 w100">
@@ -29,7 +28,7 @@ const DrawPage: FC<Props> = ({ currentUser, script, SetLog }) => {
         </div>
 
         <div className="flex-row g50">
-          <ConsoleDrawComponent DefaultScript={""} />
+          <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={false} />
         </div>
         {ParamsActive ? (
           <div className="add-item-popup">

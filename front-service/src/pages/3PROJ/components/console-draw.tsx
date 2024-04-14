@@ -25,9 +25,11 @@ interface DrawPropertiesModel {
 }
 type Props = {
   DefaultScript: string;
+  correction: boolean;
+  returnedScript: Function | false;
 };
 
-const ConsoleDrawComponent: FC<Props> = ({ DefaultScript }) => {
+const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedScript }) => {
   const [ZoneTXT, setZoneTXT] = useState<Boolean>(true);
   const [ConsoleTXT, setConsoleTXT] = useState<string[]>(["> reset draw"]);
 
@@ -86,6 +88,7 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript }) => {
   };
 
   useEffect(() => {
+    console.log(DefaultScript);
     if (document.getElementById("viewDraft")) {
       document.getElementById("viewDraft")!.nodeValue = DefaultScript;
     }
@@ -98,10 +101,12 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript }) => {
       }
     }
     if (DefaultScript !== "") {
+      resetDraw();
+      setConsoleTXT(["> reset draw"]);
       setScriptValue(DefaultScript.split(/\r?\n/));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [DefaultScript]);
 
   const simulateRocket = (
     command: ICommand,
@@ -265,7 +270,6 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript }) => {
       let line = lines[lineIndex].toUpperCase().trim();
       const parts = line.split(/\s+/);
       let command = parts.shift();
-      console.log(command); //!
 
       if (!command || command.length === 0) {
         lineIndex++;
@@ -338,7 +342,7 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript }) => {
   return (
     <div className="flex-col g5 dark-bg dark-container display-from-left">
       <div className="canva-container relative">
-        <i className="material-icons pointer" id="cursor">
+        <i className={`material-icons pointer ${LoadPopUp ? "op0" : ""}`} id="cursor">
           rocket
         </i>
         {SpeedPopUp ? (
@@ -361,10 +365,19 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript }) => {
           </div>
         ) : null}
 
-        {LoadPopUp ? <div className="absolute b0">
-              <FileManagementComponent script={"test"}/></div> : null}
+        {LoadPopUp ? (
+          <div className="absolute">
+            <FileManagementComponent
+              script={
+                (document.querySelector("input[name=draw-script]") as HTMLInputElement)
+                  ? (document.querySelector("input[name=draw-script]") as HTMLInputElement).value
+                  : ""
+              }
+            />
+          </div>
+        ) : null}
 
-        <canvas ref={canvasRef} width="450" height="450" id="viewDraft" />
+        <canvas ref={canvasRef} width="450" height="450" id="viewDraft" className={`${LoadPopUp ? "op0" : ""}`} />
       </div>
 
       <div className="b0  flex-start-justify g5 relative flex-center-align ">
@@ -374,25 +387,63 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript }) => {
         <div className={`mini-cta ${ZoneTXT ? "blue-h" : "blue"}`} onClick={() => setZoneTXT(false)}>
           console
         </div>
-        <i className={`material-icons blue-h mlauto ${SpeedPopUp ? "blue" : "blue-h"}`} onClick={() => setSpeedPopUp(!SpeedPopUp)}>
+        <i
+          className={`material-icons blue-h mlauto ${SpeedPopUp ? "blue" : "blue-h"}`}
+          onClick={() => {
+            setSpeedPopUp(!SpeedPopUp);
+            setLoadPopUp(false);
+          }}
+        >
           speed
         </i>
-        <i className={`material-icons ${LoadPopUp ? "blue" : "blue-h"}`} onClick={() => setLoadPopUp(!LoadPopUp)}>open_in_new</i>
+        {correction ? null : (
+          <i
+            className={`material-icons ${LoadPopUp ? "blue" : "blue-h"}`}
+            onClick={() => {
+              setLoadPopUp(!LoadPopUp);
+              setSpeedPopUp(false);
+            }}
+          >
+            open_in_new
+          </i>
+        )}
         <i className="material-icons blue-h" onClick={() => resetDraw()}>
           restart_alt
         </i>
       </div>
 
-      <div className={`${ZoneTXT ? "" : "hidden"}`}>
-        <div className="flex-center mini-cta cta-blue absolute b0 r0 mb35 mr40" onClick={() => (ScriptValue ? parseAndExecuteLogoScript(ScriptValue) : console.log("No script to test"))}>
+      <div className={`relative ${ZoneTXT ? "" : "hidden"}`}>
+        <div
+          className="flex-center mini-cta cta-blue 
+          absolute b0 r0 mb10 mr15"
+          onClick={() =>
+            ScriptValue ? parseAndExecuteLogoScript(ScriptValue!) : setConsoleTXT([...ConsoleTXT, "No script to test"])
+          }
+        >
           test script
         </div>
-        <textarea name="draw-script" className="input" onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))} defaultValue={DefaultScript} />
+        <textarea
+          disabled={correction}
+          name="draw-script"
+          className="input"
+          onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))}
+          defaultValue={DefaultScript}
+        />
       </div>
 
       <div className={`${ZoneTXT ? "hidden" : ""}`}>
         <textarea name="console-script" className="input" disabled value={ConsoleTXT.join("\n> ")} />
       </div>
+
+      {returnedScript ? (
+        <div className="flex-bet ">
+          <div className="cta cta-blue mlauto" onClick={() => returnedScript(ScriptValue!.join("\n> "))}>
+            <span className="add-user flex-row flex-center-align flex-start-justify g15">
+              <i className="material-icons">add</i>Submit
+            </span>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

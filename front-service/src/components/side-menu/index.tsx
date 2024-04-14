@@ -65,7 +65,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
           <i className="material-icons">web</i>
           {!MiniMenu ? <p className="pl10 m0">3PROJ</p> : null}
         </Link>
-        {actualPage.includes("/site/") ? <div className="space"></div> : null}
+        {actualPage.includes("/3PROJ/") ? <div className="space"></div> : null}
       </div>
 
       <div className="space"></div>

@@ -1,7 +1,6 @@
 .canva-container {
   width: 450px;
   height: 450px;
-  background-color: #fff;
 }
 
 textarea[name="draw-script"],
@@ -69,8 +68,15 @@ i.pointer {
 
 
 .file-input {
-  padding: 20px;
   background-color: var(--color-dark-bg);
   border-radius: 8px;
-  margin: 15px; bottom: 0; right: 0;
+}
+
+.import-container {
+  
+  padding: 25px 10px;
+  background-color: var(--color-normal-bg);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
 }

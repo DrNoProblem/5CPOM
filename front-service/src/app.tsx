@@ -51,8 +51,8 @@ import UserModel from "./models/user-model";
 import voidRoom from "./models/mocks/void-room";
 import voidTask from "./models/mocks/void-task";
 import voidUser from "./models/mocks/void-user";
-import getRoomsList from "./api-request/room/get-list";
-import getTasksList from "./api-request/task/get-list";
+import getRoomsList from "./api-request/room/get-all";
+import getTasksList from "./api-request/task/get-all";
 
 const App: FunctionComponent = () => {
   const [isLog, setIsLog] = useState<string | Boolean>(false);

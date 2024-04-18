@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 
 exports.AddRoom = async (req, res, next) => {
   try {
-    const { name, owner, co_owner, users } = req.body;
+    const { name, co_owner, users } = req.body;
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];

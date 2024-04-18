@@ -6,7 +6,7 @@ const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 exports.AddTask = async (req, res, next) => {
   try {
-    const { title, details, datelimit, correction, roomId } = req.body;
+    const { title, details, datelimit, roomId } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ status: "fail", message: "Validation error", errors: errors.array() });
@@ -22,7 +22,7 @@ exports.AddTask = async (req, res, next) => {
     }
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
     if (decoded.id !== room.owner && decoded.id !== room.co_owner) return res.status(404).json({ message: "Not permitted" });
-    const newTask = await Task.create({ title, details, datelimit, correction, render: [] });
+    const newTask = await Task.create({ title, details, datelimit, render: [] });
     room.tasks = [...room.tasks, newTask.id];
     await room.save();
     res.status(201).json({

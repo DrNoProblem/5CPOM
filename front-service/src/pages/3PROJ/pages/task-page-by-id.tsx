@@ -224,7 +224,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
 
         {PopUpActive ? (
           <div className="add-item-popup">
-            <div className="dark-background" onClick={() => setPopUpActive(false)}></div>
+            <div className="dark-background" onClick={() => setPopUpActive(false)}/>
             {IsOwner ? (
               <div className="flex-center-justify g25 mt50 w100">{/* //! owner note */}
                 <div className="dark-container flex-col relative display-from-left zi2 w50">

@@ -1,5 +1,6 @@
 import React, { FC } from "react";
 import { Link } from "react-router-dom";
+import { formatDate } from "../../../helpers/display-date-format";
 
 type Props = {
   limite: number;
@@ -38,7 +39,7 @@ const TableRenderSubmitStatusComp: FC<Props> = ({ limite, tableList, submit }) =
                   <div className="flex-row flex-start-align flex-bet w100">
                     <p className="w30">{e.roomName}</p>
                     <p className="w30">{e.taskTitle}</p>
-                    <p className="w40">{e.taskDate instanceof Date ? e.taskDate.toLocaleDateString() : e.taskDate}</p>
+                    <p className="w40">{formatDate(e.taskDate)}</p>
                   </div>
                   {e.renderStatus ? <i className="material-icons mtbauto flex-center green">task_alt</i> : <i className="material-icons mtbauto flex-center red">close</i>}
                 </Link>

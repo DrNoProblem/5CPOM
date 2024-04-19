@@ -7,6 +7,7 @@ import TaskModel from "../../../models/tasks-model";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
 import ConsoleDrawComponent from "../components/console-draw";
+import { formatDate } from "../../../helpers/display-date-format";
 
 interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
   currentUser: UserModel;
@@ -74,7 +75,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
             <h2 className="mb0 txt-end w50">Date limit is passed</h2>
           ) : (
             <h2 className="mb0 txt-end w50">
-              Date limit : <span className="blue">{Task.datelimit}</span>
+              Date limit : <span className="blue">{formatDate(Task.datelimit)}</span>
             </h2>
           )}
         </div>
@@ -84,7 +85,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
             {Task.details ? (
               <div className="dark-container flex-col display-from-left">
                 <h2 className="flex-center ">Detail :</h2>
-                <div className="task-detail">{Task.details}</div>
+                <div className="task-detail">{formatDate(Task.datelimit)}</div>
               </div>
             ) : IsOwner ? (
               <div className="dark-container flex-col display-from-left">

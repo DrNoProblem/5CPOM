@@ -6,6 +6,11 @@ import RoomModel from "../../../models/room-model";
 import TaskModel from "../../../models/tasks-model";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
+import addTask from "../../../api-request/task/add";
+import { getToken } from "../../../helpers/token-verifier";
+import isHttpStatusValid from "../../../helpers/check-status";
+import displayStatusRequest from "../../../helpers/display-status-request";
+import { formatDate } from "../../../helpers/display-date-format";
 
 interface Props extends RouteComponentProps<{ roomid: string }> {
   currentUser: UserModel;
@@ -14,6 +19,15 @@ interface Props extends RouteComponentProps<{ roomid: string }> {
   tasks: TaskModel[];
   usersList: MiniUserModel[];
 }
+
+const formatDateForInput = (): string => {
+  const today = new Date();
+  const oneMonthLater = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+  const year = oneMonthLater.getFullYear();
+  const month = (oneMonthLater.getMonth() + 1).toString().padStart(2, "0");
+  const day = oneMonthLater.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}T23:59:59`;
+};
 
 const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, SetLog }) => {
   const [Room, setRoom] = useState<RoomModel>();
@@ -36,29 +50,37 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
 
   const [ReadyToSend, setReadyToSend] = useState<Boolean>(false);
 
-  const [SelectRoomName, setSelectRoomName] = useState<string | "">("");
-  const [SelectCoOwner, setSelectCoOwner] = useState<MiniUserModel | null>(null);
-  const [SelectUsers, setSelectUsers] = useState<MiniUserModel[]>([]);
+  const [SelectTaskTitle, setSelectTaskTitle] = useState<string | "">("");
+  const [SelectTaskDetail, setSelectTaskDetail] = useState<string | "">("");
+  const [SelectTaskDate, setSelectTaskDate] = useState<Date>(formatDateForInput() as unknown as Date);
 
-  var objectFiledAddUser: any = {
-    name: SelectRoomName,
-    co_owner: SelectCoOwner ? SelectCoOwner.name : null,
-    users: SelectUsers.map((e) => e._id),
+  var objectFiledAddTask: any = {
+    title: SelectTaskTitle,
+    detail: SelectTaskDetail,
+    date: SelectTaskDate,
   };
 
   useEffect(() => {
-    setReadyToSend(areAllPropertiesEmpty(objectFiledAddUser));
+    setReadyToSend(areAllPropertiesEmpty(objectFiledAddTask));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [SelectRoomName, SelectCoOwner, SelectUsers]);
+  }, [SelectTaskTitle, SelectTaskDetail, SelectTaskDate]);
 
   const RegroupValueAddNewTask = () => {
-    console.log("add"); //!
-    SetLog();
+    console.log(objectFiledAddTask); //!
+    addTask(objectFiledAddTask.title, objectFiledAddTask.detail, objectFiledAddTask.date, Room!._id, getToken()!).then((e) => {
+      if (isHttpStatusValid(e.status)) {
+        SetLog();
+        setPopUpActive(false);
+      } else displayStatusRequest("error " + e.status + " : " + e.response.message, true);
+    });
   };
 
   const areAllPropertiesEmpty = (obj: any) => {
-    if (obj.name === "") return false;
-    if (obj.co_owner === null) return false;
+    if (obj.title === "") return false;
+    const currentDate = new Date();
+    const objectDate = new Date(obj.date);
+
+    if (objectDate < currentDate) return false;
     return true;
   };
 
@@ -76,8 +98,8 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
             <div className="dark-container w100">
               <div className="flex-center-align flex-bet mb10">
                 <h2 className="m0">List of Tasks :</h2>
-                <div className="flex-row flex-bet normal-bg-h cta  blue-h">
-                  <span className="add-user flex-row flex-center-align flex-start-justify g15" onClick={() => setPopUpActive(true)}>
+                <div className="flex-row flex-bet normal-bg-h cta  blue-h" onClick={() => setPopUpActive(true)}>
+                  <span className="add-user flex-row flex-center-align flex-start-justify g15">
                     <i className="material-icons">add</i>
                     Add new Task
                   </span>
@@ -107,7 +129,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                           <Link to={`/3PROJ/room/${Room._id}/task/${task._id}`} className="flex-row flex-bet">
                             <div className="flex-row flex-center-align w100">
                               <p className="w20">{task.title}</p>
-                              <p className="w40">{task.datelimit instanceof Date ? task.datelimit.toLocaleDateString() : task.datelimit}</p>
+                              <p className="w40">{formatDate(task.datelimit)}</p>
                               <p className="w20">
                                 {task.renders.length} / {Room.users.length}
                               </p>
@@ -192,25 +214,37 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
               <div className="dark-background" onClick={() => setPopUpActive(false)} />
               <div className="dark-container flex-col w30">
                 <h2 className="">Add new Task :</h2>
-                <i className="material-icons red-h absolute r0 mr25">close</i>
+                <i className="material-icons red-h absolute r0 mr25" onClick={() => setPopUpActive(false)}>
+                  close
+                </i>
                 <h3 className="m10">
                   Title <span className="red">*</span> :
                 </h3>
-                <input type="text" onChange={(e) => setSelectRoomName(e.target.value)} />
+                <input type="text" onChange={(e) => setSelectTaskTitle(e.target.value)} />
                 <h3 className="m10">
                   Date limit <span className="red">*</span> :
                 </h3>
                 <div className="g25">
-                  <input type="datetime-local" defaultValue={"2024-04-18T23:59:59"} className="" onChange={(e) => console.log(e.currentTarget.value)} />
+                  <input type="datetime-local" defaultValue={formatDateForInput()} className="" onChange={(e) => setSelectTaskDate(new Date(e.currentTarget.value))} />
                 </div>
                 <h3 className="m10">Detail :</h3>
-                <textarea onChange={(e) => console.log(e.currentTarget.value)} />
-                <div className="cta cta-blue mlauto mt25" onClick={RegroupValueAddNewTask}>
-                  <span className="flex-center g15">
-                    <i className="material-icons">add</i>
-                    add
-                  </span>
-                </div>
+                <textarea onChange={(e) => setSelectTaskDetail(e.currentTarget.value)} />
+
+                {ReadyToSend ? (
+                  <div className="cta cta-blue mlauto mt25" onClick={RegroupValueAddNewTask}>
+                    <span className="flex-center g15">
+                      <i className="material-icons">add</i>
+                      add
+                    </span>
+                  </div>
+                ) : (
+                  <div className="cta cta-disable mlauto mt25" onClick={RegroupValueAddNewTask}>
+                    <span className="flex-center g15">
+                      <i className="material-icons">add</i>
+                      add
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           ) : null}

@@ -12,9 +12,9 @@ const DrawnListPage: FC<Props> = ({ currentUser }) => {
   const [user, setUser] = useState<UserModel>(currentUser);
 
   return (
-    <div className="main p20 flex-col relative flex-end-align g25">
-      <div className="flex-col g25 w100">
-        <div className="g25 flex-center-align">
+    <div className="main p20 flex-col relative flex-end-align g20">
+      <div className="flex-col g20 w100">
+        <div className="g20 flex-center-align">
           <Link to={`/3PROJ`} className="cta cta-blue">
             <span>Back</span>
           </Link>

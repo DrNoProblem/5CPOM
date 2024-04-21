@@ -2,6 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import "../3P-style.scss";
 import { Color } from "aws-sdk/clients/lookoutvision";
 import FileManagementComponent from "./file-management";
+import UserModel from "../../../models/user-model";
 
 interface ICommand {
   command: string;
@@ -27,9 +28,10 @@ type Props = {
   DefaultScript: string;
   correction: boolean;
   returnedScript: Function | false;
+  currentUser: UserModel
 };
 
-const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedScript }) => {
+const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedScript, currentUser }) => {
   const [ZoneTXT, setZoneTXT] = useState<Boolean>(true);
   const [ConsoleTXT, setConsoleTXT] = useState<string[]>(["> reset draw"]);
 
@@ -338,6 +340,26 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
       lineIndex++;
     }
   };
+  const applyScriptFromFile = (file: File) => {
+    const reader = new FileReader();
+
+    // Fonction exécutée après que le fichier a été lu
+    reader.onload = (event) => {
+      const fileContent = event.target!.result as string;
+
+      // Log le contenu du fichier
+      console.log(fileContent);
+
+      // Mettre à jour le state qui contrôle le contenu du textarea
+      if (document.querySelector("textarea[name=draw-script]") as HTMLInputElement) {
+        (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value = fileContent;
+        setLoadPopUp(false);
+      }
+    };
+
+    // Début de la lecture du fichier en tant que texte
+    reader.readAsText(file);
+  };
 
   return (
     <div className="flex-col g5 dark-bg dark-container display-from-left">
@@ -366,13 +388,15 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
         ) : null}
 
         {LoadPopUp ? (
-          <div className="absolute">
+          <div className="absolute zi2 w100">
             <FileManagementComponent
               script={
-                (document.querySelector("input[name=draw-script]") as HTMLInputElement)
-                  ? (document.querySelector("input[name=draw-script]") as HTMLInputElement).value
+                (document.querySelector("textarea[name=draw-script]") as HTMLInputElement)
+                  ? (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value
                   : ""
               }
+              functionReturned={applyScriptFromFile}
+              currentUser={currentUser}
             />
           </div>
         ) : null}

@@ -465,8 +465,8 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
   };
 
   return (
-    <div className="main p20 flex-col relative flex-end-align g25">
-      <div className="flex-col g25 w100">
+    <div className="main p20 flex-col relative flex-end-align g20">
+      <div className="flex-col g20 w100">
         <h1
           className={`dark-container scores flex-center g50  playerTurn${PlayerTurn}`}
           onClick={() => console.log(VirtualBoardRender)} //!
@@ -481,7 +481,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
             flag
           </i>
         </h1>
-        <div className="board-container flex-col flex-center g25 dark-container">
+        <div className="board-container flex-col flex-center g20 dark-container">
           <div className={`board playerTurn${PlayerTurn}`}>
             {VirtualBoardRender.map((e, ei) =>
               e.map((f, fi) => (
@@ -501,7 +501,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
                 {MenuOpen === "red win" ? <h2 className={`winner${PlayerTurn}`}>CONGRATULATION RED PLAYER</h2> : null}
                 {MenuOpen === "equality" ? <h2 className={`winner${PlayerTurn}`}>EQUALITY</h2> : null}
 
-                <div className="flex-rox flex-between g25">
+                <div className="flex-rox flex-between g20">
                   {MenuOpen === "start" || MenuOpen === "blue win" || MenuOpen === "red win" || MenuOpen === "equality" ? (
                     <div className="cta cta-blue" onClick={() => InitGame()}>
                       <span>START NEW GAME</span>

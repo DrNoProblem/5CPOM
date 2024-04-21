@@ -112,16 +112,16 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
   console.log(renderList);
 
   return (
-    <div className="main p20 flex-col flex-end-align g25">
-      <div className="flex-col g25 w100">
-        <div className="g25 flex-center-align">
+    <div className="main p20 flex-col flex-end-align g20">
+      <div className="flex-col g20 w100">
+        <div className="g20 flex-center-align">
           <Link to={`/`} className="cta cta-blue">
             <span>Back</span>
           </Link>
           <h2 className="mb0">3PROJ :</h2>
         </div>
 
-        <div className="flex-between flex-row g25">
+        <div className="flex-between flex-row g20">
           <div className="flex-col dark-container display-from-left w25">
             <div className="flex-wrap g15 rapid-tool mb15">
               <Link className="cta cta-normal cta-blue-h" to={"/3PROJ/draw/"}>

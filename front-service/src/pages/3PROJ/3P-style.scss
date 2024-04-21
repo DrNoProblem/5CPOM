@@ -7,7 +7,7 @@ textarea[name="draw-script"],
 textarea[name="console-script"] {
   font-family: consolas;
   resize: none;
-  border-radius: 0;
+  border-radius: 8px;
   background: #11151a;
   border: unset;
   padding: 10px;
@@ -79,4 +79,8 @@ i.pointer {
   border-radius: 8px;
   position: relative;
   overflow: hidden;
+}
+
+#viewDraft {
+  border-radius: 8px;
 }

@@ -55,9 +55,10 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
   };
 
   return Task && Room ? (
-    <div className="main p20 flex-col relative flex-end-align g25">
-      <div className="flex-col g25 w100">
-        <div className="g25 flex-center-align">{/* //! title */}
+    <div className="main p20 flex-col relative flex-end-align g20">
+      <div className="flex-col g20 w100">
+        <div className="g20 flex-center-align">
+          {/* //! title */}
           <Link to={`/3PROJ`} className="cta cta-blue">
             <span>Back</span>
           </Link>
@@ -80,8 +81,9 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
           )}
         </div>
 
-        <div className="flex g25">
-          <div className="flex-col flex-justify-start g25 w60">{/* //! details */}
+        <div className="flex g20">
+          <div className="flex-col flex-justify-start g20 w60">
+            {/* //! details */}
             {Task.details ? (
               <div className="dark-container flex-col display-from-left">
                 <h2 className="flex-center ">Detail :</h2>
@@ -89,12 +91,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
               </div>
             ) : IsOwner ? (
               <div className="dark-container flex-col display-from-left">
-                <div className="flex-center flex-col">
-                  <h2 className="red flex-center ">
+                <div className="flex-center flex-col g20">
+                  <h2 className="red flex-center m0">
                     <i className="material-icons red mr25">warning</i>Details needed
                     <i className="material-icons red ml25">warning</i>
                   </h2>
-                  <div className="cta normal-bg blue-h mlauto mr15">
+                  <textarea name="deatil-input" id="deatil-input" rows={15}></textarea>
+                  <div className="cta normal-bg blue-h mlauto">
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">add</i>add a detail
                     </span>
@@ -107,13 +110,14 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
               </div>
             )}
           </div>
-          <div className="flex-col flex-justify-start g25 w40">
+          <div className="flex-col flex-justify-start g20 w40">
             {IsOwner ? null : RenderStatus ? (
-              <div className="dark-container display-from-left w50 flex-row">{/* //! user render ok*/}
+              <div className="dark-container display-from-left w50 flex-row">
+                {/* //! user render ok*/}
                 <i className="material-icons fs30 green mr50 ml25 mtauto mbauto">task_alt</i>
                 <div className="flex-col">
                   <h2>Render is submited</h2>
-                  <div className="flex g25">
+                  <div className="flex g20">
                     <div className="cta normal-bg blue-h mrauto">
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
                         <i className="material-icons">open_in_new</i>View
@@ -130,7 +134,8 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
               </div>
             ) : (
-              <div className="dark-container display-from-left flex-col flex-start-justify">{/* //! user no render*/}
+              <div className="dark-container display-from-left flex-col flex-start-justify">
+                {/* //! user no render*/}
                 <h2 className="red flex-center">
                   <i className="material-icons red mr25">warning</i>You need to submit a render
                   <i className="material-icons red ml25">warning</i>
@@ -151,9 +156,10 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
             )}
 
             {Task.correction && Task.renders.some((e) => e.id === currentUser._id) ? (
-              <div className="dark-container display-from-left flex-col flex-start-justify">{/* //! all correciton ok */}
+              <div className="dark-container display-from-left flex-col flex-start-justify">
+                {/* //! all correciton ok */}
                 <h2>Correction for this task :</h2>
-                <div className="flex g25">
+                <div className="flex g20">
                   <div className="cta normal-bg blue-h">
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">open_in_new</i>View
@@ -169,10 +175,11 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
               </div>
             ) : IsOwner ? (
-              <div className="dark-container display-from-left flex-col flex-start-justify">{/* //! owner no correction */}
+              <div className="dark-container display-from-left flex-col flex-start-justify">
+                {/* //! owner no correction */}
                 <h2 className="mb0">Note users's renders</h2>
                 <p className="fs14">then submit a correction</p>
-                <div className="flex g25 ">
+                <div className="flex g20 ">
                   <div className="cta normal-bg blue-h" onClick={() => setPopUpActive(true)}>
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">add</i>Note renders
@@ -181,14 +188,16 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
               </div>
             ) : (
-              <div className="dark-container flex-col display-from-left">{/* //! user no correction */}
+              <div className="dark-container flex-col display-from-left">
+                {/* //! user no correction */}
                 <h2 className="m0">No corrections and notes delivered yet</h2>
                 <p className="ml25 mb5">Once the note is delivered, you will be able to see the correction</p>
               </div>
             )}
 
             {IsOwner ? (
-              <div className="dark-container display-from-left flex-col flex-start-justify">{/* //! list of user */}
+              <div className="dark-container display-from-left flex-col flex-start-justify">
+                {/* //! list of user */}
                 <h2>
                   List of Users : <span className="fs14"></span>
                 </h2>
@@ -225,9 +234,10 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
 
         {PopUpActive ? (
           <div className="add-item-popup">
-            <div className="dark-background" onClick={() => setPopUpActive(false)}/>
+            <div className="dark-background" onClick={() => setPopUpActive(false)} />
             {IsOwner ? (
-              <div className="flex-center-justify g25 mt50 w100">{/* //! owner note */}
+              <div className="flex-center-justify g20 mt50 w100">
+                {/* //! owner note */}
                 <div className="dark-container flex-col relative display-from-left zi2 w50">
                   <h2>
                     List of Users : <span className="fs14"></span>
@@ -278,10 +288,15 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                     ))}
                   </ul>
                 </div>
-                <div className="flex-col g25">
-                  <ConsoleDrawComponent DefaultScript={WorkView ? WorkView.script : ""} correction={true} returnedScript={test} />
+                <div className="flex-col g20">
+                  <ConsoleDrawComponent
+                    DefaultScript={WorkView ? WorkView.script : ""}
+                    correction={true}
+                    returnedScript={test}
+                    currentUser={currentUser}
+                  />
                   {WorkView ? (
-                    <div className="flex g25">
+                    <div className="flex g20">
                       <div className="dark-container flex relative display-from-left zi2 w100 flex-bet">
                         <div className="flex-col">
                           <h2 className="">Script of {getNameById(WorkView._id, userList)}</h2>
@@ -302,7 +317,12 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
               </div>
             ) : (
-              <ConsoleDrawComponent DefaultScript={WorkView ? WorkView.script : ""} correction={false} returnedScript={test} />
+              <ConsoleDrawComponent
+                DefaultScript={WorkView ? WorkView.script : ""}
+                correction={false}
+                returnedScript={test}
+                currentUser={currentUser}
+              />
             )}
           </div>
         ) : null}

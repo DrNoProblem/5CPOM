@@ -33,7 +33,6 @@ import HomePage3PROJ from "./pages/3PROJ/3P-index";
 import DrawnListPage from "./pages/3PROJ/pages/draw-list-pages";
 import DrawPage from "./pages/3PROJ/pages/draw-page";
 import RoomPageById from "./pages/3PROJ/pages/room-page-by-id";
-import RoomPageManagementById from "./pages/3PROJ/pages/room-page-management-by-id";
 import RoomTaskPageById from "./pages/3PROJ/pages/task-page-by-id";
 import HomePage from "./pages/home";
 import ManageUsers from "./pages/management/manage-users";
@@ -149,18 +148,6 @@ const App: FunctionComponent = () => {
                   path="/3PROJ/room/:roomid/task/:taskid"
                   render={(props) => (
                     <RoomTaskPageById {...props} currentUser={currentUser} SetLog={SetLog} tasks={TasksList} rooms={RoomsList} userList={usersList} />
-                  )}
-                />
-                <Route
-                  path="/3PROJ/room/:roomid/manage"
-                  render={(props) => (
-                    <RoomPageManagementById
-                      {...props}
-                      currentUser={currentUser}
-                      SetLog={SetLog}
-                      tasks={TasksList}
-                      rooms={RoomsList}
-                    />
                   )}
                 />
                 <Route

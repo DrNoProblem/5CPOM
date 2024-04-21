@@ -15,6 +15,7 @@
 * {
   font-family: "silkamedium";
   color: lightgray;
+  transition: all ease-in-out 0.1s;
 }
 
 body {
@@ -257,25 +258,16 @@ h2 {
 .cta-light {
   background-color: var(--color-light-bg);
   border: 2px solid var(--color-light-bg);
-  * {
-    color: var(--color-lightgrey);
-  }
 }
 
 .cta-normal {
   background-color: var(--color-normal-bg);
   border: 2px solid var(--color-normal-bg);
-  * {
-    color: var(--color-lightgrey);
-  }
 }
 
 .cta-dark {
   background-color: var(--color-dark-bg);
   border: 2px solid var(--color-dark-bg);
-  * {
-    color: var(--color-lightgrey);
-  }
 }
 
 .cta {
@@ -524,33 +516,18 @@ textarea::-webkit-scrollbar-thumb:hover {
 }
 
 .dark-container {
-  padding: 50px;
+  padding: 20px;
   background-color: var(--color-dark-bg);
-  border-radius: 15px;
+  border-radius: 16px;
   position: relative;
   overflow: hidden;
 }
 
-.dark-container {
-  padding: 25px;
-  background-color: var(--color-dark-bg);
-  border-radius: 8px;
-  position: relative;
-  overflow: hidden;
-}
 
 .normal-container {
-  padding: 50px;
+  padding: 20px;
   background-color: var(--color-normal-bg);
-  border-radius: 15px;
-  position: relative;
-  overflow: hidden;
-}
-
-.normal-container {
-  padding: 25px;
-  background-color: var(--color-normal-bg);
-  border-radius: 8px;
+  border-radius: 16px;
   position: relative;
   overflow: hidden;
 }
@@ -730,7 +707,7 @@ a.icon {
 
 .drag-drop-container {
   background-color: var(--color-normal-bg);
-  border-radius: 15px;
+  border-radius: 8px;
   padding: 5px;
   width: calc(100% - 10px);
   cursor: pointer;

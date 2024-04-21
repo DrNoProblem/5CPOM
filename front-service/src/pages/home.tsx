@@ -15,10 +15,10 @@ const HomePage: FC<Props> = ({ currentUser }) => {
   }, [currentUser]);
 
   return (
-    <div className="main p20 flex-col relative flex-end-align g25">
-      <div className="flex-col g25 w100">
+    <div className="main p20 flex-col relative flex-end-align g20">
+      <div className="flex-col g20 w100">
         <h2 className="">Projects :</h2>
-        <div className="flex-wrap g25 w80 mb15 flex-center-align">
+        <div className="flex-wrap g20 w80 mb15 flex-center-align">
           <Link className="home-tile dark-container" to={"/1PROJ"}>
             <span className="ml15 mr15">1PROJ</span>
           </Link>
@@ -34,9 +34,9 @@ const HomePage: FC<Props> = ({ currentUser }) => {
       </div>
 
       {user && user.role === "admin" ? (
-        <div className="flex-col g25 w100">
+        <div className="flex-col g20 w100">
           <h2 className="">Admin management :</h2>
-          <div className="flex-wrap g25 w80">
+          <div className="flex-wrap g20 w80">
             <Link className="home-tile dark-container" to={"/manage-users"}>
               <span className="ml15 mr15">manage users</span>
             </Link>

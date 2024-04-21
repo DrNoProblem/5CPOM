@@ -85,16 +85,16 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
   };
 
   return Room ? (
-    <div className="main p20 flex-col relative flex-end-align g25">
-      <div className="flex-col g25 w100">
-        <div className="g25 flex-center-align">
+    <div className="main p20 flex-col relative flex-end-align g20">
+      <div className="flex-col g20 w100">
+        <div className="g20 flex-center-align">
           <Link to={`/3PROJ`} className="cta cta-blue">
             <span>Back</span>
           </Link>
           <h2 className="mb0">Room {Room!.name} :</h2>
         </div>
-        <div className="flex-col g25 mb15">
-          <div className="flex g25">
+        <div className="flex-col g20 mb15">
+          <div className="flex g20">
             <div className="dark-container w100">
               <div className="flex-center-align flex-bet mb10">
                 <h2 className="m0">List of Tasks :</h2>
@@ -176,7 +176,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
             </div>
           </div>
 
-          <div className="flex g25">
+          <div className="flex g20">
             <div className="dark-container w60 relative">
               <h2>List of users :</h2>
             </div>
@@ -224,7 +224,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                 <h3 className="m10">
                   Date limit <span className="red">*</span> :
                 </h3>
-                <div className="g25">
+                <div className="g20">
                   <input type="datetime-local" defaultValue={formatDateForInput()} className="" onChange={(e) => setSelectTaskDate(new Date(e.currentTarget.value))} />
                 </div>
                 <h3 className="m10">Detail :</h3>

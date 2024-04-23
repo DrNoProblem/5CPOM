@@ -18,10 +18,19 @@ interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> 
 }
 
 type UserListNote = {
-  _id: string;
+  id: string;
   script: string;
   note: number;
 };
+
+function countNegativeOnes(entries: UserListNote[]): number {
+  return entries.reduce((acc, entry) => {
+    if (entry.note === -1) {
+      acc += 1;
+    }
+    return acc;
+  }, 0);
+}
 
 const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks, userList }) => {
   const [Task, setTask] = useState<TaskModel>();
@@ -29,9 +38,11 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
 
   const [RenderStatus, setRenderStatus] = useState<boolean>(false);
 
+  const [TempoTaskRender, setTempoTaskRender] = useState<UserListNote[]>();
+
   const [IsOwner, setIsOwner] = useState<boolean>(false);
   const [IsDatePassed, setIsDatePassed] = useState<boolean>(false);
-  const [WorkView, setWorkView] = useState<UserListNote>();
+  const [WorkView, setWorkView] = useState<UserListNote | false>();
 
   const [PopUpActive, setPopUpActive] = useState<boolean>(false);
   useEffect(() => {
@@ -40,6 +51,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
         rooms.forEach((room) => {
           if (room.tasks.includes(task._id)) {
             setTask(task);
+            setTempoTaskRender(task.renders);
             setRoom(room);
             setIsOwner(room.co_owner === currentUser._id || room.owner === currentUser._id);
             setRenderStatus(task.renders.some((e) => e.id === currentUser._id));
@@ -54,10 +66,30 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
     console.log(script);
   };
 
-  const addNote = (userId: string) => {
-    console.log(userId); //!
-    const note = parseInt((document.querySelector("input[name=note]") as HTMLInputElement) ? (document.querySelector("input[name=note]") as HTMLInputElement).value : "");
-    console.log(note);
+  const EditNote = (userId: string, newNote: number) => {
+    setTempoTaskRender((prevTasks) => {
+      return prevTasks!.map((task) => {
+        if (task.id === userId) {
+          return { ...task, note: newNote };
+        }
+        return task;
+      });
+    });
+    setWorkView(false);
+  };
+
+  const UpdateNotes = () => {
+    console.log(TempoTaskRender);
+    const updatedTempoTaskRender: UserListNote[] = Room!.users.reduce((acc, userId) => {
+      const existingTask = TempoTaskRender!.find(task => task.id === userId);
+      if (!existingTask) {
+        acc.push({ id: userId, script: "", note: 0 });
+      }
+      return acc;
+    }, [] as UserListNote[]);
+    console.log([ ...TempoTaskRender!, ...updatedTempoTaskRender ]);
+    setWorkView(false);
+    setPopUpActive(false);
   };
 
   return Task && Room ? (
@@ -65,7 +97,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
       <div className="flex-col g20 w100">
         <div className="g20 flex-center-align">
           {/* //! title */}
-          <Link to={`/3PROJ`} className="cta cta-blue">
+          <Link to={`/3PROJ/room/${Room!._id}`} className="cta cta-blue">
             <span>Back</span>
           </Link>
           <h2 className="mb0 w50">
@@ -93,7 +125,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
             {Task.details ? (
               <div className="dark-container flex-col display-from-left">
                 <h2 className="flex-center ">Detail :</h2>
-                <div className="task-detail">{formatDate(Task.datelimit)}</div>
+                <div className="task-detail normal-container">{formatDate(Task.datelimit)}</div>
               </div>
             ) : IsOwner ? (
               <div className="dark-container flex-col display-from-left">
@@ -103,8 +135,8 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                     <i className="material-icons red ml25">warning</i>
                   </h2>
                   <textarea name="deatil-input" id="deatil-input" rows={15}></textarea>
-                  <div className="cta normal-bg blue-h mlauto">
-                    <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                  <div className="cta normal-bg blue-h mlauto" onClick={() => console.log("false")}>
+                    <span className="add-user flex-center g15">
                       <i className="material-icons">add</i>add a detail
                     </span>
                   </div>
@@ -124,13 +156,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 <div className="flex-col">
                   <h2>Render is submited</h2>
                   <div className="flex g20">
-                    <div className="cta normal-bg blue-h mrauto">
+                    <div className="cta normal-bg blue-h mrauto" onClick={() => console.log("false")}>
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
                         <i className="material-icons">open_in_new</i>View
                       </span>
                     </div>
                     {IsOwner ? (
-                      <div className="cta normal-bg blue-h mrauto">
+                      <div className="cta normal-bg blue-h mrauto" onClick={() => console.log("false")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="material-icons">edit</i>Edit the render
                         </span>
@@ -152,7 +184,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                       <i className="material-icons">add</i>Add from new draw
                     </span>
                   </div>
-                  <div className="cta normal-bg blue-h mrauto">
+                  <div className="cta normal-bg blue-h mrauto" onClick={() => console.log("false")}>
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">add</i>Choose from your draws
                     </span>
@@ -166,13 +198,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 {/* //! all correciton ok */}
                 <h2>Correction for this task :</h2>
                 <div className="flex g20">
-                  <div className="cta normal-bg blue-h">
+                  <div className="cta normal-bg blue-h" onClick={() => console.log("false")}>
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">open_in_new</i>View
                     </span>
                   </div>
                   {IsOwner ? (
-                    <div className="cta normal-bg blue-h">
+                    <div className="cta normal-bg blue-h" onClick={() => console.log("false")}>
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
                         <i className="material-icons">edit</i>Edit the correction
                       </span>
@@ -244,85 +276,139 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
             {IsOwner ? (
               <div className="flex-center-justify g20 mt50 w100">
                 {/* //! owner note */}
-                <div className="dark-container flex-col relative display-from-left zi2 w50">
-                  <h2>
-                    List of Users : <span className="fs14"></span>
-                  </h2>
 
-                  <ul className="table-list flex-col mb0 w100">
-                    <li className="legend">
-                      <div className="flex-row">
-                        <div className="flex-row flex-center-align w100">
-                          <p className="w60">USER NAME</p>
-                          <p className="w40 txt-center">NOTE</p>
-                          <i className="material-icons flex-center green op0">task_alt</i>
-                        </div>
-                      </div>
-                    </li>
+                <div className="flex-col g20 w50">
+                  <div className="dark-container flex-col relative display-from-left zi2">
+                    <h2>
+                      List of Users : <span className="fs14"></span>
+                    </h2>
 
-                    {Room.users.map((userId) => (
-                      <li
-                        className={`${Task.renders.some((e) => e.id === userId) ? "" : "disabled-li"}`}
-                        key={userId}
-                        onClick={() =>
-                          Task.renders.some((e) =>
-                            e.id === userId
-                              ? setWorkView({
-                                  _id: userId,
-                                  script: Task.renders.find((e) => e.id === userId)!.script,
-                                  note: Task.renders.find((e) => e.id === userId)!.note,
-                                })
-                              : null
-                          )
-                        }
-                      >
-                        <div className="flex-row flex-bet">
+                    <ul className="table-list flex-col mb0 w100">
+                      <li className="legend">
+                        <div className="flex-row">
                           <div className="flex-row flex-center-align w100">
-                            <p className="w60">{getNameById(userId, userList)}</p>
-                            <p className="txt-center w40">
-                              {Task.renders.some((e) => e.id === userId) ? Task.renders.find((e) => e.id === userId)!.note : "-1"}
-                              /100
-                            </p>
-                            {Task.renders.some((e) => e.id === userId) ? <i className="material-icons flex-center green">task_alt</i> : <i className="material-icons flex-center red">close</i>}
+                            <p className="w60">USER NAME</p>
+                            <p className="w40 txt-center">NOTE</p>
+                            <i className="material-icons flex-center green op0">task_alt</i>
                           </div>
                         </div>
                       </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="flex-col g20">
-                  <ConsoleDrawComponent DefaultScript={WorkView ? WorkView.script : ""} correction={true} returnedScript={test} currentUser={currentUser} />
+
+                      {TempoTaskRender
+                        ? TempoTaskRender.map((user) => (
+                            <li
+                              key={user.id}
+                              onClick={() =>
+                                setWorkView({
+                                  id: user.id,
+                                  script: user.script,
+                                  note: user.note,
+                                })
+                              }
+                            >
+                              <div className="flex-row flex-bet">
+                                <div className="flex-row flex-center-align w100">
+                                  <p className="w60">{getNameById(user.id, userList)}</p>
+                                  <p className="txt-center w40">{user.note} /100</p>
+                                  <i className="material-icons flex-center green">task_alt</i>
+                                </div>
+                              </div>
+                            </li>
+                          ))
+                        : null}
+
+                      {Room.users.map((userId) =>
+                        !Task.renders.some((e) => e.id === userId || e.script === "") ? (
+                          <li className="disabled-li" key={userId}>
+                            <div className="flex-row flex-bet">
+                              <div className="flex-row flex-center-align w100">
+                                <p className="w60">{getNameById(userId, userList)}</p>
+                                <p className="txt-center w40">0/100</p>
+                                <i className="material-icons flex-center red">close</i>
+                              </div>
+                            </div>
+                          </li>
+                        ) : null
+                      )}
+                    </ul>
+
+                    <div className="flex-row flex-center-align normal-container mt10">
+                      <h2 className="mb0 ml10">
+                        {Room.users.length - countNegativeOnes(TempoTaskRender!)}/{Room.users.length}
+                      </h2>
+                      {Room.users.length - countNegativeOnes(TempoTaskRender!) === Room.users.length ? (
+                        <div className="cta cta-blue mtauto mlauto" onClick={UpdateNotes}>
+                          <span className="flex-center g10">
+                            <i className="material-icons">upload</i>update notes
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="cta cta-disable mtauto mlauto">
+                          <span className="flex-center g10">
+                            <i className="material-icons">upload</i>update notes
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   {WorkView ? (
                     <div className="flex g20">
-                      <div className="dark-container flex relative display-from-left zi2 w100 flex-bet">
-                        <div className="flex-col">
-                          <h2 className="">Script of {getNameById(WorkView._id, userList)}</h2>
-                          <div className="cta cta-blue" onClick={() => addNote(WorkView._id)}>
-                            <span className="flex-center g15">
-                              Valide note
-                              <i className="material-icons">done</i>
+                      <div className="dark-container flex-col relative display-from-bottom zi2 w100 flex-bet g15">
+                        <h2 className="m0">Script of {getNameById(WorkView.id, userList)}</h2>
+                        <div className="flex g25">
+                          <span className="normal-container flex-center fs20 bold">
+                            <input
+                              type="number"
+                              name="note"
+                              className="fs20"
+                              max={100}
+                              min={-1}
+                              value={WorkView.note}
+                              onChange={(e) => setWorkView({ ...WorkView, note: parseInt(e.currentTarget.value) })}
+                            />
+                            &nbsp;/&nbsp;100
+                          </span>
+                          <div
+                            className="cta normal-bg blue-h mlauto"
+                            onClick={() =>
+                              EditNote(
+                                WorkView.id,
+                                (document.querySelector("input[name=note]") as HTMLInputElement)
+                                  ? parseInt((document.querySelector("input[name=note]") as HTMLInputElement).value)
+                                  : 0
+                              )
+                            }
+                          >
+                            <span className="add-user flex-center g15">
+                              <i className="material-icons mt5 mb5">done</i>
                             </span>
                           </div>
                         </div>
-                        <span className="normal-container flex-center fs20 bold">
-                          <input
-                            type="number"
-                            name="note"
-                            className="fs20"
-                            max={100}
-                            min={-1}
-                            value={WorkView.note}
-                            onChange={(e) => setWorkView({ ...WorkView, note: parseInt(e.currentTarget.value) })}
-                          />
-                          &nbsp;/&nbsp;100
-                        </span>
                       </div>
                     </div>
                   ) : null}
                 </div>
+                <div>
+                  {WorkView ? (
+                    <ConsoleDrawComponent
+                      DefaultScript={WorkView.script}
+                      correction={true}
+                      returnedScript={false}
+                      currentUser={currentUser}
+                    />
+                  ) : (
+                    <ConsoleDrawComponent DefaultScript={""} correction={true} returnedScript={false} currentUser={currentUser} />
+                  )}
+                </div>
               </div>
             ) : (
-              <ConsoleDrawComponent DefaultScript={WorkView ? WorkView.script : ""} correction={false} returnedScript={test} currentUser={currentUser} />
+              <ConsoleDrawComponent
+                DefaultScript={WorkView ? WorkView.script : ""}
+                correction={false}
+                returnedScript={test}
+                currentUser={currentUser}
+              />
             )}
           </div>
         ) : null}

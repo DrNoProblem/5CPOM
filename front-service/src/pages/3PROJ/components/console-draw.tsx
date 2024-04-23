@@ -407,7 +407,7 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
       <div className="b0  flex-start-justify g5 relative flex-center-align ">
         <div className={`mini-cta ${ZoneTXT ? "blue" : "blue-h"}`} onClick={() => setZoneTXT(true)}>
           script
-        </div>
+        </div><span className="normal">|</span>
         <div className={`mini-cta ${ZoneTXT ? "blue-h" : "blue"}`} onClick={() => setZoneTXT(false)}>
           console
         </div>
@@ -431,7 +431,7 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
             open_in_new
           </i>
         )}
-        <i className="material-icons blue-h" onClick={() => resetDraw()}>
+        <i className="material-icons blue-h" onClick={resetDraw}>
           restart_alt
         </i>
       </div>

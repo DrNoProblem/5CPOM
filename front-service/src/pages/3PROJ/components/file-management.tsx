@@ -87,7 +87,7 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
   return (
     <div className="flex-col file-input g15">
       <div className="drag-drop-container" onDrop={handleDrop} onDragOver={handleDragOver}>
-        <div className="import-container flex-center flex-col " onClick={() => handleUploadButtonClick()}>
+        <div className="import-container flex-center flex-col " onClick={handleUploadButtonClick}>
           <h2 className=" flex-center-justify w100">
             <span className="mr10 w50 txt-end">Drag & Drop</span>|<span className="ml10 w50">Click here</span>
           </h2>

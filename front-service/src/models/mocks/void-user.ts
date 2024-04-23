@@ -7,6 +7,7 @@ export const voidUser: UserModel = {
     'password': "",
     'role': "",
     'draws': [],
+    'notes': []
 }
 
 export default voidUser;

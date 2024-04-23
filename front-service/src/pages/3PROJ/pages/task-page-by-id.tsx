@@ -54,6 +54,12 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
     console.log(script);
   };
 
+  const addNote = (userId: string) => {
+    console.log(userId); //!
+    const note = parseInt((document.querySelector("input[name=note]") as HTMLInputElement) ? (document.querySelector("input[name=note]") as HTMLInputElement).value : "");
+    console.log(note);
+  };
+
   return Task && Room ? (
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
@@ -277,11 +283,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                               {Task.renders.some((e) => e.id === userId) ? Task.renders.find((e) => e.id === userId)!.note : "-1"}
                               /100
                             </p>
-                            {Task.renders.some((e) => e.id === userId) ? (
-                              <i className="material-icons flex-center green">task_alt</i>
-                            ) : (
-                              <i className="material-icons flex-center red">close</i>
-                            )}
+                            {Task.renders.some((e) => e.id === userId) ? <i className="material-icons flex-center green">task_alt</i> : <i className="material-icons flex-center red">close</i>}
                           </div>
                         </div>
                       </li>
@@ -289,18 +291,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                   </ul>
                 </div>
                 <div className="flex-col g20">
-                  <ConsoleDrawComponent
-                    DefaultScript={WorkView ? WorkView.script : ""}
-                    correction={true}
-                    returnedScript={test}
-                    currentUser={currentUser}
-                  />
+                  <ConsoleDrawComponent DefaultScript={WorkView ? WorkView.script : ""} correction={true} returnedScript={test} currentUser={currentUser} />
                   {WorkView ? (
                     <div className="flex g20">
                       <div className="dark-container flex relative display-from-left zi2 w100 flex-bet">
                         <div className="flex-col">
                           <h2 className="">Script of {getNameById(WorkView._id, userList)}</h2>
-                          <div className="cta cta-blue">
+                          <div className="cta cta-blue" onClick={() => addNote(WorkView._id)}>
                             <span className="flex-center g15">
                               Valide note
                               <i className="material-icons">done</i>
@@ -308,7 +305,15 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                           </div>
                         </div>
                         <span className="normal-container flex-center fs20 bold">
-                          <input type="number" name="note" className="fs20" max={100} min={-1} value={WorkView.note} />
+                          <input
+                            type="number"
+                            name="note"
+                            className="fs20"
+                            max={100}
+                            min={-1}
+                            value={WorkView.note}
+                            onChange={(e) => setWorkView({ ...WorkView, note: parseInt(e.currentTarget.value) })}
+                          />
                           &nbsp;/&nbsp;100
                         </span>
                       </div>
@@ -317,12 +322,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
               </div>
             ) : (
-              <ConsoleDrawComponent
-                DefaultScript={WorkView ? WorkView.script : ""}
-                correction={false}
-                returnedScript={test}
-                currentUser={currentUser}
-              />
+              <ConsoleDrawComponent DefaultScript={WorkView ? WorkView.script : ""} correction={false} returnedScript={test} currentUser={currentUser} />
             )}
           </div>
         ) : null}

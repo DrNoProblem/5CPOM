@@ -45,7 +45,8 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
   const [IsDatePassed, setIsDatePassed] = useState<boolean>(false);
   const [WorkView, setWorkView] = useState<UserListNote | false>();
 
-  const [PopUpActive, setPopUpActive] = useState<boolean>(false);
+  const [PopUpActive, setPopUpActive] = useState<string | false>(false);
+
   useEffect(() => {
     tasks.forEach((task) => {
       if (task._id === match.params.taskid) {
@@ -64,7 +65,11 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
     });
   }, [match.params, tasks, rooms, currentUser]);
 
-  const test = (script: string) => {
+  const submitUserRender = (script: string) => {
+    console.log(script);
+  };
+
+  const submitOwnerCorrection = (script: string) => {
     console.log(script);
   };
 
@@ -161,13 +166,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 <div className="dark-container display-from-left flex-col flex-start-justify">
                   <h2>Correction for this task :</h2>
                   <div className="flex g20">
-                    <div className="cta normal-bg blue-h" onClick={() => console.log("false")}>
+                    <div className="cta normal-bg blue-h" onClick={() => console.log("view correction")}>
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
                         <i className="material-icons">open_in_new</i>View
                       </span>
                     </div>
                     {IsOwner ? (
-                      <div className="cta normal-bg blue-h" onClick={() => console.log("false")}>
+                      <div className="cta normal-bg blue-h" onClick={() => console.log("edit correction")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="material-icons">edit</i>Edit
                         </span>
@@ -179,10 +184,18 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 <div className="dark-container flex-col display-from-left g20">
                   <h2 className="m0">No corrections yet</h2>
                   {IsOwner ? (
-                    <div className="cta normal-bg blue-h mrauto" onClick={() => console.log("false")}>
-                      <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                        <i className="material-icons">add</i>Add
-                      </span>
+                    <div>
+                      <div className="cta normal-bg blue-h mrauto" onClick={() => console.log("submit correction")}>
+                        <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                          <i className="material-icons">add</i>Add script
+                        </span>
+                      </div>
+
+                      <div className="cta normal-bg blue-h mrauto" onClick={() => console.log("choose correction")}>
+                        <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                          <i className="material-icons">add</i>Choose script
+                        </span>
+                      </div>
                     </div>
                   ) : null}
                 </div>
@@ -193,7 +206,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
               IsOwner ? (
                 <div className="dark-container display-from-left flex-col flex-start-justify g20">
                   <h2 className="mb0">Note users's renders</h2>
-                  <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive(true)}>
+                  <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("note")}>
                     {countNegativeOnes(Task.renders) === Room.users.length ? (
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
                         <i className="material-icons">add</i>Note
@@ -258,7 +271,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 <div className="flex-col">
                   <h2>Render is submited</h2>
                   <div className="flex g20">
-                    <div className="cta normal-bg blue-h mrauto" onClick={() => console.log("false")}>
+                    <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("view render")}>
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
                         <i className="material-icons">open_in_new</i>View
                       </span>
@@ -273,12 +286,12 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                   <i className="material-icons red ml25">warning</i>
                 </h2>
                 <div className="flex-col g15">
-                  <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive(true)}>
+                  <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit render")}>
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">add</i>Add from new draw
                     </span>
                   </div>
-                  <div className="cta normal-bg blue-h mrauto" onClick={() => console.log("false")}>
+                  <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose render")}>
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
                       <i className="material-icons">add</i>Choose from your draws
                     </span>
@@ -293,7 +306,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
           <div className="add-item-popup">
             <div className="dark-background" onClick={() => setPopUpActive(false)} />
 
-            {IsOwner ? (
+            {IsOwner && PopUpActive === "note" ? (
               <div className="flex-center-justify g20 mt50 w100">
                 <div className="flex-col g20 w50">
                   <div className="dark-container flex-col relative display-from-left zi2">
@@ -413,9 +426,18 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                   )}
                 </div>
               </div>
-            ) : (
-              <ConsoleDrawComponent DefaultScript={WorkView ? WorkView.script : ""} correction={false} returnedScript={test} currentUser={currentUser} />
-            )}
+            ) : null}
+            {/* attention correction = false ??? c koi ??? */}
+            {PopUpActive === "choose render" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitUserRender} currentUser={currentUser} /> : null}
+            {PopUpActive === "choose correction" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitOwnerCorrection} currentUser={currentUser} /> : null}
+
+            {PopUpActive === "submit correction" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitOwnerCorrection} currentUser={currentUser} /> : null}
+            {PopUpActive === "edit correction" ? <ConsoleDrawComponent DefaultScript={Task.correction} correction={false} returnedScript={submitOwnerCorrection} currentUser={currentUser} /> : null}
+            {PopUpActive === "view correction" ? <ConsoleDrawComponent DefaultScript={Task.correction} correction={false} returnedScript={false} currentUser={currentUser} /> : null}
+            {PopUpActive === "submit render" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitUserRender} currentUser={currentUser} /> : null}
+            {PopUpActive === "view render" ? (
+              <ConsoleDrawComponent DefaultScript={Task.renders.find((e) => e.id === currentUser._id)!.script} correction={false} returnedScript={false} currentUser={currentUser} />
+            ) : null}
           </div>
         ) : null}
       </div>

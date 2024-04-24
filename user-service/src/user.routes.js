@@ -53,8 +53,21 @@ router.get(
 //! private route for getting current user's info
 router.get(
   "/:id",
+  [
+    param("id").isMongoId().withMessage("Invalid user ID"),
+  ],
   userController.getUserbyId
 );
+
+router.patch(
+  "/updateDraws/:id",
+  [
+    param("id").isMongoId().withMessage("Invalid user ID"),
+    body("draws").notEmpty().withMessage("draws is required"),
+  ],
+  userController.updateDrawsCurrentUser
+);
+
 
 //! private route for updating current user's info
 router.patch(

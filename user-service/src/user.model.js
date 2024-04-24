@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['user', 'superAdmin', 'admin'],
     required: true
+  },
+  draws: {
+    type: Array,
+    required: false
   }
 });
 

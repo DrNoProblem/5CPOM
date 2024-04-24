@@ -9,6 +9,7 @@ import TaskModel from "../../../models/tasks-model";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
 import ConsoleDrawComponent from "../components/console-draw";
+import TableDraw from "../components/draw-list";
 
 interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
   currentUser: UserModel;
@@ -149,7 +150,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                   <textarea name="deatil-input" id="deatil-input" rows={15}></textarea>
                   <div className="cta normal-bg blue-h mlauto" onClick={() => console.log("false")}>
                     <span className="add-user flex-center g15">
-                      <i className="material-icons">add</i>add a detail
+                      <i className="material-icons">add</i>add detail
                     </span>
                   </div>
                 </div>
@@ -166,13 +167,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 <div className="dark-container display-from-left flex-col flex-start-justify">
                   <h2>Correction for this task :</h2>
                   <div className="flex g20">
-                    <div className="cta normal-bg blue-h" onClick={() => console.log("view correction")}>
+                    <div className="cta normal-bg blue-h" onClick={() => setPopUpActive("view correction")}>
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
                         <i className="material-icons">open_in_new</i>View
                       </span>
                     </div>
                     {IsOwner ? (
-                      <div className="cta normal-bg blue-h" onClick={() => console.log("edit correction")}>
+                      <div className="cta normal-bg blue-h" onClick={() => setPopUpActive("edit correction")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="material-icons">edit</i>Edit
                         </span>
@@ -185,13 +186,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                   <h2 className="m0">No corrections yet</h2>
                   {IsOwner ? (
                     <div>
-                      <div className="cta normal-bg blue-h mrauto" onClick={() => console.log("submit correction")}>
+                      <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit correction")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="material-icons">add</i>Add script
                         </span>
                       </div>
 
-                      <div className="cta normal-bg blue-h mrauto" onClick={() => console.log("choose correction")}>
+                      <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose correction")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="material-icons">add</i>Choose script
                         </span>
@@ -209,11 +210,11 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                   <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("note")}>
                     {countNegativeOnes(Task.renders) === Room.users.length ? (
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                        <i className="material-icons">add</i>Note
+                        <i className="material-icons">edit</i>Edit
                       </span>
                     ) : (
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                        <i className="material-icons">edit</i>Edit
+                        <i className="material-icons">add</i>Note
                       </span>
                     )}
                   </div>
@@ -288,12 +289,12 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 <div className="flex-col g15">
                   <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit render")}>
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                      <i className="material-icons">add</i>Add from new draw
+                      <i className="material-icons">add</i>Add draw
                     </span>
                   </div>
                   <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose render")}>
                     <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                      <i className="material-icons">add</i>Choose from your draws
+                      <i className="material-icons">add</i>Choose draws
                     </span>
                   </div>
                 </div>
@@ -405,7 +406,9 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                             onClick={() =>
                               EditNote(
                                 WorkView.id,
-                                (document.querySelector("input[name=note]") as HTMLInputElement) ? parseInt((document.querySelector("input[name=note]") as HTMLInputElement).value) : 0
+                                (document.querySelector("input[name=note]") as HTMLInputElement)
+                                  ? parseInt((document.querySelector("input[name=note]") as HTMLInputElement).value)
+                                  : 0
                               )
                             }
                           >
@@ -420,7 +423,12 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
                 <div>
                   {WorkView ? (
-                    <ConsoleDrawComponent DefaultScript={WorkView.script} correction={true} returnedScript={false} currentUser={currentUser} />
+                    <ConsoleDrawComponent
+                      DefaultScript={WorkView.script}
+                      correction={true}
+                      returnedScript={false}
+                      currentUser={currentUser}
+                    />
                   ) : (
                     <ConsoleDrawComponent DefaultScript={""} correction={true} returnedScript={false} currentUser={currentUser} />
                   )}
@@ -428,15 +436,50 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
               </div>
             ) : null}
             {/* attention correction = false ??? c koi ??? */}
-            {PopUpActive === "choose render" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitUserRender} currentUser={currentUser} /> : null}
-            {PopUpActive === "choose correction" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitOwnerCorrection} currentUser={currentUser} /> : null}
+            {PopUpActive === "choose render" ? <TableDraw currentUser={currentUser} returnFunction={submitUserRender} /> : null}
+            {PopUpActive === "choose correction" ? (
+              <TableDraw currentUser={currentUser} returnFunction={submitOwnerCorrection} />
+            ) : null}
 
-            {PopUpActive === "submit correction" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitOwnerCorrection} currentUser={currentUser} /> : null}
-            {PopUpActive === "edit correction" ? <ConsoleDrawComponent DefaultScript={Task.correction} correction={false} returnedScript={submitOwnerCorrection} currentUser={currentUser} /> : null}
-            {PopUpActive === "view correction" ? <ConsoleDrawComponent DefaultScript={Task.correction} correction={false} returnedScript={false} currentUser={currentUser} /> : null}
-            {PopUpActive === "submit render" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitUserRender} currentUser={currentUser} /> : null}
+            {PopUpActive === "submit correction" ? (
+              <ConsoleDrawComponent
+                DefaultScript={""}
+                correction={false}
+                returnedScript={submitOwnerCorrection}
+                currentUser={currentUser}
+              />
+            ) : null}
+            {PopUpActive === "edit correction" ? (
+              <ConsoleDrawComponent
+                DefaultScript={Task.correction}
+                correction={false}
+                returnedScript={submitOwnerCorrection}
+                currentUser={currentUser}
+              />
+            ) : null}
+            {PopUpActive === "view correction" ? (
+              <ConsoleDrawComponent
+                DefaultScript={Task.correction}
+                correction={false}
+                returnedScript={false}
+                currentUser={currentUser}
+              />
+            ) : null}
+            {PopUpActive === "submit render" ? (
+              <ConsoleDrawComponent
+                DefaultScript={""}
+                correction={false}
+                returnedScript={submitUserRender}
+                currentUser={currentUser}
+              />
+            ) : null}
             {PopUpActive === "view render" ? (
-              <ConsoleDrawComponent DefaultScript={Task.renders.find((e) => e.id === currentUser._id)!.script} correction={false} returnedScript={false} currentUser={currentUser} />
+              <ConsoleDrawComponent
+                DefaultScript={Task.renders.find((e) => e.id === currentUser._id)!.script}
+                correction={false}
+                returnedScript={false}
+                currentUser={currentUser}
+              />
             ) : null}
           </div>
         ) : null}

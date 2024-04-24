@@ -81,13 +81,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
   const UpdateNotes = () => {
     console.log(TempoTaskRender);
     const updatedTempoTaskRender: UserListNote[] = Room!.users.reduce((acc, userId) => {
-      const existingTask = TempoTaskRender!.find(task => task.id === userId);
+      const existingTask = TempoTaskRender!.find((task) => task.id === userId);
       if (!existingTask) {
         acc.push({ id: userId, script: "", note: 0 });
       }
       return acc;
     }, [] as UserListNote[]);
-    console.log([ ...TempoTaskRender!, ...updatedTempoTaskRender ]);
+    console.log([...TempoTaskRender!, ...updatedTempoTaskRender]);
     setWorkView(false);
     setPopUpActive(false);
   };
@@ -213,17 +213,33 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
               </div>
             ) : IsOwner ? (
-              <div className="dark-container display-from-left flex-col flex-start-justify">
-                {/* //! owner no correction */}
-                <h2 className="mb0">Note users's renders</h2>
-                <p className="fs14">then submit a correction</p>
-                <div className="flex g20 ">
-                  <div className="cta normal-bg blue-h" onClick={() => setPopUpActive(true)}>
-                    <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                      <i className="material-icons">add</i>Note renders
-                    </span>
+              <div className="flex-col">
+                <div className="dark-container display-from-left flex-col flex-start-justify">
+                  {/* //! owner no correction */}
+                  <h2 className="mb0">Note users's renders</h2>
+                  <div className="flex g20 ">
+                    <div className="cta normal-bg blue-h" onClick={() => setPopUpActive(true)}>
+                      <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                        <i className="material-icons">add</i>Note renders
+                      </span>
+                    </div>
                   </div>
                 </div>
+
+                
+                <div className="dark-container display-from-left flex-col flex-start-justify">
+                  {/* //! owner no correction */}
+                  <h2 className="mb0">Note users's renders</h2>
+                  <div className="flex g20 ">
+                    <div className="cta normal-bg blue-h" onClick={() => setPopUpActive(true)}>
+                      <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                        <i className="material-icons">add</i>Note renders
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                
               </div>
             ) : (
               <div className="dark-container flex-col display-from-left">
@@ -374,9 +390,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                             onClick={() =>
                               EditNote(
                                 WorkView.id,
-                                (document.querySelector("input[name=note]") as HTMLInputElement)
-                                  ? parseInt((document.querySelector("input[name=note]") as HTMLInputElement).value)
-                                  : 0
+                                (document.querySelector("input[name=note]") as HTMLInputElement) ? parseInt((document.querySelector("input[name=note]") as HTMLInputElement).value) : 0
                               )
                             }
                           >
@@ -391,24 +405,14 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
                 <div>
                   {WorkView ? (
-                    <ConsoleDrawComponent
-                      DefaultScript={WorkView.script}
-                      correction={true}
-                      returnedScript={false}
-                      currentUser={currentUser}
-                    />
+                    <ConsoleDrawComponent DefaultScript={WorkView.script} correction={true} returnedScript={false} currentUser={currentUser} />
                   ) : (
                     <ConsoleDrawComponent DefaultScript={""} correction={true} returnedScript={false} currentUser={currentUser} />
                   )}
                 </div>
               </div>
             ) : (
-              <ConsoleDrawComponent
-                DefaultScript={WorkView ? WorkView.script : ""}
-                correction={false}
-                returnedScript={test}
-                currentUser={currentUser}
-              />
+              <ConsoleDrawComponent DefaultScript={WorkView ? WorkView.script : ""} correction={false} returnedScript={test} currentUser={currentUser} />
             )}
           </div>
         ) : null}

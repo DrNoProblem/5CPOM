@@ -896,11 +896,11 @@ input.error-input {
   border: 2px solid var(--color-dark-bg);
   text-transform: uppercase;
   word-spacing: 10px;
+  border-radius: 8px;
 }
 
 .home-tile:hover {
   cursor: pointer;
-  border-radius: 8px;
   border: 2px solid var(--color-blue);
   span {
     color: var(--color-blue);

@@ -28,7 +28,7 @@ const DrawPage: FC<Props> = ({ currentUser, script, SetLog }) => {
         </div>
 
         <div className="flex-row g50">
-          <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={false} currentUser={currentUser}/>
+          <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={false} currentUser={currentUser} start={false} />
         </div>
         {ParamsActive ? (
           <div className="add-item-popup">

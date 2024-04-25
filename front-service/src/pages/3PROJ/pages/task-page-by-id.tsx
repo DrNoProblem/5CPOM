@@ -377,7 +377,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                       ) : (
                         <div className="cta cta-disable mtauto mlauto">
                           <span className="flex-center g10">
-                            <i className="material-icons">upload</i>update notes
+                            <i className="material-icons">close</i>update notes
                           </span>
                         </div>
                       )}
@@ -406,9 +406,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                             onClick={() =>
                               EditNote(
                                 WorkView.id,
-                                (document.querySelector("input[name=note]") as HTMLInputElement)
-                                  ? parseInt((document.querySelector("input[name=note]") as HTMLInputElement).value)
-                                  : 0
+                                (document.querySelector("input[name=note]") as HTMLInputElement) ? parseInt((document.querySelector("input[name=note]") as HTMLInputElement).value) : 0
                               )
                             }
                           >
@@ -423,63 +421,25 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
                 <div>
                   {WorkView ? (
-                    <ConsoleDrawComponent
-                      DefaultScript={WorkView.script}
-                      correction={true}
-                      returnedScript={false}
-                      currentUser={currentUser}
-                    />
+                    <ConsoleDrawComponent DefaultScript={WorkView.script} correction={true} returnedScript={false} currentUser={currentUser} start={true} />
                   ) : (
-                    <ConsoleDrawComponent DefaultScript={""} correction={true} returnedScript={false} currentUser={currentUser} />
+                    <ConsoleDrawComponent DefaultScript={""} correction={true} returnedScript={false} currentUser={currentUser} start={true} />
                   )}
                 </div>
               </div>
             ) : null}
             {/* attention correction = false ??? c koi ??? */}
-            {PopUpActive === "choose render" ? <TableDraw currentUser={currentUser} returnFunction={submitUserRender} /> : null}
-            {PopUpActive === "choose correction" ? (
-              <TableDraw currentUser={currentUser} returnFunction={submitOwnerCorrection} />
-            ) : null}
+            {PopUpActive === "choose render" ? <TableDraw currentUser={currentUser} returnFunction={submitUserRender} title=''/> : null}
+            {PopUpActive === "choose correction" ? <TableDraw currentUser={currentUser} returnFunction={submitOwnerCorrection} title=''/> : null}
 
-            {PopUpActive === "submit correction" ? (
-              <ConsoleDrawComponent
-                DefaultScript={""}
-                correction={false}
-                returnedScript={submitOwnerCorrection}
-                currentUser={currentUser}
-              />
-            ) : null}
+            {PopUpActive === "submit correction" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitOwnerCorrection} currentUser={currentUser} start={true} /> : null}
             {PopUpActive === "edit correction" ? (
-              <ConsoleDrawComponent
-                DefaultScript={Task.correction}
-                correction={false}
-                returnedScript={submitOwnerCorrection}
-                currentUser={currentUser}
-              />
+              <ConsoleDrawComponent DefaultScript={Task.correction} correction={false} returnedScript={submitOwnerCorrection} currentUser={currentUser} start={true} />
             ) : null}
-            {PopUpActive === "view correction" ? (
-              <ConsoleDrawComponent
-                DefaultScript={Task.correction}
-                correction={false}
-                returnedScript={false}
-                currentUser={currentUser}
-              />
-            ) : null}
-            {PopUpActive === "submit render" ? (
-              <ConsoleDrawComponent
-                DefaultScript={""}
-                correction={false}
-                returnedScript={submitUserRender}
-                currentUser={currentUser}
-              />
-            ) : null}
+            {PopUpActive === "view correction" ? <ConsoleDrawComponent DefaultScript={Task.correction} correction={false} returnedScript={false} currentUser={currentUser} start={true} /> : null}
+            {PopUpActive === "submit render" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitUserRender} currentUser={currentUser} start={true} /> : null}
             {PopUpActive === "view render" ? (
-              <ConsoleDrawComponent
-                DefaultScript={Task.renders.find((e) => e.id === currentUser._id)!.script}
-                correction={false}
-                returnedScript={false}
-                currentUser={currentUser}
-              />
+              <ConsoleDrawComponent DefaultScript={Task.renders.find((e) => e.id === currentUser._id)!.script} correction={false} returnedScript={false} currentUser={currentUser} start={true} />
             ) : null}
           </div>
         ) : null}

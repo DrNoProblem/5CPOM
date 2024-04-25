@@ -10,7 +10,6 @@ type Props = {
 };
 
 const DrawnListPage: FC<Props> = ({ currentUser }) => {
-
   return (
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
@@ -21,10 +20,7 @@ const DrawnListPage: FC<Props> = ({ currentUser }) => {
           <h2 className="m0">Draw list :</h2>
         </div>
 
-        <div className="table-list flex-col p50 dark-bg dark-container display-from-left">
-          <h2 className="">List of script saved online :</h2>
-          <TableDraw currentUser={currentUser} returnFunction={false} />
-        </div>
+        <TableDraw currentUser={currentUser} returnFunction={false} title="List of script saved online :" />
       </div>
     </div>
   );

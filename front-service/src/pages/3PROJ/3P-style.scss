@@ -84,3 +84,7 @@ i.pointer {
 #viewDraft {
   border-radius: 8px;
 }
+
+.table-list li.no-hover.active-row:hover > div {
+  background-color: var(--color-dark-bg);
+}

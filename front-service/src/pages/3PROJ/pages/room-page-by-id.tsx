@@ -238,9 +238,9 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                     </span>
                   </div>
                 ) : (
-                  <div className="cta cta-disable mlauto mt25" onClick={RegroupValueAddNewTask}>
+                  <div className="cta cta-disable mlauto mt25">
                     <span className="flex-center g15">
-                      <i className="material-icons">add</i>
+                      <i className="material-icons">close</i>
                       add
                     </span>
                   </div>

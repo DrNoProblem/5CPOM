@@ -347,10 +347,13 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
                   </div>
                   {ReadyToSend ? (
                     <div className="cta mtauto mlauto cta-blue to-right-bottom" onClick={() => AddNewRoom(objectFiledAddUser)}>
+                      <i className="material-icons">add</i>
                       <span>CREATE ROOM</span>
                     </div>
                   ) : (
                     <div className="cta mtauto mlauto cta-disable to-right-bottom">
+                      <i className="material-icons">close</i>
+                      
                       <span>CREATE ROOM</span>
                     </div>
                   )}

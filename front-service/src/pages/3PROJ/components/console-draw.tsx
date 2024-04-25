@@ -28,10 +28,11 @@ type Props = {
   DefaultScript: string;
   correction: boolean;
   returnedScript: Function | false;
-  currentUser: UserModel
+  currentUser: UserModel;
+  start: boolean;
 };
 
-const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedScript, currentUser }) => {
+const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedScript, currentUser, start }) => {
   const [ZoneTXT, setZoneTXT] = useState<Boolean>(true);
   const [ConsoleTXT, setConsoleTXT] = useState<string[]>(["> reset draw"]);
 
@@ -106,6 +107,10 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
       resetDraw();
       setConsoleTXT(["> reset draw"]);
       setScriptValue(DefaultScript.split(/\r?\n/));
+      if (start) {
+        //parseAndExecuteLogoScript(DefaultScript.split(/\r?\n/)!)
+      } else {
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [DefaultScript]);
@@ -390,11 +395,7 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
         {LoadPopUp ? (
           <div className="absolute zi2 w100">
             <FileManagementComponent
-              script={
-                (document.querySelector("textarea[name=draw-script]") as HTMLInputElement)
-                  ? (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value
-                  : ""
-              }
+              script={(document.querySelector("textarea[name=draw-script]") as HTMLInputElement) ? (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value : ""}
               functionReturned={applyScriptFromFile}
               currentUser={currentUser}
             />
@@ -407,7 +408,8 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
       <div className="b0  flex-start-justify g5 relative flex-center-align ">
         <div className={`mini-cta ${ZoneTXT ? "blue" : "blue-h"}`} onClick={() => setZoneTXT(true)}>
           script
-        </div><span className="normal">|</span>
+        </div>
+        <span className="normal">|</span>
         <div className={`mini-cta ${ZoneTXT ? "blue-h" : "blue"}`} onClick={() => setZoneTXT(false)}>
           console
         </div>
@@ -440,19 +442,11 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
         <div
           className="flex-center mini-cta cta-blue 
           absolute b0 r0 mb10 mr15"
-          onClick={() =>
-            ScriptValue ? parseAndExecuteLogoScript(ScriptValue!) : setConsoleTXT([...ConsoleTXT, "No script to test"])
-          }
+          onClick={() => (ScriptValue ? parseAndExecuteLogoScript(ScriptValue!) : setConsoleTXT([...ConsoleTXT, "No script to test"]))}
         >
           test script
         </div>
-        <textarea
-          disabled={correction}
-          name="draw-script"
-          className="input"
-          onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))}
-          defaultValue={DefaultScript}
-        />
+        <textarea disabled={correction} name="draw-script" className="input" onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))} defaultValue={DefaultScript} />
       </div>
 
       <div className={`${ZoneTXT ? "hidden" : ""}`}>
@@ -460,13 +454,23 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
       </div>
 
       {returnedScript ? (
-        <div className="flex-bet ">
-          <div className="cta cta-blue mlauto" onClick={() => returnedScript(ScriptValue!.join("\n> "))}>
-            <span className="add-user flex-row flex-center-align flex-start-justify g15">
-              <i className="material-icons">add</i>Submit
-            </span>
+        ScriptValue ? (
+          <div className="flex-bet ">
+            <div className="cta cta-blue mlauto" onClick={() => returnedScript(ScriptValue.join("\n> "))}>
+              <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                <i className="material-icons">add</i>Submit
+              </span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex-bet ">
+            <div className="cta cta-disable mlauto">
+              <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                <i className="material-icons">close</i>Submit
+              </span>
+            </div>
+          </div>
+        )
       ) : null}
     </div>
   );

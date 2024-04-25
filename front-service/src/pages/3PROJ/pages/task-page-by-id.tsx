@@ -27,9 +27,7 @@ type UserListNote = {
 
 function countNegativeOnes(entries: UserListNote[]): number {
   return entries.reduce((acc, entry) => {
-    if (entry.note === -1) {
-      acc += 1;
-    }
+    if (entry.note === -1) acc += 1;
     return acc;
   }, 0);
 }
@@ -66,15 +64,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
     });
   }, [match.params, tasks, rooms, currentUser]);
 
-  const submitUserRender = (script: string) => {
-    console.log(script);
-  };
-
-  const submitOwnerCorrection = (script: string) => {
-    console.log(script);
-  };
-
-  const EditNote = (userId: string, newNote: number) => {
+  const EditTempoNote = (userId: string, newNote: number) => {
     setTempoTaskRender((prevTasks) => {
       return prevTasks!.map((task) => {
         if (task.id === userId) {
@@ -84,6 +74,24 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
       });
     });
     setWorkView(false);
+  };
+
+  const submitUserRender = (script: string) => {
+    console.log(script);
+    //! function to submit render
+  };
+
+  const submitOwnerCorrection = (script: string) => {
+    console.log(script);
+    //! function to submit correction
+  };
+
+  const submitOwnerDetail = () => {
+    const detail: string = (document.querySelector("textarea[name=deatil-input]") as HTMLInputElement)
+      ? (document.querySelector("textarea[name=deatil-input]") as HTMLInputElement).value
+      : "";
+    console.log(detail);
+    //! function to submit detail
   };
 
   const UpdateNotes = () => {
@@ -96,6 +104,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
       return acc;
     }, [] as UserListNote[]);
     console.log([...TempoTaskRender!, ...updatedTempoTaskRender]);
+    //! funcntion to update the notes
     setWorkView(false);
     setPopUpActive(false);
   };
@@ -104,7 +113,6 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
         <div className="g20 flex-center-align">
-          {/* //! title */}
           <Link to={`/3PROJ/room/${Room!._id}`} className="cta cta-blue">
             <span>Back</span>
           </Link>
@@ -148,7 +156,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                     <i className="material-icons red ml25">warning</i>
                   </h2>
                   <textarea name="deatil-input" id="deatil-input" rows={15}></textarea>
-                  <div className="cta normal-bg blue-h mlauto" onClick={() => console.log("false")}>
+                  <div className="cta normal-bg blue-h mlauto" onClick={submitOwnerDetail}>
                     <span className="add-user flex-center g15">
                       <i className="material-icons">add</i>add detail
                     </span>
@@ -404,9 +412,11 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                           <div
                             className="cta normal-bg blue-h mlauto"
                             onClick={() =>
-                              EditNote(
+                              EditTempoNote(
                                 WorkView.id,
-                                (document.querySelector("input[name=note]") as HTMLInputElement) ? parseInt((document.querySelector("input[name=note]") as HTMLInputElement).value) : 0
+                                (document.querySelector("input[name=note]") as HTMLInputElement)
+                                  ? parseInt((document.querySelector("input[name=note]") as HTMLInputElement).value)
+                                  : 0
                               )
                             }
                           >
@@ -421,25 +431,77 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
                 <div>
                   {WorkView ? (
-                    <ConsoleDrawComponent DefaultScript={WorkView.script} correction={true} returnedScript={false} currentUser={currentUser} start={true} />
+                    <ConsoleDrawComponent
+                      DefaultScript={WorkView.script}
+                      correction={true}
+                      returnedScript={false}
+                      currentUser={currentUser}
+                      start={true}
+                    />
                   ) : (
-                    <ConsoleDrawComponent DefaultScript={""} correction={true} returnedScript={false} currentUser={currentUser} start={true} />
+                    <ConsoleDrawComponent
+                      DefaultScript={""}
+                      correction={true}
+                      returnedScript={false}
+                      currentUser={currentUser}
+                      start={true}
+                    />
                   )}
                 </div>
               </div>
             ) : null}
             {/* attention correction = false ??? c koi ??? */}
-            {PopUpActive === "choose render" ? <TableDraw currentUser={currentUser} returnFunction={submitUserRender} title=''/> : null}
-            {PopUpActive === "choose correction" ? <TableDraw currentUser={currentUser} returnFunction={submitOwnerCorrection} title=''/> : null}
-
-            {PopUpActive === "submit correction" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitOwnerCorrection} currentUser={currentUser} start={true} /> : null}
-            {PopUpActive === "edit correction" ? (
-              <ConsoleDrawComponent DefaultScript={Task.correction} correction={false} returnedScript={submitOwnerCorrection} currentUser={currentUser} start={true} />
+            {PopUpActive === "choose render" ? (
+              <TableDraw currentUser={currentUser} returnFunction={submitUserRender} title="" />
             ) : null}
-            {PopUpActive === "view correction" ? <ConsoleDrawComponent DefaultScript={Task.correction} correction={false} returnedScript={false} currentUser={currentUser} start={true} /> : null}
-            {PopUpActive === "submit render" ? <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={submitUserRender} currentUser={currentUser} start={true} /> : null}
+            {PopUpActive === "choose correction" ? (
+              <TableDraw currentUser={currentUser} returnFunction={submitOwnerCorrection} title="" />
+            ) : null}
+
+            {PopUpActive === "submit correction" ? (
+              <ConsoleDrawComponent
+                DefaultScript={""}
+                correction={false}
+                returnedScript={submitOwnerCorrection}
+                currentUser={currentUser}
+                start={true}
+              />
+            ) : null}
+            {PopUpActive === "edit correction" ? (
+              <ConsoleDrawComponent
+                DefaultScript={Task.correction}
+                correction={false}
+                returnedScript={submitOwnerCorrection}
+                currentUser={currentUser}
+                start={true}
+              />
+            ) : null}
+            {PopUpActive === "view correction" ? (
+              <ConsoleDrawComponent
+                DefaultScript={Task.correction}
+                correction={false}
+                returnedScript={false}
+                currentUser={currentUser}
+                start={true}
+              />
+            ) : null}
+            {PopUpActive === "submit render" ? (
+              <ConsoleDrawComponent
+                DefaultScript={""}
+                correction={false}
+                returnedScript={submitUserRender}
+                currentUser={currentUser}
+                start={true}
+              />
+            ) : null}
             {PopUpActive === "view render" ? (
-              <ConsoleDrawComponent DefaultScript={Task.renders.find((e) => e.id === currentUser._id)!.script} correction={false} returnedScript={false} currentUser={currentUser} start={true} />
+              <ConsoleDrawComponent
+                DefaultScript={Task.renders.find((e) => e.id === currentUser._id)!.script}
+                correction={false}
+                returnedScript={false}
+                currentUser={currentUser}
+                start={true}
+              />
             ) : null}
           </div>
         ) : null}

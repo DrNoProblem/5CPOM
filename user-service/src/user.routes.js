@@ -60,9 +60,8 @@ router.get(
 );
 
 router.patch(
-  "/updateDraws/:_id",
+  "/updateDraws/",
   [
-    param("id").isMongoId().withMessage("Invalid user ID"),
     body("draws").notEmpty().withMessage("draws is required"),
   ],
   authController.protect,

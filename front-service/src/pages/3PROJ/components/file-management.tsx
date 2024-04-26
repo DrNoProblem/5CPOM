@@ -1,4 +1,6 @@
 import React, { FC, useRef, useState } from "react";
+import CurrentUserDrawsUpdate from "../../../api-request/user/update-draw";
+import { getToken } from "../../../helpers/token-verifier";
 import UserModel from "../../../models/user-model";
 
 type Props = {
@@ -78,7 +80,17 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
     const fileData = createScriptFile(script, currentUser._id);
     if (fileData) {
       console.log(fileData.fileBlob);
-
+      const token = getToken();
+      if (token) {
+        
+        CurrentUserDrawsUpdate(currentUser, token, 'draws', [...currentUser.draws, {url: "", script: script}]).then(result => {
+          if (result.status === 200) {
+            console.log("Script uploaded successfully");
+          } else {
+            console.error("Error uploading script");
+          }
+        })
+      }
       
       // Logic to upload `fileData.fileBlob` to your database
     }

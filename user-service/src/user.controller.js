@@ -26,12 +26,14 @@ exports.getUserbyId = async (req, res) => {
 exports.updateCurrentUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
-    const { email, name, password } = req.body;
+    const { email, name, password, draws } = req.body;
     if (email) user.email = email;
     if (name) user.name = name;
     if (password) {
       user.password = await bcrypt.hash(password, 10);
     }
+    
+    if (draws) user.draws = draws;
     await user.save();
     res.json({ message: "User updated successfully" });
   } catch (err) {

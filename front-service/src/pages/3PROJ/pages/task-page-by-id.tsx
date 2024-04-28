@@ -1,8 +1,11 @@
 import React, { FC, useEffect, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import addRenderToTask from "../../../api-request/task/render-add";
 import { isDatePast } from "../../../helpers/check-date-passed";
 import { formatDate } from "../../../helpers/display-date-format";
+import displayStatusRequest from "../../../helpers/display-status-request";
 import getNameById from "../../../helpers/getNameById";
+import { getToken } from "../../../helpers/token-verifier";
 import MiniUserModel from "../../../models/mini-user-model";
 import RoomModel from "../../../models/room-model";
 import TaskModel from "../../../models/tasks-model";
@@ -10,6 +13,7 @@ import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
 import ConsoleDrawComponent from "../components/console-draw";
 import TableDraw from "../components/draw-list";
+import addCorrectionToTask from "../../../api-request/task/correction-add";
 
 interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
   currentUser: UserModel;
@@ -78,11 +82,30 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
 
   const submitUserRender = (script: string) => {
     console.log(script);
-    //! function to submit render
+    addRenderToTask(Task!._id, script, Room!._id, getToken()!).then((result) => {
+      if (result.status === 200) {
+        displayStatusRequest("Render submited", false);
+        setRenderStatus(true);
+        setPopUpActive(false);
+        SetLog();
+      } else {
+        displayStatusRequest("Render fail to sumbit", true);
+      }
+    });
   };
 
   const submitOwnerCorrection = (script: string) => {
     console.log(script);
+    addCorrectionToTask(Task!._id, script, getToken()!).then((result) => {
+      if (result.status === 200) {
+        displayStatusRequest("Correction submited", false);
+        setRenderStatus(true);
+        setPopUpActive(false);
+        SetLog();
+      } else {
+        displayStatusRequest("Correction fail to sumbit", true);
+      }
+    });
     //! function to submit correction
   };
 
@@ -137,16 +160,8 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
           <div className="flex-col flex-justify-start g20 w60">
             {Task.details ? (
               <div className="dark-container flex-col display-from-left">
-                <h2 className="flex-center ">Detail :</h2>
-                <div className="task-detail normal-container">{formatDate(Task.datelimit)}</div>
-                {IsOwner && IsDatePassed ? (
-                  <div className="cta normal-bg">
-                    <span className="flex-center g15 add-user">
-                      <i className="material-icons">edit</i>
-                      Edit detail
-                    </span>
-                  </div>
-                ) : null}
+                <h2>Detail :</h2>
+                <div className="task-detail normal-container">{Task.details}</div>
               </div>
             ) : IsOwner ? (
               <div className="dark-container flex-col display-from-left">
@@ -405,7 +420,12 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                               max={100}
                               min={-1}
                               value={WorkView.note}
-                              onChange={(e) => setWorkView({ ...WorkView, note: parseInt(e.currentTarget.value) })}
+                              onChange={(e) =>
+                                setWorkView({
+                                  ...WorkView,
+                                  note: parseInt(e.currentTarget.value),
+                                })
+                              }
                             />
                             &nbsp;/&nbsp;100
                           </span>
@@ -450,26 +470,36 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 </div>
               </div>
             ) : null}
-            {/* attention correction = false ??? c koi ??? */}
+
             {PopUpActive === "choose render" ? (
               <TableDraw currentUser={currentUser} returnFunction={submitUserRender} title="" />
             ) : null}
-            {PopUpActive === "choose correction" ? (
-              <TableDraw currentUser={currentUser} returnFunction={submitOwnerCorrection} title="" />
-            ) : null}
 
-            {PopUpActive === "submit correction" ? (
+            {PopUpActive === "submit render" ? (
               <ConsoleDrawComponent
                 DefaultScript={""}
                 correction={false}
-                returnedScript={submitOwnerCorrection}
+                returnedScript={submitUserRender}
                 currentUser={currentUser}
                 start={true}
               />
             ) : null}
-            {PopUpActive === "edit correction" ? (
+            {PopUpActive === "view render" ? (
               <ConsoleDrawComponent
-                DefaultScript={Task.correction}
+                DefaultScript={Task.renders.find((e) => e.id === currentUser._id)!.script}
+                correction={false}
+                returnedScript={false}
+                currentUser={currentUser}
+                start={true}
+              />
+            ) : null}
+
+            {PopUpActive === "choose correction" ? (
+              <TableDraw currentUser={currentUser} returnFunction={submitOwnerCorrection} title="" />
+            ) : null}
+            {PopUpActive === "submit correction" ? (
+              <ConsoleDrawComponent
+                DefaultScript={""}
                 correction={false}
                 returnedScript={submitOwnerCorrection}
                 currentUser={currentUser}
@@ -485,20 +515,11 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 start={true}
               />
             ) : null}
-            {PopUpActive === "submit render" ? (
+            {PopUpActive === "edit correction" ? (
               <ConsoleDrawComponent
-                DefaultScript={""}
+                DefaultScript={Task.correction}
                 correction={false}
-                returnedScript={submitUserRender}
-                currentUser={currentUser}
-                start={true}
-              />
-            ) : null}
-            {PopUpActive === "view render" ? (
-              <ConsoleDrawComponent
-                DefaultScript={Task.renders.find((e) => e.id === currentUser._id)!.script}
-                correction={false}
-                returnedScript={false}
+                returnedScript={submitOwnerCorrection}
                 currentUser={currentUser}
                 start={true}
               />

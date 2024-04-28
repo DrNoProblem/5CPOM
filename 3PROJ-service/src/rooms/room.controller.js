@@ -27,7 +27,7 @@ exports.AddRoom = async (req, res, next) => {
       return res.status(400).json({ status: "fail", message: "Validation error", errors: errors.array() });
     }
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    const newRoom = await Room.create({ name, owner: decoded.id, co_owner, users, tasks: "" });
+    const newRoom = await Room.create({ name, owner: decoded.id, co_owner, users, tasks: [] });
     res.status(201).json({
       status: "success",
       data: {

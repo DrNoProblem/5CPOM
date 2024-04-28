@@ -395,7 +395,11 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
         {LoadPopUp ? (
           <div className="absolute zi2 w100">
             <FileManagementComponent
-              script={(document.querySelector("textarea[name=draw-script]") as HTMLInputElement) ? (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value : ""}
+              script={
+                (document.querySelector("textarea[name=draw-script]") as HTMLInputElement)
+                  ? (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value
+                  : ""
+              }
               functionReturned={applyScriptFromFile}
               currentUser={currentUser}
             />
@@ -433,6 +437,9 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
             open_in_new
           </i>
         )}
+        <i className="material-icons blue-h" >
+        translate
+        </i>
         <i className="material-icons blue-h" onClick={resetDraw}>
           restart_alt
         </i>
@@ -442,11 +449,19 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
         <div
           className="flex-center mini-cta cta-blue 
           absolute b0 r0 mb10 mr15"
-          onClick={() => (ScriptValue ? parseAndExecuteLogoScript(ScriptValue!) : setConsoleTXT([...ConsoleTXT, "No script to test"]))}
+          onClick={() =>
+            ScriptValue ? parseAndExecuteLogoScript(ScriptValue!) : setConsoleTXT([...ConsoleTXT, "No script to test"])
+          }
         >
           test script
         </div>
-        <textarea disabled={correction} name="draw-script" className="input" onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))} defaultValue={DefaultScript} />
+        <textarea
+          disabled={correction}
+          name="draw-script"
+          className="input"
+          onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))}
+          defaultValue={DefaultScript}
+        />
       </div>
 
       <div className={`${ZoneTXT ? "hidden" : ""}`}>

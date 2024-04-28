@@ -12,8 +12,10 @@ import TaskModel from "../../models/tasks-model";
 import UserModel from "../../models/user-model";
 import "./3P-style.scss";
 
-import TableRenderSubmitStatusComp from './components/table-render-submit-status';
-import TableRoomUsersComp from './components/table-room-users';
+import TableRenderSubmitStatusComp from "./components/table-render-submit-status";
+import TableRoomUsersComp from "./components/table-room-users";
+import { getToken } from "../../helpers/token-verifier";
+import addRoom from "../../api-request/room/room-add";
 
 type Props = {
   currentUser: UserModel;
@@ -55,8 +57,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
 
   var objectFiledAddUser: any = {
     name: SelectRoomName,
-    owner: CurrentUser._id,
-    co_owner: SelectCoOwner ? SelectCoOwner.name : null,
+    co_owner: SelectCoOwner ? SelectCoOwner._id : null,
     users: SelectUsers.map((e) => e._id),
   };
 
@@ -74,7 +75,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
   const AddNewRoom = (body: any) => {
     console.log(body);
     if (areAllPropertiesEmpty(body)) {
-      SignUp(body.email, body.name, body.password, body.role).then((result) => {
+      addRoom(body.name, body.co_owner, body.users, getToken()!).then((result) => {
         if (isHttpStatusValid(result.status)) {
           displayStatusRequest("user added successfully", false);
           SetLog();
@@ -108,8 +109,6 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
         })
       : []
   ).filter((item) => item !== null) as renderModel[]; // Add a type assertion here
-
-  console.log(renderList);
 
   return (
     <div className="main p20 flex-col flex-end-align g20">
@@ -262,7 +261,13 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
               {PopUpActive.check === "add_room" ? (
                 <div className="flex-col adding-room">
                   <p className="m0 mb20 mt20">Room name :</p>
-                  <input className="input" name="username" type="text" autoComplete="no-chrome-autofill" onChange={(e) => setSelectRoomName(e.target.value)} />
+                  <input
+                    className="input"
+                    name="username"
+                    type="text"
+                    autoComplete="no-chrome-autofill"
+                    onChange={(e) => setSelectRoomName(e.target.value)}
+                  />
 
                   <div className="flex-bet mb25">
                     <div className="flex-col w50">
@@ -312,7 +317,10 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
                           {SelectUsers.map((user) => (
                             <li key={user._id}>
                               <span title={user.name}>{user.name}</span>
-                              <i className="material-icons mlauto" onClick={() => setSelectUsers(SelectUsers.filter((e) => e._id !== user._id))}>
+                              <i
+                                className="material-icons mlauto"
+                                onClick={() => setSelectUsers(SelectUsers.filter((e) => e._id !== user._id))}
+                              >
                                 delete
                               </i>
                             </li>
@@ -353,15 +361,31 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
                   ) : (
                     <div className="cta mtauto mlauto cta-disable to-right-bottom">
                       <i className="material-icons">close</i>
-                      
+
                       <span>CREATE ROOM</span>
                     </div>
                   )}
                 </div>
               ) : null}
 
-              {PopUpActive.check === "all_room" ? <TableRoomUsersComp limite={9999999999} RoomList={RoomList} usersList={usersList} currentUser={CurrentUser} owner={false} /> : null}
-              {PopUpActive.check === "owner_room" ? <TableRoomUsersComp limite={9999999999} RoomList={RoomList} usersList={usersList} currentUser={CurrentUser} owner={true} /> : null}
+              {PopUpActive.check === "all_room" ? (
+                <TableRoomUsersComp
+                  limite={9999999999}
+                  RoomList={RoomList}
+                  usersList={usersList}
+                  currentUser={CurrentUser}
+                  owner={false}
+                />
+              ) : null}
+              {PopUpActive.check === "owner_room" ? (
+                <TableRoomUsersComp
+                  limite={9999999999}
+                  RoomList={RoomList}
+                  usersList={usersList}
+                  currentUser={CurrentUser}
+                  owner={true}
+                />
+              ) : null}
               {PopUpActive.check === "render" ? (
                 <div className="flex-col">
                   <TableRenderSubmitStatusComp limite={9999999999} tableList={renderList} submit={false} />
@@ -380,14 +404,22 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
                   <ul className="SelectUsersList">
                     {usersList
                       ? usersList.map((user) =>
-                          user._id !== (SelectCoOwner ? SelectCoOwner._id : null) ? (
+                          user._id !== (SelectCoOwner ? SelectCoOwner._id : null) && user._id !== CurrentUser._id ? (
                             IsSelectedUser(user._id) ? (
-                              <li key={user._id} className="blue flex-center-align" onClick={() => setSelectUsers(SelectUsers.filter((e) => e._id !== user._id))}>
+                              <li
+                                key={user._id}
+                                className="blue flex-center-align"
+                                onClick={() => setSelectUsers(SelectUsers.filter((e) => e._id !== user._id))}
+                              >
                                 <i className="material-icons blue mr10">done</i>
                                 {user.name}
                               </li>
                             ) : (
-                              <li key={user._id} className="flex-center-align" onClick={() => setSelectUsers([...SelectUsers, user])}>
+                              <li
+                                key={user._id}
+                                className="flex-center-align"
+                                onClick={() => setSelectUsers([...SelectUsers, user])}
+                              >
                                 <i className="material-icons op0 mr10">done</i>
                                 {user.name}
                               </li>
@@ -409,25 +441,27 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
                   <ul className="SelectUsersList">
                     {usersList
                       ? usersList.map((user) =>
-                          SelectCoOwner && user._id === SelectCoOwner._id ? (
-                            <li key={user._id} className="blue flex-center-align" onClick={() => setSelectCoOwner(null)}>
-                              <i className="material-icons blue mr10">done</i>
-                              {user.name}
-                            </li>
-                          ) : (
-                            <li
-                              key={user._id}
-                              className="flex-center-align"
-                              onClick={() => {
-                                setSelectCoOwner(user);
-                                setSelectUsers(SelectUsers.filter((e) => e._id !== user._id));
-                                setChooseCoOwnerActive(false);
-                              }}
-                            >
-                              <i className="material-icons op0 mr10">done</i>
-                              {user.name}
-                            </li>
-                          )
+                          user._id !== CurrentUser._id ? (
+                            SelectCoOwner && user._id === SelectCoOwner._id ? (
+                              <li key={user._id} className="blue flex-center-align" onClick={() => setSelectCoOwner(null)}>
+                                <i className="material-icons blue mr10">done</i>
+                                {user.name}
+                              </li>
+                            ) : (
+                              <li
+                                key={user._id}
+                                className="flex-center-align"
+                                onClick={() => {
+                                  setSelectCoOwner(user);
+                                  setSelectUsers(SelectUsers.filter((e) => e._id !== user._id));
+                                  setChooseCoOwnerActive(false);
+                                }}
+                              >
+                                <i className="material-icons op0 mr10">done</i>
+                                {user.name}
+                              </li>
+                            )
+                          ) : null
                         )
                       : null}
                   </ul>

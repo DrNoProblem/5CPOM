@@ -26,27 +26,39 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title }) => {
           </div>
         </li>
         {currentUser.draws
-          ? currentUser.draws.map((draws: { url: string; script: string }) => {
+          ? currentUser.draws.map((draws: { date: Date; script: string }) => {
               counter++;
               return (
-                <li key={draws.url + "-" + draws.script} className={`no-hover${ActiveRow === draws.url ? " active-row" : ""}`}>
+                <li
+                  key={draws.date + "-" + draws.script}
+                  className={`no-hover${ActiveRow === draws.date + "" ? " active-row" : ""}`}
+                >
                   <div className="flex-col">
                     <div className="flex-row flex-start-align flex-start-justify w100">
                       <p className="w10">{counter}</p>
                       <p className="w90">{draws.script}</p>
                       <i
-                        className="material-icons mtauto mbauto blue-h"
+                        className="material-icons mtauto mbauto blue-h expand"
                         onClick={() => {
-                          ActiveRow === draws.url ? setActiveRow("") : setActiveRow(draws.url);
+                          ActiveRow === draws.date + ""
+                            ? setActiveRow("")
+                            : setActiveRow(draws.date + "");
                         }}
                       >
-                        add
+                        chevron_right
                       </i>
                     </div>
-                    {ActiveRow === draws.url ? (
+                    {ActiveRow === draws.date + "" ? (
                       <div className="border-top-normal flex-start-justify g15 pt15 pb5 row-detail">
                         <div className="flex-col g15">
-                          <div className="cta normal-bg mrauto blue-h" onClick={() => (draws.script === DrawView ? setDrawView(false) : setDrawView(draws.script))}>
+                          <div
+                            className="cta normal-bg mrauto blue-h"
+                            onClick={() =>
+                              draws.script === DrawView
+                                ? setDrawView(false)
+                                : setDrawView(draws.script)
+                            }
+                          >
                             {draws.script === DrawView ? (
                               <span className="add-user flex-center g15">
                                 <i className="material-icons">visibility_off</i>
@@ -61,7 +73,10 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title }) => {
                           </div>
 
                           {returnFunction ? (
-                            <div className="cta cta-blue mrauto" onClick={() => returnFunction(draws.script)}>
+                            <div
+                              className="cta cta-blue mrauto"
+                              onClick={() => returnFunction(draws.script)}
+                            >
                               <span className="flex-center g15">
                                 <i className="material-icons">task_alt</i>
                                 Choose
@@ -71,7 +86,15 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title }) => {
                         </div>
 
                         <div className="mlauto">
-                          {DrawView ? <ConsoleDrawComponent DefaultScript={DrawView} correction={true} returnedScript={false} currentUser={currentUser} start={true} /> : null}
+                          {DrawView ? (
+                            <ConsoleDrawComponent
+                              DefaultScript={DrawView}
+                              correction={true}
+                              returnedScript={false}
+                              currentUser={currentUser}
+                              start={true}
+                            />
+                          ) : null}
                         </div>
                       </div>
                     ) : null}

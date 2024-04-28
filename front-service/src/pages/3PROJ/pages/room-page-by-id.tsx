@@ -6,7 +6,7 @@ import RoomModel from "../../../models/room-model";
 import TaskModel from "../../../models/tasks-model";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
-import addTask from "../../../api-request/task/add";
+import addTask from "../../../api-request/task/task-add";
 import { getToken } from "../../../helpers/token-verifier";
 import isHttpStatusValid from "../../../helpers/check-status";
 import displayStatusRequest from "../../../helpers/display-status-request";

@@ -6,11 +6,12 @@ import UserModel from "../../../models/user-model";
 type Props = {
   script: string;
   functionReturned: Function;
-  currentUser: UserModel
+  currentUser: UserModel;
 };
 
 const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentUser }) => {
-  const [SelectedFileToUpload, setSelectedFileToUpload] = useState<File>();
+  const [SelectedFileToUpload, setSelectedFileToUpload] = useState<File | null>();
+  const [FileContent, setFileContent] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleUploadButtonClick = () => {
@@ -38,7 +39,7 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
     e.preventDefault();
   };
 
-/*   const downloadScript = () => {
+  /*   const downloadScript = () => {
     if (script !== "") {
       const element = document.createElement("a");
       const file = new Blob([script], { type: "text/plain" });
@@ -55,6 +56,26 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
     }
   }; */
 
+  const UploadFileContent = async () => {
+    console.log(await readFileContent());
+  };
+
+  const readFileContent = async (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      if (SelectedFileToUpload) {
+        const reader = new FileReader();
+
+        reader.onload = (event: ProgressEvent<FileReader>) => {
+          if (event.target && event.target.result) resolve(event.target.result as string);
+        };
+        reader.onerror = reject;
+        reader.readAsText(SelectedFileToUpload);
+      } else {
+        reject("No file selected");
+      }
+    });
+  };
+
   const createScriptFile = (script: string, currentUserId: string) => {
     if (script !== "") {
       const fileName = `script${currentUserId}.txt`;
@@ -63,7 +84,7 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
     }
     return null;
   };
-  
+
   const downloadScript = () => {
     const fileData = createScriptFile(script, currentUser._id);
     if (fileData) {
@@ -75,23 +96,24 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
       document.body.removeChild(element); // Clean up
     }
   };
-  
+
   const uploadScriptOnDataBase = () => {
     const fileData = createScriptFile(script, currentUser._id);
     if (fileData) {
       console.log(fileData.fileBlob);
       const token = getToken();
       if (token) {
-        
-        CurrentUserDrawsUpdate(currentUser, token, 'draws', [...currentUser.draws, {url: "", script: script}]).then(result => {
-          if (result.status === 200) {
-            console.log("Script uploaded successfully");
-          } else {
-            console.error("Error uploading script");
+        CurrentUserDrawsUpdate(currentUser, token, "draws", [...currentUser.draws, { date: new Date(), script: script }]).then(
+          (result) => {
+            if (result.status === 200) {
+              console.log("Script uploaded successfully");
+            } else {
+              console.error("Error uploading script");
+            }
           }
-        })
+        );
       }
-      
+
       // Logic to upload `fileData.fileBlob` to your database
     }
   };
@@ -107,8 +129,25 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
           <input type="file" accept=".txt" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
         </div>
       </div>
+      {SelectedFileToUpload ? (
+        <div className="border-bot-normal pb15">
+          <div className="w100 g15 mb15 flex-center-align">
+            <i className="material-icons">folder</i>
+            <span>{SelectedFileToUpload.name}</span>
+            <i className="material-icons red-h mlauto normal" onClick={() => setSelectedFileToUpload(null)}>
+              delete
+            </i>
+          </div>
+          <div className="cta blue-h normal-bg" onClick={UploadFileContent}>
+            <span className="add-user flex-row flex-center-align flex-start-justify g15">
+              <i className="material-icons">keyboard_tab</i>
+              Save imported script
+            </span>
+          </div>
+        </div>
+      ) : null}
 
-      <div className={`flex-wrap g15${SelectedFileToUpload ? " border-bot-normal pb15" : ""}`}>
+      <div className="flex-wrap g15">
         <div className="cta blue-h normal-bg" onClick={uploadScriptOnDataBase}>
           <span className="add-user flex-row flex-center-align flex-start-justify g15">
             <i className="material-icons">save</i>Save script
@@ -122,22 +161,6 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
           </span>
         </div>
       </div>
-
-      {SelectedFileToUpload ? (
-        <div>
-          <div className="w100 g15 mb15 flex-center-align">
-            <i className="material-icons">folder</i>
-            <span>{SelectedFileToUpload.name}</span>
-            <i className="material-icons red-h mlauto normal">close</i>
-          </div>
-          <div className="cta blue-h normal-bg" onClick={() => functionReturned(SelectedFileToUpload)}>
-            <span className="add-user flex-row flex-center-align flex-start-justify g15">
-              <i className="material-icons">keyboard_tab</i>
-              Import script and apply
-            </span>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 };

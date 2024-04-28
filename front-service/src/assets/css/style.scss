@@ -544,7 +544,7 @@ textarea::-webkit-scrollbar-thumb:hover {
 .normal-container {
   padding: 20px;
   background-color: var(--color-normal-bg);
-  border-radius: 16px;
+  border-radius: 8px;
   position: relative;
   overflow: hidden;
 }
@@ -806,7 +806,11 @@ a.icon {
         right: 0;
         width: 5%;
         height: 100%;
-        background: linear-gradient(90deg, #00000000 0%, var(--color-dark-bg) 50%);
+        background: linear-gradient(
+          90deg,
+          #00000000 0%,
+          var(--color-dark-bg) 50%
+        );
       }
     }
 
@@ -1114,4 +1118,11 @@ input[name="note"] {
 input[name="note"]::-ms-clear,
 input[name="note"]::-ms-reveal {
   display: none;
+}
+
+li.active-row i.expand {
+  transform: rotate(90deg);
+}
+li i.expand {
+  color: var(--color-light-bg);
 }

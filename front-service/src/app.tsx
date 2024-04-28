@@ -10,6 +10,8 @@ import "./assets/css/style-tab.scss";
 import "./assets/css/style.scss";
 
 //? API REQUEST
+import getRoomsList from "./api-request/room/room-get-all";
+import getTasksList from "./api-request/task/task-get-all";
 import getCurrent from "./api-request/user/get-current";
 import getUsersList from "./api-request/user/get-list";
 import getCompleteUsersList from "./api-request/user/get-list-complete";
@@ -50,8 +52,6 @@ import UserModel from "./models/user-model";
 import voidRoom from "./models/mocks/void-room";
 import voidTask from "./models/mocks/void-task";
 import voidUser from "./models/mocks/void-user";
-import getRoomsList from "./api-request/room/get-all";
-import getTasksList from "./api-request/task/get-all";
 
 const App: FunctionComponent = () => {
   const [isLog, setIsLog] = useState<string | Boolean>(false);

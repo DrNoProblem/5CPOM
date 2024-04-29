@@ -1,7 +1,9 @@
-import React, { FC, useRef, useState } from "react";
+import React, {FC, useRef, useState} from "react";
 import CurrentUserDrawsUpdate from "../../../api-request/user/update-draw";
-import { getToken } from "../../../helpers/token-verifier";
+import {getToken} from "../../../helpers/token-verifier";
 import UserModel from "../../../models/user-model";
+import isHttpStatusValid from "../../../helpers/check-status";
+import displayStatusRequest from "../../../helpers/display-status-request";
 
 type Props = {
   script: string;
@@ -9,9 +11,8 @@ type Props = {
   currentUser: UserModel;
 };
 
-const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentUser }) => {
+const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUser}) => {
   const [SelectedFileToUpload, setSelectedFileToUpload] = useState<File | null>();
-  const [FileContent, setFileContent] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleUploadButtonClick = () => {
@@ -39,23 +40,6 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
     e.preventDefault();
   };
 
-  /*   const downloadScript = () => {
-    if (script !== "") {
-      const element = document.createElement("a");
-      const file = new Blob([script], { type: "text/plain" });
-      element.href = URL.createObjectURL(file);
-      element.download = "script.txt";
-      document.body.appendChild(element); // Required for this to work in FireFox
-      element.click();
-    } 
-  };
-
-  const uploadScriptOnDataBase = () => {
-    if (script !== "") {
-      console.log(script);
-    }
-  }; */
-
   const UploadFileContent = async () => {
     console.log(await readFileContent());
   };
@@ -79,8 +63,8 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
   const createScriptFile = (script: string, currentUserId: string) => {
     if (script !== "") {
       const fileName = `script${currentUserId}.txt`;
-      const fileBlob = new Blob([script], { type: "text/plain" });
-      return { fileBlob, fileName };
+      const fileBlob = new Blob([script], {type: "text/plain"});
+      return {fileBlob, fileName};
     }
     return null;
   };
@@ -103,13 +87,12 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
       console.log(fileData.fileBlob);
       const token = getToken();
       if (token) {
-        CurrentUserDrawsUpdate(currentUser, token, "draws", [...currentUser.draws, { date: new Date(), script: script }]).then(
+        CurrentUserDrawsUpdate(currentUser, "draws", [...currentUser.draws, {date: new Date(), script: script}]).then(
           (result) => {
-            if (result.status === 200) {
-              console.log("Script uploaded successfully");
-            } else {
-              console.error("Error uploading script");
-            }
+            if (isHttpStatusValid(result.status)) {
+              functionReturned(script);
+              displayStatusRequest("Script uploaded successfully", false);
+            } else displayStatusRequest("error : uploading script", true);
           }
         );
       }
@@ -126,7 +109,7 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
             <span className="mr10 w50 txt-end">Drag & Drop</span>|<span className="ml10 w50">Click here</span>
           </h2>
           <span>to import a script file</span>
-          <input type="file" accept=".txt" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
+          <input type="file" accept=".txt" style={{display: "none"}} ref={fileInputRef} onChange={handleFileChange} />
         </div>
       </div>
       {SelectedFileToUpload ? (

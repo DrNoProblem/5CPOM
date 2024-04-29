@@ -1,9 +1,11 @@
-async function addRoom(name: string, co_owner: string, users: string[], token: string) {
+import { getToken } from "../../helpers/token-verifier";
+
+async function addRoom(name: string, co_owner: string, users: string[]) {
     const response = await fetch("http://localhost:4100/room/add", {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${getToken()}`
         },
         body: JSON.stringify({ name, co_owner, users })
     });

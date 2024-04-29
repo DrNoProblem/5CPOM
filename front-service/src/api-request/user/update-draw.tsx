@@ -1,8 +1,8 @@
+import { getToken } from "../../helpers/token-verifier";
 import UserModel from "../../models/user-model";
 
 async function CurrentUserDrawsUpdate(
   user: UserModel,
-  token: string | undefined,
   valueType: string,
   value: { date: Date; script: string }[],
 ) {
@@ -12,7 +12,7 @@ async function CurrentUserDrawsUpdate(
     body: JSON.stringify({ ...user, [valueType]: value }),
     headers: {
       "Content-Type": "application/json",
-      authorization: "Bearer " + token,
+      authorization: `Bearer ${getToken()}`,
     },
   });
   data = { response: await response.json(), status: response.status };

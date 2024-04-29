@@ -1,11 +1,13 @@
-import React, { FC, useEffect, useState } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import React, {FC, useEffect, useState} from "react";
+import {Link, RouteComponentProps} from "react-router-dom";
+import addCorrectionToTask from "../../../api-request/task/correction-add";
 import addRenderToTask from "../../../api-request/task/render-add";
-import { isDatePast } from "../../../helpers/check-date-passed";
-import { formatDate } from "../../../helpers/display-date-format";
+import {isDatePast} from "../../../helpers/check-date-passed";
+import isHttpStatusValid from "../../../helpers/check-status";
+import {formatDate} from "../../../helpers/display-date-format";
 import displayStatusRequest from "../../../helpers/display-status-request";
+import formatDateForInput from "../../../helpers/formatDateForInput";
 import getNameById from "../../../helpers/getNameById";
-import { getToken } from "../../../helpers/token-verifier";
 import MiniUserModel from "../../../models/mini-user-model";
 import RoomModel from "../../../models/room-model";
 import TaskModel from "../../../models/tasks-model";
@@ -13,9 +15,8 @@ import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
 import ConsoleDrawComponent from "../components/console-draw";
 import TableDraw from "../components/draw-list";
-import addCorrectionToTask from "../../../api-request/task/correction-add";
 
-interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
+interface Props extends RouteComponentProps<{roomid: string; taskid: string}> {
   currentUser: UserModel;
   SetLog: Function;
   rooms: RoomModel[];
@@ -36,7 +37,7 @@ function countNegativeOnes(entries: UserListNote[]): number {
   }, 0);
 }
 
-const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks, userList }) => {
+const RoomTaskPageById: FC<Props> = ({match, currentUser, SetLog, rooms, tasks, userList}) => {
   const [Task, setTask] = useState<TaskModel>();
   const [Room, setRoom] = useState<RoomModel>();
 
@@ -49,6 +50,10 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
   const [WorkView, setWorkView] = useState<UserListNote | false>();
 
   const [PopUpActive, setPopUpActive] = useState<string | false>(false);
+
+  const [SelectTaskTitle, setSelectTaskTitle] = useState<string | "">("");
+  const [SelectTaskDate, setSelectTaskDate] = useState<Date>(formatDateForInput() as unknown as Date);
+  const [ReadyToSend, setReadyToSend] = useState<Boolean>(false);
 
   useEffect(() => {
     tasks.forEach((task) => {
@@ -68,11 +73,40 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
     });
   }, [match.params, tasks, rooms, currentUser]);
 
+  var objectFiledAddTask: any = {
+    title: SelectTaskTitle,
+    date: SelectTaskDate,
+  };
+
+  useEffect(() => {
+    setReadyToSend(areAllPropertiesEmpty(objectFiledAddTask));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [SelectTaskTitle, SelectTaskDate]);
+
+  const areAllPropertiesEmpty = (obj: any) => {
+    if (obj.title === "") return false;
+    const currentDate = new Date();
+    const objectDate = new Date(obj.date);
+
+    if (objectDate < currentDate) return false;
+    return true;
+  };
+
+  const RegroupValueAddNewTask = () => {
+    console.log(objectFiledAddTask); //!
+    /*     addTask(objectFiledAddTask.title, objectFiledAddTask.detail, objectFiledAddTask.date, Room!._id).then((e) => {
+      if (isHttpStatusValid(e.status)) {
+        SetLog();
+        setPopUpActive(false);
+      } else displayStatusRequest("error " + e.status + " : " + e.response.message, true);
+    }); */
+  };
+
   const EditTempoNote = (userId: string, newNote: number) => {
     setTempoTaskRender((prevTasks) => {
       return prevTasks!.map((task) => {
         if (task.id === userId) {
-          return { ...task, note: newNote };
+          return {...task, note: newNote};
         }
         return task;
       });
@@ -82,10 +116,9 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
 
   const submitUserRender = (script: string) => {
     console.log(script);
-    addRenderToTask(Task!._id, script, Room!._id, getToken()!).then((result) => {
-      if (result.status === 200) {
+    addRenderToTask(Task!._id, script, Room!._id).then((result) => {
+      if (isHttpStatusValid(result.status)) {
         displayStatusRequest("Render submited", false);
-        setRenderStatus(true);
         setPopUpActive(false);
         SetLog();
       } else {
@@ -96,10 +129,9 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
 
   const submitOwnerCorrection = (script: string) => {
     console.log(script);
-    addCorrectionToTask(Task!._id, script, getToken()!).then((result) => {
-      if (result.status === 200) {
+    addCorrectionToTask(Task!._id, script).then((result) => {
+      if (isHttpStatusValid(result.status)) {
         displayStatusRequest("Correction submited", false);
-        setRenderStatus(true);
         setPopUpActive(false);
         SetLog();
       } else {
@@ -122,7 +154,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
     const updatedTempoTaskRender: UserListNote[] = Room!.users.reduce((acc, userId) => {
       const existingTask = TempoTaskRender!.find((task) => task.id === userId);
       if (!existingTask) {
-        acc.push({ id: userId, script: "", note: 0 });
+        acc.push({id: userId, script: "", note: 0});
       }
       return acc;
     }, [] as UserListNote[]);
@@ -139,192 +171,238 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
           <Link to={`/3PROJ/room/${Room!._id}`} className="cta cta-blue">
             <span>Back</span>
           </Link>
-          <h2 className="mb0 w50">
-            Tasks :{" "}
-            <Link to={`/3PROJ`} className="blue">
+          <h2 className="mb0 w50 flex-center-align g15">
+            Tasks :
+            <span className="blue" onClick={() => setPopUpActive("edition task")}>
               {Task.title}
-            </Link>{" "}
-            of{" "}
-            <Link to={`/3PROJ`} className="blue">
-              {Room.name}
-            </Link>
-          </h2>{" "}
-          {IsDatePassed ? null : (
+            </span>
+            of {Room.name}{" "}
+            {IsOwner ? (
+              <i className="material-icons ml25 blue-h" onClick={() => setPopUpActive("edition task")}>
+                settings
+              </i>
+            ) : null}
+          </h2>
+          {IsDatePassed ? (
+            <h2 className="mb0 txt-end w50 red" onClick={() => setPopUpActive("edition task")}>
+              Date limit is passed
+            </h2>
+          ) : (
             <h2 className="mb0 txt-end w50">
-              Date limit : <span className="blue">{formatDate(Task.datelimit)}</span>
+              Date limit :{" "}
+              <span className="blue" onClick={() => setPopUpActive("edition task")}>
+                {formatDate(Task.datelimit)}
+              </span>
             </h2>
           )}
         </div>
 
-        <div className="flex g20">
-          <div className="flex-col flex-justify-start g20 w60">
-            {Task.details ? (
-              <div className="dark-container flex-col display-from-left">
-                <h2>Detail :</h2>
-                <div className="task-detail normal-container">{Task.details}</div>
-              </div>
-            ) : IsOwner ? (
-              <div className="dark-container flex-col display-from-left">
-                <div className="flex-center flex-col g20">
-                  <h2 className="red flex-center m0">
-                    <i className="material-icons red mr25">warning</i>Details needed
-                    <i className="material-icons red ml25">warning</i>
-                  </h2>
-                  <textarea name="deatil-input" id="deatil-input" rows={15}></textarea>
-                  <div className="cta normal-bg blue-h mlauto" onClick={submitOwnerDetail}>
-                    <span className="add-user flex-center g15">
-                      <i className="material-icons">add</i>add detail
-                    </span>
-                  </div>
+        {!IsOwner && IsDatePassed && Task.details === "" ? (
+          <h2 className="txt-center m0 mtauto  pt50 mt50">
+            Date limite is passed and no details.
+            <br />
+            <br />
+            Wait for new information
+          </h2>
+        ) : (
+          <div className="flex g20">
+            <div className="flex-col flex-justify-start g20 w60">
+              {Task.details ? (
+                <div className="dark-container flex-col display-from-left">
+                  <h2>Detail :</h2>
+                  <div className="task-detail normal-container">{Task.details}</div>
                 </div>
-              </div>
-            ) : (
-              <div className="dark-container flex-col display-from-left">
-                <h2 className="red flex-center m0">No details yet</h2>
-              </div>
-            )}
-          </div>
-          <div className="flex-col flex-justify-start g20 w40">
-            {IsDatePassed && countNegativeOnes(Task.renders) === Room.users.length /* note submit && date passed */ ? (
-              Task.correction /* correction */ ? (
-                <div className="dark-container display-from-left flex-col flex-start-justify">
-                  <h2>Correction for this task :</h2>
-                  <div className="flex g20">
-                    <div className="cta normal-bg blue-h" onClick={() => setPopUpActive("view correction")}>
-                      <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                        <i className="material-icons">open_in_new</i>View
-                      </span>
+              ) : (
+                <div className="dark-container flex-col display-from-left">
+                  {IsDatePassed ? (
+                    IsOwner ? (
+                      <div className="flex-col">
+                        <h2 className="red flex-center">Move the date limit or delete this task</h2>
+                        <div className="g15 flex-center">
+                          <div className="cta cta-blue" onClick={() => setPopUpActive("edition task")}>
+                            <span className="flex-center g10">
+                              <i className="material-icons">edit</i>Redate
+                            </span>
+                          </div>
+                          <div className="cta cta-red">
+                            <span className="flex-center g10">
+                              <i className="material-icons">delete</i>delete
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null
+                  ) : IsOwner ? (
+                    <div className="flex-center flex-col g20">
+                      <h2 className="red flex-center m0">
+                        <i className="material-icons red mr25">warning</i>Details needed
+                        <i className="material-icons red ml25">warning</i>
+                      </h2>
+                      <textarea name="deatil-input" id="deatil-input" rows={15}></textarea>
+                      <div className="cta normal-bg blue-h mlauto" onClick={submitOwnerDetail}>
+                        <span className="add-user flex-center g15">
+                          <i className="material-icons">add</i>add detail
+                        </span>
+                      </div>
                     </div>
+                  ) : (
+                    <h2 className="red flex-center m0">No details yet</h2>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex-col flex-justify-start g20 w40">
+              {IsDatePassed &&
+              Task.details !== "" &&
+              countNegativeOnes(Task.renders) === Room.users.length /* note submit && date passed */ ? (
+                Task.correction /* correction */ ? (
+                  <div className="dark-container display-from-left flex-col flex-start-justify">
+                    <h2>Correction for this task :</h2>
+                    <div className="flex g20">
+                      <div className="cta normal-bg blue-h" onClick={() => setPopUpActive("view correction")}>
+                        <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                          <i className="material-icons">open_in_new</i>View
+                        </span>
+                      </div>
+                      {IsOwner ? (
+                        <div className="cta normal-bg blue-h" onClick={() => setPopUpActive("edit correction")}>
+                          <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                            <i className="material-icons">edit</i>Edit
+                          </span>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="dark-container flex-col display-from-left g20">
+                    <h2 className="m0">No corrections yet</h2>
                     {IsOwner ? (
-                      <div className="cta normal-bg blue-h" onClick={() => setPopUpActive("edit correction")}>
+                      <div>
+                        <div
+                          className="cta normal-bg blue-h mrauto"
+                          onClick={() => setPopUpActive("submit correction")}
+                        >
+                          <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                            <i className="material-icons">add</i>Add script
+                          </span>
+                        </div>
+
+                        <div
+                          className="cta normal-bg blue-h mrauto"
+                          onClick={() => setPopUpActive("choose correction")}
+                        >
+                          <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                            <i className="material-icons">add</i>Choose script
+                          </span>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              ) : null}
+
+              {IsDatePassed && Task.details !== "" /* notes */ ? (
+                IsOwner ? (
+                  <div className="dark-container display-from-left flex-col flex-start-justify g20">
+                    <h2 className="mb0">Note users's renders</h2>
+                    <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("note")}>
+                      {countNegativeOnes(Task.renders) === Room.users.length ? (
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="material-icons">edit</i>Edit
+                        </span>
+                      ) : (
+                        <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                          <i className="material-icons">add</i>Note
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ) : Task.renders.some((e) => e.id === currentUser._id) ? (
+                  <div className="dark-container flex-col display-from-left">
+                    <h2 className="m0">Notes for this tack :</h2>
+                    <span className="normal-container flex-center fs20 bold">
+                      {Task.renders.find((e) => e.id === currentUser._id)!.note}
+                      &nbsp;/&nbsp;100
+                    </span>
+                  </div>
+                ) : (
+                  <div className="dark-container flex-col display-from-left">
+                    <h2 className="m0">Notes not submited yet</h2>
+                  </div>
+                )
+              ) : null}
+
+              {IsOwner /* user list */ ? (
+                <div className="dark-container display-from-left flex-col flex-start-justify">
+                  <h2>
+                    List of Users : <span className="fs14"></span>
+                  </h2>
+
+                  <ul className="table-list flex-col mb0 ">
+                    <li className="legend">
+                      <div className="flex-row">
+                        <div className="flex-row flex-center-align w100">
+                          <p className="w80">USER NAME</p>
+                          <p className="w20 txt-center">RENDER STATUS</p>
+                        </div>
+                      </div>
+                    </li>
+
+                    {Room.users.map((userId) => (
+                      <li key={userId}>
+                        <div className="flex-row flex-bet">
+                          <div className="flex-row flex-center-align w100">
+                            <p className="w80">{getNameById(userId, userList)}</p>
+                            {Task.renders.some((e) => e.id === userId) ? (
+                              <i className="material-icons mtbauto flex-center green w20">task_alt</i>
+                            ) : (
+                              <i className="material-icons mtbauto flex-center red w20">close</i>
+                            )}
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : RenderStatus /* ok render */ ? (
+                <div className="dark-container display-from-left w50 flex-row">
+                  <i className="material-icons fs30 green mr50 ml25 mtauto mbauto">task_alt</i>
+                  <div className="flex-col">
+                    <h2>Render is submited</h2>
+                    <div className="flex g20">
+                      <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("view render")}>
+                        <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                          <i className="material-icons">open_in_new</i>View
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : IsDatePassed ? null : Task.details !== "" ? (
+                <div className="dark-container display-from-left flex-col flex-start-justify">
+                  <h2 className="red flex-center">
+                    <i className="material-icons red mr25">warning</i>You need to submit a render
+                    <i className="material-icons red ml25">warning</i>
+                  </h2>
+                  <div className="flex-col g15">
+                    <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit render")}>
+                      <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                        <i className="material-icons">add</i>Add draw
+                      </span>
+                    </div>
+                    {currentUser.draws.length > 0 ? (
+                      <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose render")}>
+                        <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                          <i className="material-icons">add</i>Choose draws
                         </span>
                       </div>
                     ) : null}
                   </div>
                 </div>
-              ) : (
-                <div className="dark-container flex-col display-from-left g20">
-                  <h2 className="m0">No corrections yet</h2>
-                  {IsOwner ? (
-                    <div>
-                      <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit correction")}>
-                        <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                          <i className="material-icons">add</i>Add script
-                        </span>
-                      </div>
-
-                      <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose correction")}>
-                        <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                          <i className="material-icons">add</i>Choose script
-                        </span>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              )
-            ) : null}
-
-            {IsDatePassed /* notes */ ? (
-              IsOwner ? (
-                <div className="dark-container display-from-left flex-col flex-start-justify g20">
-                  <h2 className="mb0">Note users's renders</h2>
-                  <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("note")}>
-                    {countNegativeOnes(Task.renders) === Room.users.length ? (
-                      <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                        <i className="material-icons">edit</i>Edit
-                      </span>
-                    ) : (
-                      <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                        <i className="material-icons">add</i>Note
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ) : Task.renders.some((e) => e.id === currentUser._id) ? (
-                <div className="dark-container flex-col display-from-left">
-                  <h2 className="m0">Notes for this tack :</h2>
-                  <span className="normal-container flex-center fs20 bold">
-                    {Task.renders.find((e) => e.id === currentUser._id)!.note}
-                    &nbsp;/&nbsp;100
-                  </span>
-                </div>
-              ) : (
-                <div className="dark-container flex-col display-from-left">
-                  <h2 className="m0">Notes not submited yet</h2>
-                </div>
-              )
-            ) : null}
-
-            {IsOwner /* user list */ ? (
-              <div className="dark-container display-from-left flex-col flex-start-justify">
-                <h2>
-                  List of Users : <span className="fs14"></span>
-                </h2>
-
-                <ul className="table-list flex-col mb0 ">
-                  <li className="legend">
-                    <div className="flex-row">
-                      <div className="flex-row flex-center-align w100">
-                        <p className="w80">USER NAME</p>
-                        <p className="w20 txt-center">RENDER STATUS</p>
-                      </div>
-                    </div>
-                  </li>
-
-                  {Room.users.map((userId) => (
-                    <li key={userId}>
-                      <div className="flex-row flex-bet">
-                        <div className="flex-row flex-center-align w100">
-                          <p className="w80">{getNameById(userId, userList)}</p>
-                          {Task.renders.some((e) => e.id === userId) ? (
-                            <i className="material-icons mtbauto flex-center green w20">task_alt</i>
-                          ) : (
-                            <i className="material-icons mtbauto flex-center red w20">close</i>
-                          )}
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : RenderStatus /* ok render */ ? (
-              <div className="dark-container display-from-left w50 flex-row">
-                <i className="material-icons fs30 green mr50 ml25 mtauto mbauto">task_alt</i>
-                <div className="flex-col">
-                  <h2>Render is submited</h2>
-                  <div className="flex g20">
-                    <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("view render")}>
-                      <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                        <i className="material-icons">open_in_new</i>View
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : /* no render */ IsDatePassed /* date passed */ ? null /* date no passed */ : (
-              <div className="dark-container display-from-left flex-col flex-start-justify">
-                <h2 className="red flex-center">
-                  <i className="material-icons red mr25">warning</i>You need to submit a render
-                  <i className="material-icons red ml25">warning</i>
-                </h2>
-                <div className="flex-col g15">
-                  <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit render")}>
-                    <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                      <i className="material-icons">add</i>Add draw
-                    </span>
-                  </div>
-                  <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose render")}>
-                    <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                      <i className="material-icons">add</i>Choose draws
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
+              ) : null}
+            </div>
           </div>
-        </div>
+        )}
 
         {PopUpActive ? (
           <div className="add-item-popup">
@@ -523,6 +601,42 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 currentUser={currentUser}
                 start={true}
               />
+            ) : null}
+
+            {PopUpActive === "edition task" ? (
+              <div className="dark-container w50 flex-col">
+                <h2>Edit information of the task :</h2>
+                <i className="material-icons red-h absolute r0 mr25" onClick={() => setPopUpActive(false)}>
+                  close
+                </i>
+                <h3 className="m10">Title :</h3>
+                <input type="text" onChange={(e) => setSelectTaskTitle(e.target.value)} defaultValue={Task.title} />
+                <h3 className="m10">Date limit :</h3>
+                <div className="g20">
+                  <input
+                    type="datetime-local"
+                    defaultValue={formatDateForInput()}
+                    className=""
+                    onChange={(e) => setSelectTaskDate(new Date(e.currentTarget.value))}
+                  />
+                </div>
+
+                {ReadyToSend ? (
+                  <div className="cta cta-blue mlauto mt25" onClick={RegroupValueAddNewTask}>
+                    <span className="flex-center g10">
+                      <i className="material-icons">edit</i>
+                      apply
+                    </span>
+                  </div>
+                ) : (
+                  <div className="cta cta-disable mlauto mt25">
+                    <span className="flex-center g10">
+                      <i className="material-icons">close</i>
+                      apply
+                    </span>
+                  </div>
+                )}
+              </div>
             ) : null}
           </div>
         ) : null}

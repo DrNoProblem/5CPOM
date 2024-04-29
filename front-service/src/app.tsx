@@ -84,7 +84,7 @@ const App: FunctionComponent = () => {
           })
           
           if (result.response.role === "admin" || result.response.role === "superAdmin") {
-            getCompleteUsersList(token).then((users) => {
+            getCompleteUsersList().then((users) => {
               if (isHttpStatusValid(users.status)) {
                 setCompleteUsersList(users.response);
                 setUsersList(
@@ -96,9 +96,9 @@ const App: FunctionComponent = () => {
               } else displayStatusRequest("error " + users.status + " : " + users.response.message, true);
             });
           } else if (result.response.role === "user") {
-            getCompleteUsersList(token).then((users) => {
+            getCompleteUsersList().then((users) => {
               if (isHttpStatusValid(users.status)) {
-                getUsersList(users.response);
+                getUsersList();
               } else displayStatusRequest("error " + users.status + " : " + users.response.message, true);
             });
           } else displayStatusRequest("error  : Unreconized User", true);

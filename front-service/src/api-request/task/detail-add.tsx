@@ -1,9 +1,11 @@
-async function addDetailToTask(taskId: string, correctionDetails: any, token: string) {
+import { getToken } from "../../helpers/token-verifier";
+
+async function addDetailToTask(taskId: string, correctionDetails: any) {
     const response = await fetch(`http://localhost:4100/task/addDetail/${taskId}`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            authorization: `Bearer ${getToken()}`,
         },
         body: JSON.stringify(correctionDetails)
     });

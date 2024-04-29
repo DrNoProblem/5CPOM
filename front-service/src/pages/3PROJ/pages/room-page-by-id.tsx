@@ -1,18 +1,19 @@
-import React, { FC, useEffect, useState } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import React, {FC, useEffect, useState} from "react";
+import {Link, RouteComponentProps} from "react-router-dom";
+import addTask from "../../../api-request/task/task-add";
+import isHttpStatusValid from "../../../helpers/check-status";
+import {formatDate} from "../../../helpers/display-date-format";
+import displayStatusRequest from "../../../helpers/display-status-request";
 import getNameById from "../../../helpers/getNameById";
 import MiniUserModel from "../../../models/mini-user-model";
 import RoomModel from "../../../models/room-model";
 import TaskModel from "../../../models/tasks-model";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
-import addTask from "../../../api-request/task/task-add";
-import { getToken } from "../../../helpers/token-verifier";
-import isHttpStatusValid from "../../../helpers/check-status";
-import displayStatusRequest from "../../../helpers/display-status-request";
-import { formatDate } from "../../../helpers/display-date-format";
+import formatDateForInput from "../../../helpers/formatDateForInput";
+import {isDatePast} from "../../../helpers/check-date-passed";
 
-interface Props extends RouteComponentProps<{ roomid: string }> {
+interface Props extends RouteComponentProps<{roomid: string}> {
   currentUser: UserModel;
   SetLog: Function;
   rooms: RoomModel[];
@@ -20,16 +21,25 @@ interface Props extends RouteComponentProps<{ roomid: string }> {
   usersList: MiniUserModel[];
 }
 
-const formatDateForInput = (): string => {
-  const today = new Date();
-  const oneMonthLater = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
-  const year = oneMonthLater.getFullYear();
-  const month = (oneMonthLater.getMonth() + 1).toString().padStart(2, "0");
-  const day = oneMonthLater.getDate().toString().padStart(2, "0");
-  return `${year}-${month}-${day}T23:59:59`;
+const countUserRenders = (userId: string, tasks: TaskModel[]) => {
+  return tasks.reduce((acc, task) => {
+    // Ajouter au compteur pour chaque occurrence de userId dans task.renders
+    const count = task.renders.filter((render) => render.id === userId).length;
+    return acc + count;
+  }, 0);
 };
 
-const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, SetLog }) => {
+const countTaskPassed = (tasks: TaskModel[]) => {
+  return tasks.reduce((acc, task) => {
+    // Ajouter au compteur pour chaque occurrence de userId dans task.renders
+    const count = isDatePast(task.datelimit) ? 1 : 0;
+    return acc + count;
+  }, 0);
+};
+
+const RoomPageById: FC<Props> = ({match, currentUser, rooms, tasks, usersList, SetLog}) => {
+  const [IsOwner, setIsOwner] = useState<boolean>(false);
+
   const [Room, setRoom] = useState<RoomModel>();
   const [PopUpActive, setPopUpActive] = useState<boolean>();
 
@@ -44,6 +54,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
     rooms.forEach((room) => {
       if (room._id === match.params.roomid) {
         setRoom(room);
+        setIsOwner(room.co_owner === currentUser._id || room.owner === currentUser._id);
       }
     });
   }, [match.params, tasks, rooms]);
@@ -67,7 +78,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
 
   const RegroupValueAddNewTask = () => {
     console.log(objectFiledAddTask); //!
-    addTask(objectFiledAddTask.title, objectFiledAddTask.detail, objectFiledAddTask.date, Room!._id, getToken()!).then((e) => {
+    addTask(objectFiledAddTask.title, objectFiledAddTask.detail, objectFiledAddTask.date, Room!._id).then((e) => {
       if (isHttpStatusValid(e.status)) {
         SetLog();
         setPopUpActive(false);
@@ -98,12 +109,14 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
             <div className="dark-container w100">
               <div className="flex-center-align flex-bet mb10">
                 <h2 className="m0">List of Tasks :</h2>
-                <div className="flex-row flex-bet normal-bg-h cta  blue-h" onClick={() => setPopUpActive(true)}>
-                  <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                    <i className="material-icons">add</i>
-                    Add new Task
-                  </span>
-                </div>
+                {IsOwner ? (
+                  <div className="flex-row flex-bet normal-bg-h cta  blue-h" onClick={() => setPopUpActive(true)}>
+                    <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                      <i className="material-icons">add</i>
+                      Add new Task
+                    </span>
+                  </div>
+                ) : null}
               </div>
               <ul className="table-list flex-col mb0 ">
                 <li className="legend">
@@ -130,14 +143,20 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                             <div className="flex-row flex-center-align w100">
                               <p className="w20">{task.title}</p>
                               <p className="w40">{formatDate(task.datelimit)}</p>
-                              <p className="w20">
-                                {task.renders.length} / {Room.users.length}
+                              <p className="w20 pl20">
+                                {IsOwner ? (
+                                  `${task.renders.length} / ${Room.users.length}`
+                                ) : task.renders.some((r) => r.id === currentUser._id) ? (
+                                  <i className="material-icons green">done</i>
+                                ) : (
+                                  <i className="material-icons red">close</i>
+                                )}
                               </p>
                               <p className="w10">
                                 <i className="material-icons">{!!task.correction ? "done" : "close"}</i>
                               </p>
                             </div>
-                            {isTaskProblem(task) ? (
+                            {isTaskProblem(task) && IsOwner ? (
                               <i className="material-icons warning red" data-title={isTaskProblem(task)}>
                                 warning
                               </i>
@@ -152,62 +171,71 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
               </ul>
             </div>
 
-            <div className="dark-container w30 relative">
-              <h2>{Room.name} Informations :</h2>
-              <i className="material-icons blue-h absolute t0 r0 mt25 mr25">settings</i>
-              <div className="flex-col">
-                <p className="flex">
-                  <strong className="w40">Owner : </strong>
-                  {getNameById(Room.owner, usersList)}
-                </p>
-                <p className="flex">
-                  <strong className="w40">Co-Owner : </strong>
-                  {getNameById(Room.co_owner, usersList)}
-                </p>
-                <p className="flex">
-                  <strong className="w40">Running Task : </strong>
-                  {Room.name}
-                </p>
-                <p className="flex">
-                  <strong className="w40">Ended Task : </strong>
-                  {Room.name}
-                </p>
+            <div className="w30">
+              <div className="dark-container relative">
+                <h2>{Room.name} Informations :</h2>
+                {IsOwner ? <i className="material-icons blue-h absolute t0 r0 mt25 mr25">settings</i> : null}
+                <div className="flex-col">
+                  <p className="flex">
+                    <strong className="w40">Owner : </strong>
+                    {getNameById(Room.owner, usersList)}
+                  </p>
+                  <p className="flex">
+                    <strong className="w40">Co-Owner : </strong>
+                    {getNameById(Room.co_owner, usersList)}
+                  </p>
+                  <p className="flex">
+                    <strong className="w40">Running Task : </strong>
+                    {Room.tasks.length - countTaskPassed(tasks.filter((task) => Room.tasks.includes(task._id)))}
+                  </p>
+                  <p className="flex">
+                    <strong className="w40">Ended Task : </strong>
+                    {countTaskPassed(tasks.filter((task) => Room.tasks.includes(task._id)))}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-
-          <div className="flex g20">
-            <div className="dark-container w60 relative">
-              <h2>List of users :</h2>
-            </div>
-            <div className="dark-container w40 relative">
-              <h2>List of users :</h2>
-              <i className="material-icons blue-h absolute t0 r0 mt25 mr25">settings</i>
-              <ul className="table-list flex-col mb0 ">
-                <li className="legend">
-                  <div className="flex-row">
-                    <div className="flex-row flex-center-align w100">
-                      <p className="w80">NAME</p>
-                      <p className="w20">SUBMITED RENDERS</p>
+          {IsOwner ? (
+            <div className="flex g20">
+              <div className="dark-container w60 relative">
+                <h2>List of users :</h2>
+              </div>
+              <div className="dark-container w40 relative">
+                <h2>List of users :</h2>
+                <i className="material-icons blue-h absolute t0 r0 mt25 mr25">settings</i>
+                <ul className="table-list flex-col mb0 ">
+                  <li className="legend">
+                    <div className="flex-row">
+                      <div className="flex-row flex-center-align w100">
+                        <p className="w75">NAME</p>
+                        <p className="w20">SUBMITED RENDERS</p>
+                      </div>
                     </div>
-                  </div>
-                </li>
+                  </li>
 
-                {Room.co_owner === currentUser._id || Room.owner === currentUser._id
-                  ? Room.users.map((userId) => (
-                      <li key={userId}>
-                        <div className="flex-row flex-bet">
-                          <div className="flex-row flex-center-align w100">
-                            <p className="w80">{getNameById(userId, usersList)}</p>
-                            <p className="w20">0 / {Room.tasks.length}</p>
+                  {Room.co_owner === currentUser._id || Room.owner === currentUser._id
+                    ? Room.users.map((userId) => (
+                        <li key={userId}>
+                          <div className="flex-row flex-bet">
+                            <div className="flex-row flex-center-align w100">
+                              <p className="w75">{getNameById(userId, usersList)}</p>
+                              <p className="w20 pl20">
+                                {countUserRenders(
+                                  userId,
+                                  tasks.filter((task) => Room.tasks.includes(task._id))
+                                )}
+                                / {Room.tasks.length}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </li>
-                    ))
-                  : null}
-              </ul>
+                        </li>
+                      ))
+                    : null}
+                </ul>
+              </div>
             </div>
-          </div>
+          ) : null}
 
           {PopUpActive ? (
             <div className="add-item-popup">
@@ -225,21 +253,26 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                   Date limit <span className="red">*</span> :
                 </h3>
                 <div className="g20">
-                  <input type="datetime-local" defaultValue={formatDateForInput()} className="" onChange={(e) => setSelectTaskDate(new Date(e.currentTarget.value))} />
+                  <input
+                    type="datetime-local"
+                    defaultValue={formatDateForInput()}
+                    className=""
+                    onChange={(e) => setSelectTaskDate(new Date(e.currentTarget.value))}
+                  />
                 </div>
                 <h3 className="m10">Detail :</h3>
                 <textarea onChange={(e) => setSelectTaskDetail(e.currentTarget.value)} />
 
                 {ReadyToSend ? (
                   <div className="cta cta-blue mlauto mt25" onClick={RegroupValueAddNewTask}>
-                    <span className="flex-center g15">
+                    <span className="flex-center g10">
                       <i className="material-icons">add</i>
                       add
                     </span>
                   </div>
                 ) : (
                   <div className="cta cta-disable mlauto mt25">
-                    <span className="flex-center g15">
+                    <span className="flex-center g10">
                       <i className="material-icons">close</i>
                       add
                     </span>

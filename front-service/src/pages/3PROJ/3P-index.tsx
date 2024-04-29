@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import SignUp from "../../api-request/user/sign-up";
 import isHttpStatusValid from "../../helpers/check-status";
 import displayStatusRequest from "../../helpers/display-status-request";
 import MiniUserModel from "../../models/mini-user-model";
@@ -12,10 +11,9 @@ import TaskModel from "../../models/tasks-model";
 import UserModel from "../../models/user-model";
 import "./3P-style.scss";
 
+import addRoom from "../../api-request/room/room-add";
 import TableRenderSubmitStatusComp from "./components/table-render-submit-status";
 import TableRoomUsersComp from "./components/table-room-users";
-import { getToken } from "../../helpers/token-verifier";
-import addRoom from "../../api-request/room/room-add";
 
 type Props = {
   currentUser: UserModel;
@@ -75,7 +73,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
   const AddNewRoom = (body: any) => {
     console.log(body);
     if (areAllPropertiesEmpty(body)) {
-      addRoom(body.name, body.co_owner, body.users, getToken()!).then((result) => {
+      addRoom(body.name, body.co_owner, body.users).then((result) => {
         if (isHttpStatusValid(result.status)) {
           displayStatusRequest("user added successfully", false);
           SetLog();
@@ -92,10 +90,10 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
     room.users.some((user) => user === CurrentUser._id)
       ? room.tasks.map((taskid) => {
           const task = TaskList.find((e) => e._id === taskid);
-          console.log(room);
-          console.log(task);
           if (!task) {
-            console.error(`Task with id ${taskid} not found`);
+            return null;
+          }
+          if (task.details === "") {
             return null;
           }
           return {

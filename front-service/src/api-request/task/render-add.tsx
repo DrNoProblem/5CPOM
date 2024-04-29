@@ -1,9 +1,11 @@
-async function addRenderToTask(taskId: string, render: string, roomId: string, token: string) {
+import { getToken } from "../../helpers/token-verifier";
+
+async function addRenderToTask(taskId: string, render: string, roomId: string) {
     const response = await fetch(`http://localhost:4100/task/addRender/${taskId}`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            authorization: `Bearer ${getToken()}`,
         },
         body: JSON.stringify({ render, roomId })
     });

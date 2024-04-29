@@ -806,11 +806,7 @@ a.icon {
         right: 0;
         width: 5%;
         height: 100%;
-        background: linear-gradient(
-          90deg,
-          #00000000 0%,
-          var(--color-dark-bg) 50%
-        );
+        background: linear-gradient(90deg, #00000000 0%, var(--color-dark-bg) 50%);
       }
     }
 
@@ -1125,4 +1121,9 @@ li.active-row i.expand {
 }
 li i.expand {
   color: var(--color-light-bg);
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0) invert(0.8);
+  cursor: pointer;
 }

@@ -77,7 +77,7 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title }) => {
                               className="cta cta-blue mrauto"
                               onClick={() => returnFunction(draws.script)}
                             >
-                              <span className="flex-center g15">
+                              <span className="flex-center g10">
                                 <i className="material-icons">task_alt</i>
                                 Choose
                               </span>

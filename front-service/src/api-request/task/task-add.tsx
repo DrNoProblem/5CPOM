@@ -1,9 +1,11 @@
-const addTask = async (title: string, details: string, datelimit: Date, roomId: string, token: string) => {
+import { getToken } from "../../helpers/token-verifier";
+
+const addTask = async (title: string, details: string, datelimit: Date, roomId: string) => {
     const response = await fetch("http://localhost:4100/task/add", {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            authorization: `Bearer ${getToken()}`,
         },
         body: JSON.stringify({ title, details, datelimit, roomId })
     });

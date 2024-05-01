@@ -1,10 +1,10 @@
-import React, {FC, useEffect, useState} from "react";
-import {Link, RouteComponentProps} from "react-router-dom";
+import React, { FC, useEffect, useState } from "react";
+import { Link, RouteComponentProps } from "react-router-dom";
 import addCorrectionToTask from "../../../api-request/task/correction-add";
 import addRenderToTask from "../../../api-request/task/render-add";
-import {isDatePast} from "../../../helpers/check-date-passed";
+import { isDatePast } from "../../../helpers/check-date-passed";
 import isHttpStatusValid from "../../../helpers/check-status";
-import {formatDate} from "../../../helpers/display-date-format";
+import { formatDate } from "../../../helpers/display-date-format";
 import displayStatusRequest from "../../../helpers/display-status-request";
 import formatDateForInput from "../../../helpers/formatDateForInput";
 import getNameById from "../../../helpers/getNameById";
@@ -15,8 +15,9 @@ import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
 import ConsoleDrawComponent from "../components/console-draw";
 import TableDraw from "../components/draw-list";
+import EditTaskInfo from "../components/fields-task-info";
 
-interface Props extends RouteComponentProps<{roomid: string; taskid: string}> {
+interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
   currentUser: UserModel;
   SetLog: Function;
   rooms: RoomModel[];
@@ -37,7 +38,7 @@ function countNegativeOnes(entries: UserListNote[]): number {
   }, 0);
 }
 
-const RoomTaskPageById: FC<Props> = ({match, currentUser, SetLog, rooms, tasks, userList}) => {
+const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks, userList }) => {
   const [Task, setTask] = useState<TaskModel>();
   const [Room, setRoom] = useState<RoomModel>();
 
@@ -50,10 +51,6 @@ const RoomTaskPageById: FC<Props> = ({match, currentUser, SetLog, rooms, tasks, 
   const [WorkView, setWorkView] = useState<UserListNote | false>();
 
   const [PopUpActive, setPopUpActive] = useState<string | false>(false);
-
-  const [SelectTaskTitle, setSelectTaskTitle] = useState<string | "">("");
-  const [SelectTaskDate, setSelectTaskDate] = useState<Date>(formatDateForInput() as unknown as Date);
-  const [ReadyToSend, setReadyToSend] = useState<Boolean>(false);
 
   useEffect(() => {
     tasks.forEach((task) => {
@@ -73,16 +70,6 @@ const RoomTaskPageById: FC<Props> = ({match, currentUser, SetLog, rooms, tasks, 
     });
   }, [match.params, tasks, rooms, currentUser]);
 
-  var objectFiledAddTask: any = {
-    title: SelectTaskTitle,
-    date: SelectTaskDate,
-  };
-
-  useEffect(() => {
-    setReadyToSend(areAllPropertiesEmpty(objectFiledAddTask));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [SelectTaskTitle, SelectTaskDate]);
-
   const areAllPropertiesEmpty = (obj: any) => {
     if (obj.title === "") return false;
     const currentDate = new Date();
@@ -92,21 +79,11 @@ const RoomTaskPageById: FC<Props> = ({match, currentUser, SetLog, rooms, tasks, 
     return true;
   };
 
-  const RegroupValueAddNewTask = () => {
-    console.log(objectFiledAddTask); //!
-    /*     addTask(objectFiledAddTask.title, objectFiledAddTask.detail, objectFiledAddTask.date, Room!._id).then((e) => {
-      if (isHttpStatusValid(e.status)) {
-        SetLog();
-        setPopUpActive(false);
-      } else displayStatusRequest("error " + e.status + " : " + e.response.message, true);
-    }); */
-  };
-
   const EditTempoNote = (userId: string, newNote: number) => {
     setTempoTaskRender((prevTasks) => {
       return prevTasks!.map((task) => {
         if (task.id === userId) {
-          return {...task, note: newNote};
+          return { ...task, note: newNote };
         }
         return task;
       });
@@ -154,7 +131,7 @@ const RoomTaskPageById: FC<Props> = ({match, currentUser, SetLog, rooms, tasks, 
     const updatedTempoTaskRender: UserListNote[] = Room!.users.reduce((acc, userId) => {
       const existingTask = TempoTaskRender!.find((task) => task.id === userId);
       if (!existingTask) {
-        acc.push({id: userId, script: "", note: 0});
+        acc.push({ id: userId, script: "", note: 0 });
       }
       return acc;
     }, [] as UserListNote[]);
@@ -164,25 +141,32 @@ const RoomTaskPageById: FC<Props> = ({match, currentUser, SetLog, rooms, tasks, 
     setPopUpActive(false);
   };
 
+  const SuccessInfoSubmited = (update: boolean) => {
+    if (update) SetLog();
+    setPopUpActive(false);
+  };
+
   return Task && Room ? (
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
         <div className="g20 flex-center-align">
-          <Link to={`/3PROJ/room/${Room!._id}`} className="cta cta-blue">
-            <span>Back</span>
-          </Link>
-          <h2 className="mb0 w50 flex-center-align g15">
-            Tasks :
-            <span className="blue" onClick={() => setPopUpActive("edition task")}>
-              {Task.title}
-            </span>
-            of {Room.name}{" "}
-            {IsOwner ? (
-              <i className="material-icons ml25 blue-h" onClick={() => setPopUpActive("edition task")}>
-                settings
-              </i>
-            ) : null}
-          </h2>
+          <div className="g20 flex-center-align w50">
+            <Link to={`/3PROJ/room/${Room!._id}`} className="cta cta-blue">
+              <span>Back</span>
+            </Link>
+            <h2 className="mb0 flex-center-align g15">
+              Tasks :
+              <span className="blue" onClick={() => setPopUpActive("edition task")}>
+                {Task.title}
+              </span>
+              of {Room.name}{" "}
+              {IsOwner ? (
+                <i className="material-icons ml25 blue-h" onClick={() => setPopUpActive("edition task")}>
+                  settings
+                </i>
+              ) : null}
+            </h2>
+          </div>
           {IsDatePassed ? (
             <h2 className="mb0 txt-end w50 red" onClick={() => setPopUpActive("edition task")}>
               Date limit is passed
@@ -278,19 +262,13 @@ const RoomTaskPageById: FC<Props> = ({match, currentUser, SetLog, rooms, tasks, 
                     <h2 className="m0">No corrections yet</h2>
                     {IsOwner ? (
                       <div>
-                        <div
-                          className="cta normal-bg blue-h mrauto"
-                          onClick={() => setPopUpActive("submit correction")}
-                        >
+                        <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit correction")}>
                           <span className="add-user flex-row flex-center-align flex-start-justify g15">
                             <i className="material-icons">add</i>Add script
                           </span>
                         </div>
 
-                        <div
-                          className="cta normal-bg blue-h mrauto"
-                          onClick={() => setPopUpActive("choose correction")}
-                        >
+                        <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose correction")}>
                           <span className="add-user flex-row flex-center-align flex-start-justify g15">
                             <i className="material-icons">add</i>Choose script
                           </span>
@@ -365,14 +343,21 @@ const RoomTaskPageById: FC<Props> = ({match, currentUser, SetLog, rooms, tasks, 
                   </ul>
                 </div>
               ) : RenderStatus /* ok render */ ? (
-                <div className="dark-container display-from-left w50 flex-row">
-                  <i className="material-icons fs30 green mr50 ml25 mtauto mbauto">task_alt</i>
-                  <div className="flex-col">
-                    <h2>Render is submited</h2>
-                    <div className="flex g20">
+                <div className="dark-container display-from-left flex-row">
+                  <div className="flex-col g20">
+                    <div className="flex-center g15">
+                      <i className="material-icons fs30 green">task_alt</i>
+                      <h2 className="m0">Render is submited</h2>
+                    </div>
+                    <div className="flex g15">
                       <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("view render")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                          <i className="material-icons">open_in_new</i>View
+                          <i className="material-icons">visibility</i>View
+                        </span>
+                      </div>
+                      <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("edit render")}>
+                        <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                          <i className="material-icons">edit</i>Edit
                         </span>
                       </div>
                     </div>
@@ -603,40 +588,24 @@ const RoomTaskPageById: FC<Props> = ({match, currentUser, SetLog, rooms, tasks, 
               />
             ) : null}
 
-            {PopUpActive === "edition task" ? (
-              <div className="dark-container w50 flex-col">
-                <h2>Edit information of the task :</h2>
-                <i className="material-icons red-h absolute r0 mr25" onClick={() => setPopUpActive(false)}>
-                  close
-                </i>
-                <h3 className="m10">Title :</h3>
-                <input type="text" onChange={(e) => setSelectTaskTitle(e.target.value)} defaultValue={Task.title} />
-                <h3 className="m10">Date limit :</h3>
-                <div className="g20">
-                  <input
-                    type="datetime-local"
-                    defaultValue={formatDateForInput()}
-                    className=""
-                    onChange={(e) => setSelectTaskDate(new Date(e.currentTarget.value))}
-                  />
-                </div>
 
-                {ReadyToSend ? (
-                  <div className="cta cta-blue mlauto mt25" onClick={RegroupValueAddNewTask}>
-                    <span className="flex-center g10">
-                      <i className="material-icons">edit</i>
-                      apply
-                    </span>
-                  </div>
-                ) : (
-                  <div className="cta cta-disable mlauto mt25">
-                    <span className="flex-center g10">
-                      <i className="material-icons">close</i>
-                      apply
-                    </span>
-                  </div>
-                )}
-              </div>
+            {PopUpActive === "edit render" ? (
+              <ConsoleDrawComponent
+                DefaultScript={Task.renders.find((e) => e.id === currentUser._id)!.script}
+                correction={false}
+                returnedScript={submitUserRender}
+                currentUser={currentUser}
+                start={true}
+              />
+            ) : null}
+
+            {PopUpActive === "edition task" ? (
+              <EditTaskInfo
+                defaultValues={{ title: Task.title, detail: Task.details, date: Task.datelimit }}
+                functionReturned={SuccessInfoSubmited}
+                CurrentRoom={Room}
+                Add={false}
+              />
             ) : null}
           </div>
         ) : null}

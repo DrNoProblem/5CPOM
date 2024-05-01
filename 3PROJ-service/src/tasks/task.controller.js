@@ -61,10 +61,25 @@ exports.updateTaskById = async (req, res, next) => {
 };
 exports.deleteTaskById = async (req, res, next) => {
   try {
-    const task = await Task.findByIdAndDelete(req.params.taskId);
-    if (!task) return res.status(404).json({ message: "Task not found" });
+    const taskId = req.params.taskId;
+    const task = await Task.findByIdAndDelete(taskId);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+    const roomsUpdated = await Room.updateMany(
+      { tasks: taskId }, 
+      { $pull: { tasks: taskId } } 
+    );
+
+    if (roomsUpdated.nModified > 0) {
+      console.log(`${roomsUpdated.nModified} rooms have been updated to remove the task`);
+    } else {
+      console.log("No rooms needed updating.");
+    }
+
     res.json({ message: "Task deleted successfully" });
   } catch (err) {
+    console.error("Error during task deletion:", err);
     next(err);
   }
 };
@@ -82,10 +97,11 @@ exports.AddRender = async (req, res, next) => {
       return res.status(404).json({ message: "You can not submit a render as owner or co-owner for this room" });
     const task = await Task.findById(req.params.taskId);
     if (!task) return res.status(404).json({ message: "Task not found" });
-    if (task.renders.some((render) => render.id === decoded.id)) {
-      return res.status(400).json({ message: "Render already submit" });
-    }
-    task.renders = [...task.renders, { id: decoded.id, script: render, note: 0 }];
+    const renderIndex = task.renders.findIndex((r) => r.id === decoded.id);
+    if (renderIndex !== -1)
+      task.renders.set(renderIndex, { id: decoded.id, script: render, note: task.renders[renderIndex].note });
+    else task.renders = [...task.renders, { id: decoded.id, script: render, note: 0 }];
+
     await task.save();
     res.status(201).json({
       status: "success",

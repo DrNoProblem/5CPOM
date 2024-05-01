@@ -305,6 +305,14 @@ h2 {
   }
 }
 
+.cta-full-red {
+  background-color: var(--color-red);
+  border: 2px solid var(--color-red);
+  * {
+    color: var(--color-white);
+  }
+}
+
 .cta-green {
   background-color: #0d822520;
   border: 2px solid var(--color-green);
@@ -314,7 +322,7 @@ h2 {
 }
 
 .cta-disable {
-  background-color: rgba(255, 39, 104, 0.1254901961);
+  background-color: #ff276820;
   border: 2px solid var(--color-red);
   * {
     color: var(--color-red);
@@ -334,6 +342,14 @@ h2 {
   border: 2px solid var(--color-red);
   * {
     color: var(--color-white);
+  }
+}
+
+.cta-full-red:hover {
+  background-color: #ff276840;
+  border: 2px solid var(--color-red);
+  * {
+    color: var(--color-red);
   }
 }
 

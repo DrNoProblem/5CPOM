@@ -106,11 +106,11 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
     if (DefaultScript !== "") {
       resetDraw();
       setConsoleTXT(["> reset draw"]);
+      console.log(DefaultScript);
       setScriptValue(DefaultScript.split(/\r?\n/));
       if (start) {
         //parseAndExecuteLogoScript(DefaultScript.split(/\r?\n/)!)
-      } else {
-      }
+      } 
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [DefaultScript]);
@@ -471,7 +471,7 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
       {returnedScript ? (
         ScriptValue ? (
           <div className="flex-bet ">
-            <div className="cta cta-blue mlauto" onClick={() => returnedScript(ScriptValue.join("\n> "))}>
+            <div className="cta cta-blue mlauto" onClick={() => returnedScript(ScriptValue.join("\n"))}>
               <span className="add-user flex-row flex-center-align flex-start-justify g15">
                 <i className="material-icons">add</i>Submit
               </span>

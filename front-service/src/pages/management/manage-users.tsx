@@ -97,7 +97,7 @@ const ManageUsers: FunctionComponent<Props> = ({ users, currentUser, SetLog }) =
                                     <p className='w30'>EMAIL</p>
                                     <p className='w30'>ID</p>
                                 </div>
-                                <i className={`material-icons mtbauto ${TableActive ? 'table-active' : 'table-no-active'}`}>expand_more</i>
+                                <i className={` mtbauto ${TableActive ? 'table-active' : 'table-no-active'}`}>expand_more</i>
                             </div>
                         </li>
                         {TableActive ? (
@@ -110,7 +110,7 @@ const ManageUsers: FunctionComponent<Props> = ({ users, currentUser, SetLog }) =
                                             <p className='w30'>{user.email}</p>
                                             <p className='w30'>{user._id}</p>
                                         </div>
-                                        <Link to={`/user/` + user._id} className='icon'><i className='material-icons ml10 blue-h'>edit</i></Link>
+                                        <Link to={`/user/` + user._id} className='icon'><i className=' ml10 blue-h'>edit</i></Link>
                                     </div>
 
                                 </li>
@@ -122,7 +122,7 @@ const ManageUsers: FunctionComponent<Props> = ({ users, currentUser, SetLog }) =
                     </ul>
                     <div className='flex-row flex-bet normal-bg-h cta mrauto blue-h' onClick={() => setAddActive(!AddActive)}>
                         <span className='add-user flex-row flex-center-align flex-start-justify g15'>
-                            <i className='material-icons'>add</i>
+                            <i className=''>add</i>
                             Add new User
                         </span>
                     </div>
@@ -131,7 +131,7 @@ const ManageUsers: FunctionComponent<Props> = ({ users, currentUser, SetLog }) =
                 {AddActive ? (
                     <div className='flex-row g50'>
                         <div className='dark-container flex-col mt50 mb50 w35 h5 relative display-from-left zi2'>
-                            <i className='material-icons red-h absolute r0 mr50' onClick={() => { setAddActive(false)}}>close</i>
+                            <i className=' red-h absolute r0 mr50' onClick={() => { setAddActive(false)}}>close</i>
                             <h2 className='mt0'>Add new User :</h2>
                             <div className='flex-col'>
                                 <p className='title mt0'>Email :</p>

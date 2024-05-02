@@ -156,25 +156,25 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
             </Link>
             <h2 className="mb0 flex-center-align g15">
               Tasks :
-              <span className="blue" onClick={() => setPopUpActive("edition task")}>
+              <span className="blue" onClick={() => (IsOwner ? setPopUpActive("edition task") : null)}>
                 {Task.title}
               </span>
               of {Room.name}{" "}
               {IsOwner ? (
-                <i className="material-icons ml25 blue-h" onClick={() => setPopUpActive("edition task")}>
+                <i className=" ml25 blue-h" onClick={() => setPopUpActive("edition task")}>
                   settings
                 </i>
               ) : null}
             </h2>
           </div>
           {IsDatePassed ? (
-            <h2 className="mb0 txt-end w50 red" onClick={() => setPopUpActive("edition task")}>
+            <h2 className="mb0 txt-end w50 red" onClick={() => (IsOwner ? setPopUpActive("edition task") : null)}>
               Date limit is passed
             </h2>
           ) : (
             <h2 className="mb0 txt-end w50">
-              Date limit :{" "}
-              <span className="blue" onClick={() => setPopUpActive("edition task")}>
+              Date limit :&nbsp;
+              <span className="blue" onClick={() => (IsOwner ? setPopUpActive("edition task") : null)}>
                 {formatDate(Task.datelimit)}
               </span>
             </h2>
@@ -205,12 +205,12 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                         <div className="g15 flex-center">
                           <div className="cta cta-blue" onClick={() => setPopUpActive("edition task")}>
                             <span className="flex-center g10">
-                              <i className="material-icons">edit</i>Redate
+                              <i className="">edit</i>Redate
                             </span>
                           </div>
                           <div className="cta cta-red">
                             <span className="flex-center g10">
-                              <i className="material-icons">delete</i>delete
+                              <i className="">delete</i>delete
                             </span>
                           </div>
                         </div>
@@ -219,13 +219,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                   ) : IsOwner ? (
                     <div className="flex-center flex-col g20">
                       <h2 className="red flex-center m0">
-                        <i className="material-icons red mr25">warning</i>Details needed
-                        <i className="material-icons red ml25">warning</i>
+                        <i className=" red mr25">warning</i>Details needed
+                        <i className=" red ml25">warning</i>
                       </h2>
                       <textarea name="deatil-input" id="deatil-input" rows={15}></textarea>
                       <div className="cta normal-bg blue-h mlauto" onClick={submitOwnerDetail}>
                         <span className="add-user flex-center g15">
-                          <i className="material-icons">add</i>add detail
+                          <i className="">add</i>add detail
                         </span>
                       </div>
                     </div>
@@ -245,13 +245,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                     <div className="flex g20">
                       <div className="cta normal-bg blue-h" onClick={() => setPopUpActive("view correction")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                          <i className="material-icons">open_in_new</i>View
+                          <i className="">open_in_new</i>View
                         </span>
                       </div>
                       {IsOwner ? (
                         <div className="cta normal-bg blue-h" onClick={() => setPopUpActive("edit correction")}>
                           <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                            <i className="material-icons">edit</i>Edit
+                            <i className="">edit</i>Edit
                           </span>
                         </div>
                       ) : null}
@@ -264,13 +264,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                       <div>
                         <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit correction")}>
                           <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                            <i className="material-icons">add</i>Add script
+                            <i className="">add</i>Add script
                           </span>
                         </div>
 
                         <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose correction")}>
                           <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                            <i className="material-icons">add</i>Choose script
+                            <i className="">add</i>Choose script
                           </span>
                         </div>
                       </div>
@@ -286,11 +286,11 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                     <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("note")}>
                       {countNegativeOnes(Task.renders) === Room.users.length ? (
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                          <i className="material-icons">edit</i>Edit
+                          <i className="">edit</i>Edit
                         </span>
                       ) : (
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                          <i className="material-icons">add</i>Note
+                          <i className="">add</i>Note
                         </span>
                       )}
                     </div>
@@ -332,9 +332,9 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                           <div className="flex-row flex-center-align w100">
                             <p className="w80">{getNameById(userId, userList)}</p>
                             {Task.renders.some((e) => e.id === userId) ? (
-                              <i className="material-icons mtbauto flex-center green w20">task_alt</i>
+                              <i className=" mtbauto flex-center green w20">task_alt</i>
                             ) : (
-                              <i className="material-icons mtbauto flex-center red w20">close</i>
+                              <i className=" mtbauto flex-center red w20">close</i>
                             )}
                           </div>
                         </div>
@@ -346,18 +346,18 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 <div className="dark-container display-from-left flex-row">
                   <div className="flex-col g20">
                     <div className="flex-center g15">
-                      <i className="material-icons fs30 green">task_alt</i>
+                      <i className=" fs30 green">task_alt</i>
                       <h2 className="m0">Render is submited</h2>
                     </div>
                     <div className="flex g15">
                       <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("view render")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                          <i className="material-icons">visibility</i>View
+                          <i className="">visibility</i>View
                         </span>
                       </div>
                       <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("edit render")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                          <i className="material-icons">edit</i>Edit
+                          <i className="">edit</i>Edit
                         </span>
                       </div>
                     </div>
@@ -366,19 +366,19 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
               ) : IsDatePassed ? null : Task.details !== "" ? (
                 <div className="dark-container display-from-left flex-col flex-start-justify">
                   <h2 className="red flex-center">
-                    <i className="material-icons red mr25">warning</i>You need to submit a render
-                    <i className="material-icons red ml25">warning</i>
+                    <i className=" red mr25">warning</i>You need to submit a render
+                    <i className=" red ml25">warning</i>
                   </h2>
                   <div className="flex-col g15">
                     <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit render")}>
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                        <i className="material-icons">add</i>Add draw
+                        <i className="">add</i>Add draw
                       </span>
                     </div>
                     {currentUser.draws.length > 0 ? (
                       <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose render")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                          <i className="material-icons">add</i>Choose draws
+                          <i className="">add</i>Choose draws
                         </span>
                       </div>
                     ) : null}
@@ -407,7 +407,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                           <div className="flex-row flex-center-align w100">
                             <p className="w60">USER NAME</p>
                             <p className="w40 txt-center">NOTE</p>
-                            <i className="material-icons flex-center green op0">task_alt</i>
+                            <i className=" flex-center green op0">task_alt</i>
                           </div>
                         </div>
                       </li>
@@ -428,7 +428,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                                 <div className="flex-row flex-center-align w100">
                                   <p className="w60">{getNameById(user.id, userList)}</p>
                                   <p className="txt-center w40">{user.note} /100</p>
-                                  <i className="material-icons flex-center green">task_alt</i>
+                                  <i className=" flex-center green">task_alt</i>
                                 </div>
                               </div>
                             </li>
@@ -442,7 +442,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                               <div className="flex-row flex-center-align w100">
                                 <p className="w60">{getNameById(userId, userList)}</p>
                                 <p className="txt-center w40">0/100</p>
-                                <i className="material-icons flex-center red">close</i>
+                                <i className=" flex-center red">close</i>
                               </div>
                             </div>
                           </li>
@@ -457,13 +457,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                       {Room.users.length - countNegativeOnes(TempoTaskRender!) === Room.users.length ? (
                         <div className="cta cta-blue mtauto mlauto" onClick={UpdateNotes}>
                           <span className="flex-center g10">
-                            <i className="material-icons">upload</i>update notes
+                            <i className="">upload</i>update notes
                           </span>
                         </div>
                       ) : (
                         <div className="cta cta-disable mtauto mlauto">
                           <span className="flex-center g10">
-                            <i className="material-icons">close</i>update notes
+                            <i className="">close</i>update notes
                           </span>
                         </div>
                       )}
@@ -504,7 +504,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                             }
                           >
                             <span className="add-user flex-center g15">
-                              <i className="material-icons mt5 mb5">done</i>
+                              <i className=" mt5 mb5">done</i>
                             </span>
                           </div>
                         </div>
@@ -587,7 +587,6 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 start={true}
               />
             ) : null}
-
 
             {PopUpActive === "edit render" ? (
               <ConsoleDrawComponent

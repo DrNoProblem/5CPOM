@@ -86,7 +86,7 @@ const EditTaskInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentRoom,
   return (
     <div className="dark-container flex-col w30">
       {Add ? <h2 className="">Add new Task :</h2> : <h2 className="">Edit Task :</h2>}
-      <i className="material-icons red-h absolute r0 mr20" onClick={closeModal}>
+      <i className=" red-h absolute r0 mr20" onClick={closeModal}>
         close
       </i>
       <h3 className="m10">
@@ -111,7 +111,7 @@ const EditTaskInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentRoom,
         {!Add ? (
           <div className="cta cta-full-red" onClick={() => functionReturned(false)}>
             <span className="flex-center g10">
-              <i className="material-icons">delete</i>Delete
+              <i className="">delete</i>Delete
             </span>
           </div>
         ) : null}
@@ -122,12 +122,12 @@ const EditTaskInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentRoom,
           >
             {Add ? (
               <span className="flex-center g10">
-                <i className="material-icons">add</i>
+                <i className="">add</i>
                 add
               </span>
             ) : (
               <span className="flex-center g10">
-                <i className="material-icons">edit</i>
+                <i className="">edit</i>
                 edit
               </span>
             )}
@@ -135,7 +135,7 @@ const EditTaskInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentRoom,
         ) : (
           <div className="cta cta-disable mlauto">
             <span className="flex-center g10">
-              <i className="material-icons">close</i>
+              <i className="">close</i>
               {Add ? "add" : "edit"}
             </span>
           </div>

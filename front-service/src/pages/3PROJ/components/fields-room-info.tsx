@@ -77,7 +77,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
   return (
     <div className="dark-container flex-col relative display-from-left zi2 w100">
     {Add ? <h2 className="">Add new Room :</h2> : <h2 className="">Edit Room :</h2>}
-      <i className="material-icons red-h absolute r0 mr20" onClick={closeModal}>close</i>
+      <i className=" red-h absolute r0 mr20" onClick={closeModal}>close</i>
       <div className="flex-col adding-room">
         <p className="m0 mb20 mt20">Room name :</p>
         <input
@@ -91,7 +91,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
         <div className="flex-bet mb25">
           <div className="flex-col w50">
             <p className="m0 mb20 mt20 flex-center-align">
-              <i className="material-icons mr10">person</i>
+              <i className=" mr10">person</i>
               Co-Owner :
             </p>
             {SelectCoOwner ? (
@@ -100,7 +100,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
                   <li>
                     <span>{getNameById(SelectCoOwner, usersList)}</span>
                     <i
-                      className="material-icons mlauto"
+                      className=" mlauto"
                       onClick={() => {
                         setChooseCoOwnerActive(true);
                         setSelectUsersActive(false);
@@ -120,7 +120,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
                   setSelectUsersActive(false);
                 }}
               >
-                <i className="material-icons">person_add_alt_1</i>
+                <i className="">person_add_alt_1</i>
                 <span>Choose user</span>
               </div>
             )}
@@ -128,7 +128,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
 
           <div className="flex-col w50">
             <p className="m0 mb20 mt20 flex-center-align">
-              <i className="material-icons mr10">groups</i>
+              <i className=" mr10">groups</i>
               Users :
             </p>
             {SelectUsers.length !== 0 ? (
@@ -136,7 +136,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
                 {SelectUsers.map((user) => (
                   <li key={user}>
                     <span>{getNameById(user, usersList)}</span>
-                    <i className="material-icons mlauto" onClick={() => setSelectUsers(SelectUsers.filter((e) => e !== user))}>
+                    <i className=" mlauto" onClick={() => setSelectUsers(SelectUsers.filter((e) => e !== user))}>
                       delete
                     </i>
                   </li>
@@ -152,7 +152,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
                   setChooseCoOwnerActive(false);
                 }}
               >
-                <i className="material-icons">person_add_alt_1</i>
+                <i className="">person_add_alt_1</i>
                 <span>Add users</span>
               </div>
             ) : (
@@ -163,7 +163,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
                   setChooseCoOwnerActive(false);
                 }}
               >
-                <i className="material-icons">person_add_alt_1</i>
+                <i className="">person_add_alt_1</i>
                 <span>Choose users</span>
               </div>
             )}
@@ -176,19 +176,19 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
           >
             {Add ? (
               <span className="flex-center g10">
-                <i className="material-icons">add</i>
+                <i className="">add</i>
                 create
               </span>
             ) : (
               <span className="flex-center g10">
-                <i className="material-icons">edit</i>
+                <i className="">edit</i>
                 edit
               </span>
             )}
           </div>
         ) : (
           <div className="cta mtauto mlauto cta-disable to-right-bottom">
-            <i className="material-icons">close</i>
+            <i className="">close</i>
 
             {Add ? "create" : "edit"}
           </div>
@@ -199,7 +199,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
         <div className="SelectUsersWindow dark-container w50">
           <p className="mt0 flex-center flex-bet">
             Select users :
-            <i className="material-icons" onClick={() => setSelectUsersActive(!SelectUsersActive)}>
+            <i className="" onClick={() => setSelectUsersActive(!SelectUsersActive)}>
               close
             </i>
           </p>
@@ -213,12 +213,12 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
                         className="blue flex-center-align"
                         onClick={() => setSelectUsers(SelectUsers.filter((e) => e !== user._id))}
                       >
-                        <i className="material-icons blue mr10">done</i>
+                        <i className=" blue mr10">done</i>
                         {user.name}
                       </li>
                     ) : (
                       <li key={user._id} className="flex-center-align" onClick={() => setSelectUsers([...SelectUsers, user._id])}>
-                        <i className="material-icons op0 mr10">done</i>
+                        <i className=" op0 mr10">done</i>
                         {user.name}
                       </li>
                     )
@@ -233,7 +233,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
         <div className="SelectUsersWindow dark-container w50">
           <p className="mt0 flex-center flex-bet">
             Choose a user :
-            <i className="material-icons" onClick={() => setChooseCoOwnerActive(!ChooseCoOwnerActive)}>
+            <i className="" onClick={() => setChooseCoOwnerActive(!ChooseCoOwnerActive)}>
               close
             </i>
           </p>
@@ -243,7 +243,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
                   user._id !== CurrentUser._id ? (
                     SelectCoOwner && user._id === SelectCoOwner ? (
                       <li key={user._id} className="blue flex-center-align" onClick={() => setSelectCoOwner("")}>
-                        <i className="material-icons blue mr10">done</i>
+                        <i className=" blue mr10">done</i>
                         {user.name}
                       </li>
                     ) : (
@@ -256,7 +256,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
                           setChooseCoOwnerActive(false);
                         }}
                       >
-                        <i className="material-icons op0 mr10">done</i>
+                        <i className=" op0 mr10">done</i>
                         {user.name}
                       </li>
                     )

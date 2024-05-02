@@ -136,20 +136,20 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
                             <div className="item flex-row flex-center-align normal-bg-h">
                                 <p className='pr10 txt-end w25'>username :</p>
                                 <p className=''>{user.name}</p>
-                                <i className='material-icons blue-h mlauto mr15' onClick={() => setEditMode('username')}>edit</i>
+                                <i className=' blue-h mlauto mr15' onClick={() => setEditMode('username')}>edit</i>
                             </div>
 
                             <div className="item flex-row flex-center-align normal-bg-h">
                                 <p className='pr10 txt-end w25'>email :</p>
                                 <p className=''>{user.email}</p>
-                                <i className='material-icons blue-h mlauto mr15' onClick={() => setEditMode('email')}>edit</i>
+                                <i className=' blue-h mlauto mr15' onClick={() => setEditMode('email')}>edit</i>
                             </div>
 
 
                             <div className="item flex-row flex-center-align normal-bg-h">
                                 <p className='pr10 txt-end w25'>password :</p>
                                 <p className=''>********</p>
-                                <i className='material-icons blue-h mlauto mr15' onClick={() => setEditMode('password')}>edit</i>
+                                <i className=' blue-h mlauto mr15' onClick={() => setEditMode('password')}>edit</i>
                             </div>
 
                             <div className="item flex-row flex-center-align">
@@ -163,7 +163,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
                     {EditMode ? (
                         <div className="edit-mode dark-container flex-col flex-start-align flex-bet w35 relative display-from-left">
                             <div className='mb20'>
-                                <i className='material-icons red-h absolute r0 mr50' onClick={() => setEditMode(false)}>close</i>
+                                <i className=' red-h absolute r0 mr50' onClick={() => setEditMode(false)}>close</i>
                                 {EditMode !== 'deleteUser' ? (
                                     <h2 className='mt0'>Edit {EditMode} :</h2>
                                 ) : (

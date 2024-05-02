@@ -84,11 +84,11 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
             <div className="flex-col dark-container display-from-left">
               <div className="flex-wrap g15 rapid-tool mb15">
                 <Link className="cta cta-normal cta-blue-h" to={"/3PROJ/draw/"}>
-                  <i className="material-icons">gesture</i>
+                  <i className="">gesture</i>
                   <span>Draw</span>
                 </Link>
                 <Link className="cta cta-normal cta-blue-h" to={"/3PROJ/draw-history"}>
-                  <i className="material-icons">history</i>
+                  <i className="">history</i>
                   <span>Draw history</span>
                 </Link>
                 <div
@@ -97,7 +97,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
                     setPopUpActive({ title: "Create new room", check: "add_room", second_title: false });
                   }}
                 >
-                  <i className="material-icons">add</i>
+                  <i className="">add</i>
                   <span>Create room</span>
                 </div>
               </div>
@@ -111,7 +111,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
                     setPopUpActive({ check: "render", title: "List of tasks to render", second_title: "List of tasks rendered" });
                   }}
                 >
-                  <i className="material-icons">open_in_new</i>
+                  <i className="">open_in_new</i>
                   <span>Renders</span>
                 </div>
                 <div
@@ -120,7 +120,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
                     setPopUpActive({ check: "all_room", title: "List of all rooms", second_title: false });
                   }}
                 >
-                  <i className="material-icons">open_in_new</i>
+                  <i className="">open_in_new</i>
                   <span>All rooms</span>
                 </div>
                 <div
@@ -129,7 +129,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
                     setPopUpActive({ check: "owner_room", title: "List of owned rooms", second_title: false });
                   }}
                 >
-                  <i className="material-icons">open_in_new</i>
+                  <i className="">open_in_new</i>
                   <span>Owned rooms</span>
                 </div>
               </div>
@@ -140,7 +140,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
               <h2>
                 List of tasks to render :
                 <i
-                  className="material-icons absolute r0 mr25 blue-h"
+                  className=" absolute r0 mr25 blue-h"
                   onClick={() => {
                     setPopUpActive({ check: "render", title: "List of tasks rendered", second_title: "List of tasks rendered" });
                   }}
@@ -159,7 +159,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
               <h2 className="">
                 List of owned rooms :
                 <i
-                  className="material-icons absolute r0 mr25 blue-h"
+                  className=" absolute r0 mr25 blue-h"
                   onClick={() => {
                     setPopUpActive({ check: "owner_room", title: "List of owned rooms", second_title: false });
                   }}
@@ -176,7 +176,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
               <h2 className="">
                 List of all rooms :
                 <i
-                  className="material-icons absolute r0 mr25 blue-h"
+                  className=" absolute r0 mr25 blue-h"
                   onClick={() => {
                     setPopUpActive({ check: "all_room", title: "List of all rooms", second_title: false });
                   }}
@@ -212,7 +212,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
             ) : (
               <div className="dark-container flex-col relative display-from-left zi2 w100">
                 <i
-                  className="material-icons red-h absolute r0 mr20"
+                  className=" red-h absolute r0 mr20"
                   onClick={() => {
                     setPopUpActive(false);
                   }}

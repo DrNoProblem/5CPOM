@@ -369,12 +369,12 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
   return (
     <div className="flex-col g5 dark-bg dark-container display-from-left">
       <div className="canva-container relative">
-        <i className={`material-icons pointer ${LoadPopUp ? "op0" : ""}`} id="cursor">
+        <i className={` pointer ${LoadPopUp ? "op0" : ""}`} id="cursor">
           rocket
         </i>
         {SpeedPopUp ? (
           <div className="speed-input absolute flex-center p10 w80 flex-bet">
-            <i className="material-icons mr10">speed</i>
+            <i className=" mr10">speed</i>
             <input
               className="w60"
               type="range"
@@ -418,7 +418,7 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
           console
         </div>
         <i
-          className={`material-icons blue-h mlauto ${SpeedPopUp ? "blue" : "blue-h"}`}
+          className={` blue-h mlauto ${SpeedPopUp ? "blue" : "blue-h"}`}
           onClick={() => {
             setSpeedPopUp(!SpeedPopUp);
             setLoadPopUp(false);
@@ -428,7 +428,7 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
         </i>
         {correction ? null : (
           <i
-            className={`material-icons ${LoadPopUp ? "blue" : "blue-h"}`}
+            className={` ${LoadPopUp ? "blue" : "blue-h"}`}
             onClick={() => {
               setLoadPopUp(!LoadPopUp);
               setSpeedPopUp(false);
@@ -437,10 +437,10 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
             open_in_new
           </i>
         )}
-        <i className="material-icons blue-h" >
+        <i className=" blue-h" >
         translate
         </i>
-        <i className="material-icons blue-h" onClick={resetDraw}>
+        <i className=" blue-h" onClick={resetDraw}>
           restart_alt
         </i>
       </div>
@@ -473,7 +473,7 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
           <div className="flex-bet ">
             <div className="cta cta-blue mlauto" onClick={() => returnedScript(ScriptValue.join("\n"))}>
               <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                <i className="material-icons">add</i>Submit
+                <i className="">add</i>Submit
               </span>
             </div>
           </div>
@@ -481,7 +481,7 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
           <div className="flex-bet ">
             <div className="cta cta-disable mlauto">
               <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                <i className="material-icons">close</i>Submit
+                <i className="">close</i>Submit
               </span>
             </div>
           </div>

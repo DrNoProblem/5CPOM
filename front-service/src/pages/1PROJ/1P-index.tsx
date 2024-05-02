@@ -471,13 +471,13 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           className={`dark-container scores flex-center g50  playerTurn${PlayerTurn}`}
           onClick={() => console.log(VirtualBoardRender)} //!
         >
-          <i className="material-icons blue" onClick={() => setMenuOpen("red win")}>
+          <i className=" blue" onClick={() => setMenuOpen("red win")}>
             flag
           </i>
-          <i className="material-icons" onClick={() => setMenuOpen("pause")}>
+          <i className="" onClick={() => setMenuOpen("pause")}>
             settings
           </i>
-          <i className="material-icons red" onClick={() => setMenuOpen("blue win")}>
+          <i className=" red" onClick={() => setMenuOpen("blue win")}>
             flag
           </i>
         </h1>

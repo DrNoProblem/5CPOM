@@ -27,7 +27,7 @@ const TableRenderSubmitStatusComp: FC<Props> = ({ limite, tableList, submit }) =
             <p className="w30">TASK</p>
             <p className="w40">DATE</p>
           </div>
-          <i className="material-icons mtbauto flex-center op0">expand_more</i>
+          <i className=" mtbauto flex-center op0">expand_more</i>
         </div>
       </li>
 
@@ -41,7 +41,7 @@ const TableRenderSubmitStatusComp: FC<Props> = ({ limite, tableList, submit }) =
                     <p className="w30">{e.taskTitle}</p>
                     <p className="w40">{formatDate(e.taskDate)}</p>
                   </div>
-                  {e.renderStatus ? <i className="material-icons mtbauto flex-center green">task_alt</i> : <i className="material-icons mtbauto flex-center red">close</i>}
+                  {e.renderStatus ? <i className=" mtbauto flex-center green">task_alt</i> : <i className=" mtbauto flex-center red">close</i>}
                 </Link>
               </li>
             ) : null

@@ -21,7 +21,7 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title }) => {
             <div className="flex-row flex-start-align flex-start-justify w100">
               <p className="w10">N°</p>
               <p className="w90">SCRIPT</p>
-              <i className="material-icons op0">add</i>
+              <i className=" op0">add</i>
             </div>
           </div>
         </li>
@@ -38,7 +38,7 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title }) => {
                       <p className="w10">{counter}</p>
                       <p className="w90">{draws.script}</p>
                       <i
-                        className="material-icons mtauto mbauto blue-h expand"
+                        className=" mtauto mbauto blue-h expand"
                         onClick={() => {
                           ActiveRow === draws.date + ""
                             ? setActiveRow("")
@@ -61,12 +61,12 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title }) => {
                           >
                             {draws.script === DrawView ? (
                               <span className="add-user flex-center g15">
-                                <i className="material-icons">visibility_off</i>
+                                <i className="">visibility_off</i>
                                 Hide
                               </span>
                             ) : (
                               <span className="add-user flex-center g15">
-                                <i className="material-icons">visibility</i>
+                                <i className="">visibility</i>
                                 View
                               </span>
                             )}
@@ -78,7 +78,7 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title }) => {
                               onClick={() => returnFunction(draws.script)}
                             >
                               <span className="flex-center g10">
-                                <i className="material-icons">task_alt</i>
+                                <i className="">task_alt</i>
                                 Choose
                               </span>
                             </div>

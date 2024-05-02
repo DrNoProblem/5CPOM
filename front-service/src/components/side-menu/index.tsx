@@ -17,7 +17,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
 
   return (
     <div
-      className={`side-menu dark-container relative flex-col g5 ${
+      className={`side-menu dark-container relative flex-col g5 display-from-left ${
         MiniMenu ? "mini-menu" : ""
       }`}
     >
@@ -28,7 +28,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
           actualPage === "/" ? " blue" : ""
         }`}
       >
-        <i className="material-icons">home</i>
+        <i className="">home</i>
         {!MiniMenu ? <p className="pl10 m0">Home</p> : null}
       </Link>
 
@@ -42,7 +42,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
             actualPage === "/1PROJ" ? " blue" : ""
           }`}
         >
-          <i className="material-icons">web</i>
+          <i className="">web</i>
           {!MiniMenu ? <p className="pl10 m0">1PROJ</p> : null}
         </Link>
         <Link
@@ -52,7 +52,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
             actualPage === "/2PROJ" ? " blue" : ""
           }`}
         >
-          <i className="material-icons">web</i>
+          <i className="">web</i>
           {!MiniMenu ? <p className="pl10 m0">2PROJ</p> : null}
         </Link>
         <Link
@@ -62,7 +62,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
             actualPage === "/3PROJ" ? " blue" : ""
           }`}
         >
-          <i className="material-icons">web</i>
+          <i className="">web</i>
           {!MiniMenu ? <p className="pl10 m0">3PROJ</p> : null}
         </Link>
         {actualPage.includes("/3PROJ/") ? <div className="space"></div> : null}
@@ -77,20 +77,20 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
           actualPage === "/manage-users" ? " blue" : ""
         }`}
       >
-        <i className="material-icons">group</i>
+        <i className="">group</i>
         {!MiniMenu ? <p className="pl10 m0">Manage Users</p> : null}
       </Link>
 
       {!MiniMenu ? (
         <i
-          className="material-icons normal-bg-h blue-h retactor"
+          className=" normal-bg-h blue-h retactor"
           onClick={() => toggleSizeMenu(true)}
         >
           first_page
         </i>
       ) : (
         <i
-          className="material-icons normal-bg-h blue-h retactor"
+          className=" normal-bg-h blue-h retactor"
           onClick={() => toggleSizeMenu(false)}
         >
           last_page

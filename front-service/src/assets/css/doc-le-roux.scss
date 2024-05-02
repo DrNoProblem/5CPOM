@@ -20,6 +20,10 @@ body {margin: 0;}
 .flex-end-justify {display: flex; justify-content: flex-end;}
 .flex-bet {display: flex; justify-content: space-between;}
 .flex-around {display: flex; justify-content: space-around;}
+.blur {filter: blur(10px);}
+.scroll {overflow: scroll;}
+.scroll-x {overflow-x: scroll;}
+.scroll-y {overflow-y: scroll;}
 .upper {text-transform: uppercase;}
 .lower {text-transform: lowercase;}
 .capit {text-transform: capitalize;}

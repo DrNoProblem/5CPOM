@@ -71,7 +71,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
           </Link>
           <h2 className="mb0">
             Room{" "}
-            <span className="blue" onClick={() => setPopUpActive("edit room")}>
+            <span className="blue" onClick={() => IsOwner ? setPopUpActive("edit room") : null}>
               {Room!.name}
             </span>{" "}
             :
@@ -83,7 +83,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
               <div className="dark-container relative">
                 <h2>{Room.name} Informations :</h2>
                 {IsOwner ? (
-                  <i className="material-icons blue-h absolute t0 r0 mt25 mr25" onClick={() => setPopUpActive("edit room")}>
+                  <i className=" blue-h absolute t0 r0 mt25 mr25" onClick={() => setPopUpActive("edit room")}>
                     settings
                   </i>
                 ) : null}
@@ -110,7 +110,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
               {IsOwner ? (
                 <div className="dark-container relative">
                   <h2>List of users :</h2>
-                  <i className="material-icons blue-h absolute t0 r0 mt25 mr25" onClick={() => setPopUpActive("edit room")}>
+                  <i className=" blue-h absolute t0 r0 mt25 mr25" onClick={() => setPopUpActive("edit room")}>
                     settings
                   </i>
                   <ul className="table-list flex-col mb0 ">
@@ -152,7 +152,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                   {IsOwner ? (
                     <div className="flex-row flex-bet normal-bg-h cta  blue-h" onClick={() => setPopUpActive("add task")}>
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                        <i className="material-icons">add</i>
+                        <i className="">add</i>
                         Add new Task
                       </span>
                     </div>
@@ -171,7 +171,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                         </p>
                         <p className="w10">CORRECTION</p>
                       </div>
-                      <i className="material-icons mtbauto flex-center op0 padded">expand_more</i>
+                      <i className=" mtbauto flex-center op0 padded">expand_more</i>
                     </div>
                   </li>
 
@@ -187,21 +187,21 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                                   {IsOwner ? (
                                     `${task.renders.length} / ${Room.users.length}`
                                   ) : task.renders.some((r) => r.id === currentUser._id) ? (
-                                    <i className="material-icons green">done</i>
+                                    <i className=" green">done</i>
                                   ) : (
-                                    <i className="material-icons red">close</i>
+                                    <i className=" red">close</i>
                                   )}
                                 </p>
                                 <p className="w10">
-                                  <i className="material-icons">{!!task.correction ? "done" : "close"}</i>
+                                  <i className="">{!!task.correction ? "done" : "close"}</i>
                                 </p>
                               </div>
                               {isTaskProblem(task) && IsOwner ? (
-                                <i className="material-icons warning red" data-title={isTaskProblem(task)}>
+                                <i className=" warning red" data-title={isTaskProblem(task)}>
                                   warning
                                 </i>
                               ) : (
-                                <i className="material-icons warning op0">warning</i>
+                                <i className=" warning op0">warning</i>
                               )}
                             </Link>
                           </li>

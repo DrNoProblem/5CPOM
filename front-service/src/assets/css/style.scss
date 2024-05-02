@@ -18,6 +18,23 @@
   transition: all ease-in-out 0.1s;
 }
 
+*::-webkit-scrollbar {
+  width: 5px;
+  margin-right: 5px;
+  border-radius: 100px !important;
+}
+*::-webkit-scrollbar-thumb {
+  width: 50px;
+  background-color: var(--color-dark-bg);
+  border-radius: 100px !important;
+  cursor: pointer;
+  border: var(--color-normal-bg) 0px solid;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-blue);
+}
+
 body {
   margin: 0;
   background: var(--color-normal-bg);
@@ -30,6 +47,18 @@ body::-webkit-scrollbar {
 i {
   user-select: none;
   cursor: pointer;
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
 }
 
 h2 {
@@ -93,34 +122,58 @@ h2 {
 
 .blue-h:hover {
   color: var(--color-blue);
+  * {
+    color: var(--color-blue);
+  }
 }
 
 .red-h:hover {
   color: var(--color-red);
+  * {
+    color: var(--color-red);
+  }
 }
 
 .green-h:hover {
   color: var(--color-green);
+  * {
+    color: var(--color-green);
+  }
 }
 
 .orange-h:hover {
   color: var(--color-orange);
+  * {
+    color: var(--color-orange);
+  }
 }
 
 .white-h:hover {
   color: var(--color-white);
+  * {
+    color: var(--color-white);
+  }
 }
 
 .black-h:hover {
   color: var(--color-black);
+  * {
+    color: var(--color-black);
+  }
 }
 
 .lightgrey-h:hover {
   color: var(--color-lightgrey);
+  * {
+    color: var(--color-lightgrey);
+  }
 }
 
 .grey-h:hover {
   color: var(--color-grey);
+  * {
+    color: var(--color-grey);
+  }
 }
 
 .blue-bg {
@@ -294,6 +347,14 @@ h2 {
   border: 2px solid var(--color-blue);
   * {
     color: var(--color-blue);
+  }
+}
+
+.cta-full-blue {
+  background-color: var(--color-blue);
+  border: 2px solid var(--color-blue);
+  * {
+    color: var(--color-white);
   }
 }
 
@@ -565,16 +626,63 @@ textarea::-webkit-scrollbar-thumb:hover {
   overflow: hidden;
 }
 
-.material-icons.table-no-active {
+i.table-no-active {
   transform: rotate(-90deg);
 }
 
-.material-icons.table-active {
+i.table-active {
   transform: rotate(0deg);
 }
 
 a.icon {
   margin: auto 0;
+}
+
+.user-login {
+  width: 100%;
+  height: 100vh;
+}
+
+.user-login > div.bloc {
+  width: 100vw;
+  height: 100vh;
+  background-color: unset;
+  overflow: unset;
+}
+
+.log-container {
+  display: flex;
+  justify-content: center;
+
+  padding-bottom: 5vh;
+  >* {
+    max-width: 500px;
+  }
+}
+
+.user-login .logo {
+  margin-top: 5vh;
+}
+
+.user-login .blur-dark-bg {
+  height: 200%;
+  width: 200%;
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  backdrop-filter: blur(10px);
+  background-color: #252e37d0;
+  z-index: 0;
+}
+
+.user-login .forget {
+  align-self: flex-end;
+}
+
+.user-login .forget span:hover {
+  color: var(--color-blue);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .table-list {
@@ -876,12 +984,12 @@ a.icon {
   }
 }
 
-i.material-icons.reform-slug-input {
+i.reform-slug-input {
   margin: auto 25px auto 0px;
   transform: translateX(calc(-100% - 15px));
 }
 
-i.material-icons.reform-slug-input:hover {
+i.reform-slug-input:hover {
   color: var(--color-red);
 }
 

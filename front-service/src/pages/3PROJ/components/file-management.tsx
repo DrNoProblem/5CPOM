@@ -115,15 +115,15 @@ const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUs
       {SelectedFileToUpload ? (
         <div className="border-bot-normal pb15">
           <div className="w100 g15 mb15 flex-center-align">
-            <i className="material-icons">folder</i>
+            <i className="">folder</i>
             <span>{SelectedFileToUpload.name}</span>
-            <i className="material-icons red-h mlauto normal" onClick={() => setSelectedFileToUpload(null)}>
+            <i className=" red-h mlauto normal" onClick={() => setSelectedFileToUpload(null)}>
               delete
             </i>
           </div>
           <div className="cta blue-h normal-bg" onClick={UploadFileContent}>
             <span className="add-user flex-row flex-center-align flex-start-justify g15">
-              <i className="material-icons">keyboard_tab</i>
+              <i className="">keyboard_tab</i>
               Save imported script
             </span>
           </div>
@@ -133,13 +133,13 @@ const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUs
       <div className="flex-wrap g15">
         <div className="cta blue-h normal-bg" onClick={uploadScriptOnDataBase}>
           <span className="add-user flex-row flex-center-align flex-start-justify g15">
-            <i className="material-icons">save</i>Save script
+            <i className="">save</i>Save script
           </span>
         </div>
 
         <div className="cta blue-h normal-bg" onClick={downloadScript}>
           <span className="add-user flex-row flex-center-align flex-start-justify g15">
-            <i className="material-icons">download</i>
+            <i className="">download</i>
             Download script
           </span>
         </div>

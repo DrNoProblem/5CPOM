@@ -22,7 +22,7 @@ const DrawPage: FC<Props> = ({ currentUser, script, SetLog }) => {
             <span>Back</span>
           </Link>
           <h2 className="mb0">Draw :</h2>
-          <i className="material-icons" onClick={() => setParamsActive(true)}>
+          <i className="" onClick={() => setParamsActive(true)}>
             settings
           </i>
         </div>
@@ -43,7 +43,7 @@ const DrawPage: FC<Props> = ({ currentUser, script, SetLog }) => {
               <h2 className="">
                 Settings :
                 <i
-                  className="material-icons red-h absolute r0 mr50"
+                  className=" red-h absolute r0 mr50"
                   onClick={() => {
                     setParamsActive(false);
                   }}

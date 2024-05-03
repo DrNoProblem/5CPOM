@@ -20,7 +20,6 @@ type Props = {
   Add: boolean;
 };
 const EditTaskInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentRoom, Add }) => {
-  let history = useHistory();
   const [ReadyToSend, setReadyToSend] = useState<Boolean>(false);
 
   const [SelectTaskTitle, setSelectTaskTitle] = useState<string | "">(defaultValues.title);
@@ -47,7 +46,7 @@ const EditTaskInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentRoom,
           setSelectTaskTitle("");
           setSelectTaskDetail("");
           setSelectTaskDate(formatDateForInput(false));
-          functionReturned(true);
+          functionReturned('succes');
         } else displayStatusRequest("error " + e.status + " : " + e.response.message, true);
       });
     } else displayStatusRequest("error : ", true);
@@ -67,21 +66,9 @@ const EditTaskInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentRoom,
   };
 
   const closeModal = () => {
-    functionReturned(false);
+    functionReturned('');
   };
 
-  const deleteCurrentTask = () => {
-    DeleteTaskById(getToken()!, CurrentRoom!._id).then((result) => {
-      if (isHttpStatusValid(result.status)) {
-        displayStatusRequest("task deleted successfully", false);
-        setSelectTaskTitle("");
-        setSelectTaskDetail("");
-        setSelectTaskDate(formatDateForInput(false));
-        functionReturned(true);
-        history.push(`/room/${CurrentRoom!._id}`);
-      } else displayStatusRequest("error " + result.status + " : " + result.response.message, true);
-    });
-  };
 
   return (
     <div className="dark-container flex-col w30">
@@ -108,13 +95,13 @@ const EditTaskInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentRoom,
       <textarea onChange={(e) => setSelectTaskDetail(e.currentTarget.value)} defaultValue={SelectTaskDetail} />
 
       <div className="flex-row g15 mt15">
-        {!Add ? (
-          <div className="cta cta-full-red" onClick={() => functionReturned(false)}>
+        {Add ? null : (
+          <div className="cta cta-red" onClick={() => functionReturned('delete')}>
             <span className="flex-center g10">
               <i className="">delete</i>Delete
             </span>
           </div>
-        ) : null}
+        )}
         {ReadyToSend ? (
           <div
             className="cta cta-blue mlauto"

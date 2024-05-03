@@ -53,7 +53,7 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
 
   const AddNewRoom = (body: RoomInfoUpload) => {
     console.log(body);
-        if (areAllPropertiesEmpty(body)) {
+    if (areAllPropertiesEmpty(body)) {
       addRoom(body.name, body.co_owner, body.users).then((result) => {
         if (isHttpStatusValid(result.status)) {
           displayStatusRequest("user added successfully", false);
@@ -76,8 +76,10 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
 
   return (
     <div className="dark-container flex-col relative display-from-left zi2 w100">
-    {Add ? <h2 className="">Add new Room :</h2> : <h2 className="">Edit Room :</h2>}
-      <i className=" red-h absolute r0 mr20" onClick={closeModal}>close</i>
+      {Add ? <h2 className="">Add new Room :</h2> : <h2 className="">Edit Room :</h2>}
+      <i className=" red-h absolute r0 mr20" onClick={closeModal}>
+        close
+      </i>
       <div className="flex-col adding-room">
         <p className="m0 mb20 mt20">Room name :</p>
         <input
@@ -169,30 +171,39 @@ const EditRoomInfo: FC<Props> = ({ defaultValues, functionReturned, CurrentUser,
             )}
           </div>
         </div>
-        {ReadyToSend ? (
-          <div
-            className="cta mtauto mlauto cta-blue to-right-bottom"
-            onClick={() => (Add ? AddNewRoom(objectFiledAddRoom) : updateRoom(objectFiledAddRoom))}
-          >
-            {Add ? (
+        <div className="flex">
+          {Add ? null : (
+            <div className="cta cta-red" onClick={() => functionReturned("delete")}>
               <span className="flex-center g10">
-                <i className="">add</i>
-                create
+                <i className="">delete</i>Delete
               </span>
-            ) : (
-              <span className="flex-center g10">
-                <i className="">edit</i>
-                edit
-              </span>
-            )}
-          </div>
-        ) : (
-          <div className="cta mtauto mlauto cta-disable to-right-bottom">
-            <i className="">close</i>
+            </div>
+          )}
+          {ReadyToSend ? (
+            <div
+              className="cta mtauto mlauto cta-blue to-right-bottom"
+              onClick={() => (Add ? AddNewRoom(objectFiledAddRoom) : updateRoom(objectFiledAddRoom))}
+            >
+              {Add ? (
+                <span className="flex-center g10">
+                  <i className="">add</i>
+                  create
+                </span>
+              ) : (
+                <span className="flex-center g10">
+                  <i className="">edit</i>
+                  edit
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className="cta mtauto mlauto cta-disable to-right-bottom">
+              <i className="">close</i>
 
-            {Add ? "create" : "edit"}
-          </div>
-        )}
+              {Add ? "create" : "edit"}
+            </div>
+          )}
+        </div>
       </div>
 
       {SelectUsersActive ? (

@@ -1,13 +1,14 @@
 import React, { FC, useEffect, useState } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps, useHistory } from "react-router-dom";
 import addCorrectionToTask from "../../../api-request/task/correction-add";
 import addRenderToTask from "../../../api-request/task/render-add";
+import DeleteTaskById from "../../../api-request/task/task-delete";
 import { isDatePast } from "../../../helpers/check-date-passed";
 import isHttpStatusValid from "../../../helpers/check-status";
 import { formatDate } from "../../../helpers/display-date-format";
 import displayStatusRequest from "../../../helpers/display-status-request";
-import formatDateForInput from "../../../helpers/formatDateForInput";
 import getNameById from "../../../helpers/getNameById";
+import { getToken } from "../../../helpers/token-verifier";
 import MiniUserModel from "../../../models/mini-user-model";
 import RoomModel from "../../../models/room-model";
 import TaskModel from "../../../models/tasks-model";
@@ -16,6 +17,7 @@ import "../3P-style.scss";
 import ConsoleDrawComponent from "../components/console-draw";
 import TableDraw from "../components/draw-list";
 import EditTaskInfo from "../components/fields-task-info";
+import ModalConfirmDelete from "../components/confirmation-delete";
 
 interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
   currentUser: UserModel;
@@ -141,9 +143,26 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
     setPopUpActive(false);
   };
 
-  const SuccessInfoSubmited = (update: boolean) => {
-    if (update) SetLog();
-    setPopUpActive(false);
+  const SuccessInfoSubmited = (update: string) => {
+    if (update === "succes") SetLog();
+    if (update === "delete") setPopUpActive("delete task");
+    else setPopUpActive(false);
+  };
+  let history = useHistory();
+
+  const ConfirmToDelete = (deleteTask: boolean) => {
+    if (deleteTask) {
+      DeleteTaskById(getToken()!, Task!._id).then((result) => {
+        if (isHttpStatusValid(result.status)) {
+          displayStatusRequest("task deleted successfully", false);
+          SetLog();
+          history.push(`/room/${currentUser!._id}`);
+        } else displayStatusRequest("error " + result.status + " : " + result.response.message, true);
+      });
+    }
+    else{
+      SuccessInfoSubmited('')
+    }
   };
 
   return Task && Room ? (
@@ -208,7 +227,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                               <i className="">edit</i>Redate
                             </span>
                           </div>
-                          <div className="cta cta-red">
+                          <div className="cta cta-red" onClick={() => setPopUpActive("delete task")}>
                             <span className="flex-center g10">
                               <i className="">delete</i>delete
                             </span>
@@ -605,6 +624,10 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                 CurrentRoom={Room}
                 Add={false}
               />
+            ) : null}
+
+            {PopUpActive === "delete task" ? (
+              <ModalConfirmDelete functionReturned={ConfirmToDelete} itemTitle={Task.title} />
             ) : null}
           </div>
         ) : null}

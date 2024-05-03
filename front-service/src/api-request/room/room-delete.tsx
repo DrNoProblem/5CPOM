@@ -1,8 +1,14 @@
-async function deleteRoomById(roomId: string) {
-    const response = await fetch(`http://localhost:4100/room/deleteRoom/${roomId}`, {
-        method: "DELETE",
+async function DeleteRoomById(token:string, id: string) {
+    var data: any = []
+    const response = await fetch(`http://localhost:4100/Room/deleteRoom/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token // token d'authentification
+        },
     });
-    const data = { response: await response.json(), status: response.status };
-    return data;
+    data = {response : await response.json(), status: response.status};
+    return data
 }
-export default deleteRoomById;
+
+export default DeleteRoomById;

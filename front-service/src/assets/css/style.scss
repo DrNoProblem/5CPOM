@@ -528,6 +528,16 @@ i.warning:hover::after {
   background-color: var(--color-blue);
 }
 
+.modal-delete {
+  width: 500px;
+  position: relative;
+  h1 {
+    width: 100%;
+    text-align: center;
+    letter-spacing: 25px;
+  }
+}
+
 .dark-background {
   position: fixed;
   top: 0 !important;

@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const config = require("./config");
 
+const drawRoutes = require("./draws/draw.routes");
 const roomRoutes = require("./rooms/room.routes");
 const taskRoutes = require("./tasks/task.routes");
 
@@ -31,6 +32,7 @@ mongoose
 // Routes
 app.use("/room", roomRoutes);
 app.use("/task", taskRoutes);
+app.use("/draw", drawRoutes);
 
 // Default route
 app.get("/", (req, res) => {

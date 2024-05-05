@@ -3,13 +3,18 @@ import { Link } from "react-router-dom";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
 import TableDraw from "../components/draw-list";
+import DataModel from "../../../models/data-model";
 
 type Props = {
   currentUser: UserModel;
   SetLog: Function;
+  Data: DataModel;
 };
 
-const DrawnListPage: FC<Props> = ({ currentUser }) => {
+const DrawnListPage: FC<Props> = ({ currentUser, Data }) => {
+
+  let DrawsList = Data.draws.filter((draw) => currentUser.draws.includes(draw._id));
+
   return (
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
@@ -20,7 +25,7 @@ const DrawnListPage: FC<Props> = ({ currentUser }) => {
           <h2 className="m0">Draw list :</h2>
         </div>
 
-        <TableDraw currentUser={currentUser} returnFunction={false} title="List of script saved online :" />
+        <TableDraw currentUser={currentUser} returnFunction={false} title="List of script saved online :" DrawsList={DrawsList} />
       </div>
     </div>
   );

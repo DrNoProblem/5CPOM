@@ -9,22 +9,20 @@ import { formatDate } from "../../../helpers/display-date-format";
 import displayStatusRequest from "../../../helpers/display-status-request";
 import getNameById from "../../../helpers/getNameById";
 import { getToken } from "../../../helpers/token-verifier";
-import MiniUserModel from "../../../models/mini-user-model";
 import RoomModel from "../../../models/room-model";
 import TaskModel from "../../../models/tasks-model";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
+import ModalConfirmDelete from "../components/confirmation-delete";
 import ConsoleDrawComponent from "../components/console-draw";
 import TableDraw from "../components/draw-list";
 import EditTaskInfo from "../components/fields-task-info";
-import ModalConfirmDelete from "../components/confirmation-delete";
+import DataModel from "../../../models/data-model";
 
 interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
   currentUser: UserModel;
   SetLog: Function;
-  rooms: RoomModel[];
-  tasks: TaskModel[];
-  userList: MiniUserModel[];
+  Data: DataModel;
 }
 
 type UserListNote = {
@@ -40,7 +38,7 @@ function countNegativeOnes(entries: UserListNote[]): number {
   }, 0);
 }
 
-const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks, userList }) => {
+const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
   const [Task, setTask] = useState<TaskModel>();
   const [Room, setRoom] = useState<RoomModel>();
 
@@ -55,9 +53,9 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
   const [PopUpActive, setPopUpActive] = useState<string | false>(false);
 
   useEffect(() => {
-    tasks.forEach((task) => {
+    Data.tasks.forEach((task) => {
       if (task._id === match.params.taskid) {
-        rooms.forEach((room) => {
+        Data.rooms.forEach((room) => {
           if (room.tasks.includes(task._id)) {
             setTask(task);
             setTempoTaskRender(task.renders);
@@ -70,7 +68,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
         });
       }
     });
-  }, [match.params, tasks, rooms, currentUser]);
+  }, [match.params, Data, currentUser]);
 
   const areAllPropertiesEmpty = (obj: any) => {
     if (obj.title === "") return false;
@@ -349,7 +347,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                       <li key={userId}>
                         <div className="flex-row flex-bet">
                           <div className="flex-row flex-center-align w100">
-                            <p className="w80">{getNameById(userId, userList)}</p>
+                            <p className="w80">{getNameById(userId, Data.users)}</p>
                             {Task.renders.some((e) => e.id === userId) ? (
                               <i className=" mtbauto flex-center green w20">task_alt</i>
                             ) : (
@@ -445,7 +443,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                             >
                               <div className="flex-row flex-bet">
                                 <div className="flex-row flex-center-align w100">
-                                  <p className="w60">{getNameById(user.id, userList)}</p>
+                                  <p className="w60">{getNameById(user.id, Data.users)}</p>
                                   <p className="txt-center w40">{user.note} /100</p>
                                   <i className=" flex-center green">task_alt</i>
                                 </div>
@@ -459,7 +457,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                           <li className="disabled-li" key={userId}>
                             <div className="flex-row flex-bet">
                               <div className="flex-row flex-center-align w100">
-                                <p className="w60">{getNameById(userId, userList)}</p>
+                                <p className="w60">{getNameById(userId, Data.users)}</p>
                                 <p className="txt-center w40">0/100</p>
                                 <i className=" flex-center red">close</i>
                               </div>
@@ -492,7 +490,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
                   {WorkView ? (
                     <div className="flex g20">
                       <div className="dark-container flex-col relative display-from-bottom zi2 w100 flex-bet g15">
-                        <h2 className="m0">Script of {getNameById(WorkView.id, userList)}</h2>
+                        <h2 className="m0">Script of {getNameById(WorkView.id, Data.users)}</h2>
                         <div className="flex g25">
                           <span className="normal-container flex-center fs20 bold">
                             <input
@@ -554,7 +552,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
             ) : null}
 
             {PopUpActive === "choose render" ? (
-              <TableDraw currentUser={currentUser} returnFunction={submitUserRender} title="" />
+              <TableDraw currentUser={currentUser} returnFunction={submitUserRender} title="" DrawsList={[]} />
             ) : null}
 
             {PopUpActive === "submit render" ? (
@@ -577,7 +575,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, rooms, tasks,
             ) : null}
 
             {PopUpActive === "choose correction" ? (
-              <TableDraw currentUser={currentUser} returnFunction={submitOwnerCorrection} title="" />
+              <TableDraw currentUser={currentUser} returnFunction={submitOwnerCorrection} title="" DrawsList={[]} />
             ) : null}
             {PopUpActive === "submit correction" ? (
               <ConsoleDrawComponent

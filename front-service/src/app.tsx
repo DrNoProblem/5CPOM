@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { match, Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 
 //? assets
 import "./assets/css/animations.scss";
@@ -25,15 +25,16 @@ import { getToken, removeToken } from "./helpers/token-verifier";
 //? components
 import Header5CPOM from "./components/header";
 import SideMenu from "./components/side-menu";
-import UserLogIn from "./pages/authentification";
 import UserRecover from "./components/user-recover";
+import UserLogIn from "./pages/authentification";
 
 //? pages
 import HomePage1PROJ from "./pages/1PROJ/1P-index";
 import HomePage2PROJ from "./pages/2PROJ/2P-index";
 import HomePage3PROJ from "./pages/3PROJ/3P-index";
 import DrawnListPage from "./pages/3PROJ/pages/draw-list-pages";
-import DrawPage from "./pages/3PROJ/pages/draw-page";
+import DrawPage from "./pages/3PROJ/pages/draw-new-page";
+import DrawPageById from "./pages/3PROJ/pages/draw-page-by-id";
 import RoomPageById from "./pages/3PROJ/pages/room-page-by-id";
 import RoomTaskPageById from "./pages/3PROJ/pages/task-page-by-id";
 import HomePage from "./pages/home";
@@ -43,24 +44,22 @@ import PageNotFound from "./pages/not-found";
 import Unauthorized from "./pages/unauthorized";
 
 //? models
+import getDrawsList from "./api-request/draw/draw-get-all";
+import DataModel from "./models/data-model";
+import DrawModel from "./models/draw-model";
 import MiniUserModel from "./models/mini-user-model";
 import RoomModel from "./models/room-model";
 import TaskModel from "./models/tasks-model";
 import UserModel from "./models/user-model";
 
 //? mocks
-import voidRoom from "./models/mocks/void-room";
-import voidTask from "./models/mocks/void-task";
 import voidUser from "./models/mocks/void-user";
 
 const App: FunctionComponent = () => {
   const [isLog, setIsLog] = useState<string | Boolean>(false);
   const [currentUser, setCurrentUser] = useState<UserModel>(voidUser);
-  const [usersList, setUsersList] = useState<MiniUserModel[]>([]);
 
-  const [CompleteUsersList, setCompleteUsersList] = useState<UserModel[]>([voidUser]);
-  const [TasksList, setTasksList] = useState<TaskModel[]>([voidTask]);
-  const [RoomsList, setRoomsList] = useState<RoomModel[]>([voidRoom]);
+  const [Data, setData] = useState<DataModel>();
 
   useEffect(() => {
     SetLog();
@@ -73,42 +72,45 @@ const App: FunctionComponent = () => {
     console.log(token);
 
     if (token) {
-      getCurrent(token).then((result) => {
-        if (isHttpStatusValid(result.status)) {
-          setCurrentUser(result.response);
-          getRoomsList().then((result) => {
-            if (isHttpStatusValid(result.status)) setRoomsList(result.response);
-          })
-          getTasksList().then((result) => {
-            if (isHttpStatusValid(result.status)) setTasksList(result.response);
-          })
-          
-          if (result.response.role === "admin" || result.response.role === "superAdmin") {
-            getCompleteUsersList().then((users) => {
-              if (isHttpStatusValid(users.status)) {
-                setCompleteUsersList(users.response);
-                setUsersList(
-                  users.response.map((user: UserModel) => ({
-                    _id: user._id,
-                    name: user.name,
-                  }))
-                );
-              } else displayStatusRequest("error " + users.status + " : " + users.response.message, true);
-            });
-          } else if (result.response.role === "user") {
-            getCompleteUsersList().then((users) => {
-              if (isHttpStatusValid(users.status)) {
-                getUsersList();
-              } else displayStatusRequest("error " + users.status + " : " + users.response.message, true);
-            });
+      getCurrent(token).then((CurrentUserResult) => {
+        if (isHttpStatusValid(CurrentUserResult.status)) {
+          setCurrentUser(CurrentUserResult.response);
+
+          let usersPromise;
+          if (CurrentUserResult.response.role === "admin" || CurrentUserResult.response.role === "superAdmin") {
+            usersPromise = getCompleteUsersList();
+          } else if (CurrentUserResult.response.role === "user") {
+            usersPromise = getUsersList();
           } else displayStatusRequest("error  : Unreconized User", true);
-        } else displayStatusRequest("error " + result.status + " : " + result.response.message, true);
+
+          Promise.all([getRoomsList(), getTasksList(), getDrawsList(), usersPromise])
+            .then((results) => {
+              const [RoomsResult, TasksResult, DrawsResult, UsersResult] = results;
+
+              let RoomsList: RoomModel[] = [];
+              let TasksList: TaskModel[] = [];
+              let DrawsList: DrawModel[] = [];
+              let UsersList: UserModel[] | MiniUserModel[] = [];
+
+              if (isHttpStatusValid(RoomsResult.status)) RoomsList = RoomsResult.response;
+              if (isHttpStatusValid(TasksResult.status)) TasksList = TasksResult.response;
+              if (isHttpStatusValid(DrawsResult.status)) DrawsList = DrawsResult.response;
+              if (isHttpStatusValid(UsersResult.status)) UsersList = UsersResult.response;
+
+              setData({
+                rooms: RoomsList,
+                tasks: TasksList,
+                draws: DrawsList,
+                users: UsersList,
+              });
+            })
+            .catch((error) => {
+              displayStatusRequest("error : " + error, true);
+            });
+        } else displayStatusRequest("error " + CurrentUserResult.status + " : " + CurrentUserResult.response.message, true);
       });
     }
-    console.log(CompleteUsersList);
-    console.log(usersList);
-    console.log(RoomsList);
-    console.log(TasksList);
+    console.log(Data);
     setIsLog(token);
   };
 
@@ -130,7 +132,7 @@ const App: FunctionComponent = () => {
     setMiniMenu(value);
   };
 
-  if (checklog() && currentUser) {
+  if (checklog() && currentUser && Data) {
     return (
       <Router>
         <div>
@@ -146,20 +148,23 @@ const App: FunctionComponent = () => {
                 <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} />} />{" "}
                 <Route
                   path="/3PROJ/room/:roomid/task/:taskid"
-                  render={(props) => (
-                    <RoomTaskPageById {...props} currentUser={currentUser} SetLog={SetLog} tasks={TasksList} rooms={RoomsList} userList={usersList} />
-                  )}
+                  render={(props) => <RoomTaskPageById {...props} currentUser={currentUser} SetLog={SetLog} Data={Data} />}
                 />
                 <Route
                   path="/3PROJ/room/:roomid"
-                  render={(props) => (
-                    <RoomPageById {...props} currentUser={currentUser} SetLog={SetLog} tasks={TasksList} rooms={RoomsList} usersList={usersList}/>
-                  )}
+                  render={(props) => <RoomPageById {...props} currentUser={currentUser} SetLog={SetLog} Data={Data} />}
                 />
-                <Route path="/3PROJ/draw/" render={(props) => <DrawPage currentUser={currentUser} SetLog={SetLog} script={""} />} />
+                <Route
+                  path="/3PROJ/draw/"
+                  render={() => <DrawPage currentUser={currentUser} SetLog={SetLog} script={""} Data={Data} />}
+                />
+                <Route
+                  path="/3PROJ/draw/:drawid"
+                  render={(props) => <DrawPageById {...props} currentUser={currentUser} SetLog={SetLog} Data={Data} />}
+                />
                 <Route
                   path="/3PROJ/draw-history/"
-                  render={(props) => <DrawnListPage currentUser={currentUser} SetLog={SetLog} />}
+                  render={() => <DrawnListPage currentUser={currentUser} SetLog={SetLog} Data={Data} />}
                 />
                 <Route
                   exact
@@ -167,10 +172,10 @@ const App: FunctionComponent = () => {
                   render={() => (
                     <HomePage3PROJ
                       currentUser={currentUser}
-                      usersList={usersList}
                       SetLog={SetLog}
-                      tasks={TasksList}
-                      rooms={RoomsList}
+                      tasks={Data.tasks}
+                      rooms={Data.rooms}
+                      usersList={Data.users}
                     />
                   )}
                 />
@@ -182,7 +187,7 @@ const App: FunctionComponent = () => {
                       currentUser.role === "user" ? (
                         <Unauthorized />
                       ) : (
-                        <ManageUsers users={CompleteUsersList} currentUser={currentUser} SetLog={SetLog} />
+                        <ManageUsers users={Data.users as UserModel[]} currentUser={currentUser} SetLog={SetLog} />
                       )
                     }
                   />
@@ -192,7 +197,7 @@ const App: FunctionComponent = () => {
                   render={(props) => (
                     <UserSettings
                       {...props}
-                      userList={currentUser.role === "user" ? [currentUser] : CompleteUsersList}
+                      userList={currentUser.role === "user" ? [currentUser] : (Data.users as UserModel[])}
                       SetLog={SetLog}
                     />
                   )}

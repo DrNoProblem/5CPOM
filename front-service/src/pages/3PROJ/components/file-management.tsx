@@ -86,7 +86,7 @@ const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUs
     if (fileData) {
       console.log(fileData.fileBlob);
       const token = getToken();
-      if (token) {
+      if (token) {/* 
         CurrentUserDrawsUpdate(currentUser, "draws", [...currentUser.draws, {date: new Date(), script: script}]).then(
           (result) => {
             if (isHttpStatusValid(result.status)) {
@@ -94,7 +94,7 @@ const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUs
               displayStatusRequest("Script uploaded successfully", false);
             } else displayStatusRequest("error : uploading script", true);
           }
-        );
+        ); */
       }
 
       // Logic to upload `fileData.fileBlob` to your database

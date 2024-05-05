@@ -15,13 +15,12 @@ import "../3P-style.scss";
 import ModalConfirmDelete from "../components/confirmation-delete";
 import EditRoomInfo from "../components/fields-room-info";
 import EditTaskInfo from "../components/fields-task-info";
+import DataModel from "../../../models/data-model";
 
 interface Props extends RouteComponentProps<{ roomid: string }> {
   currentUser: UserModel;
   SetLog: Function;
-  rooms: RoomModel[];
-  tasks: TaskModel[];
-  usersList: MiniUserModel[];
+  Data: DataModel;
 }
 
 const countUserRenders = (userId: string, tasks: TaskModel[]) => {
@@ -40,7 +39,7 @@ const countTaskPassed = (tasks: TaskModel[]) => {
   }, 0);
 };
 
-const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, SetLog }) => {
+const RoomPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
   const [IsOwner, setIsOwner] = useState<boolean>(false);
 
   const [Room, setRoom] = useState<RoomModel>();
@@ -54,13 +53,13 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
   };
 
   useEffect(() => {
-    rooms.forEach((room) => {
+    Data.rooms.forEach((room) => {
       if (room._id === match.params.roomid) {
         setRoom(room);
         setIsOwner(room.co_owner === currentUser._id || room.owner === currentUser._id);
       }
     });
-  }, [match.params, tasks, rooms]);
+  }, [match.params, Data]);
 
 
   const SuccessInfoSubmited = (update: string) => {
@@ -111,19 +110,19 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                 <div className="flex-col">
                   <p className="flex">
                     <strong className="w40">Owner : </strong>
-                    {getNameById(Room.owner, usersList)}
+                    {getNameById(Room.owner, Data.users)}
                   </p>
                   <p className="flex">
                     <strong className="w40">Co-Owner : </strong>
-                    {getNameById(Room.co_owner, usersList)}
+                    {getNameById(Room.co_owner, Data.users)}
                   </p>
                   <p className="flex">
                     <strong className="w40">Running Task : </strong>
-                    {Room.tasks.length - countTaskPassed(tasks.filter((task) => Room.tasks.includes(task._id)))}
+                    {Room.tasks.length - countTaskPassed(Data.tasks.filter((task) => Room.tasks.includes(task._id)))}
                   </p>
                   <p className="flex">
                     <strong className="w40">Ended Task : </strong>
-                    {countTaskPassed(tasks.filter((task) => Room.tasks.includes(task._id)))}
+                    {countTaskPassed(Data.tasks.filter((task) => Room.tasks.includes(task._id)))}
                   </p>
                 </div>
               </div>
@@ -149,11 +148,11 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                           <li key={userId}>
                             <div className="flex-row flex-bet">
                               <div className="flex-row flex-center-align w100">
-                                <p className="w75">{getNameById(userId, usersList)}</p>
+                                <p className="w75">{getNameById(userId, Data.users)}</p>
                                 <p className="w20 pl20">
                                   {countUserRenders(
                                     userId,
-                                    tasks.filter((task) => Room.tasks.includes(task._id))
+                                    Data.tasks.filter((task) => Room.tasks.includes(task._id))
                                   )}
                                   / {Room.tasks.length}
                                 </p>
@@ -196,8 +195,8 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                     </div>
                   </li>
 
-                  {tasks
-                    ? tasks.map((task) =>
+                  {Data.tasks
+                    ? Data.tasks.map((task) =>
                         Room.tasks.includes(task._id) ? (
                           <li key={task._id}>
                             <Link to={`/3PROJ/room/${Room._id}/task/${task._id}`} className="flex-row flex-bet">
@@ -258,7 +257,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, rooms, tasks, usersList, 
                   }}
                   functionReturned={SuccessInfoSubmited}
                   CurrentUser={currentUser}
-                  usersList={usersList}
+                  usersList={Data.users}
                   Add={false}
                 />
               ) : null}

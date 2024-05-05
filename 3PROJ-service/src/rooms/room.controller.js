@@ -2,8 +2,8 @@ const Room = require("./room.model");
 const Task = require("../tasks/task.model");
 const { promisify } = require("util");
 const AppError = require("../utils/appError");
-const { validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
+const { validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
 
 exports.AddRoom = async (req, res, next) => {
   try {
@@ -27,7 +27,7 @@ exports.AddRoom = async (req, res, next) => {
       return res.status(400).json({ status: "fail", message: "Validation error", errors: errors.array() });
     }
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    const newRoom = await Room.create({ name, owner: decoded.id, co_owner, users, tasks: [] });
+    const newRoom = await Room.create({ name, owner: decoded.id, co_owner, users, tasks: [""] });
     res.status(201).json({
       status: "success",
       data: {
@@ -55,8 +55,12 @@ exports.GetRoomById = async (req, res, next) => {
   }
 };
 exports.updateRoomById = async (req, res, next) => {
+  const roomId = req.params.roomId;
+  const updates = req.body;
   try {
-    const room = "";
+    if (Object.keys(updates).length === 0) return res.status(400).send({ message: "No updates provided" });
+    const room = await Room.findByIdAndUpdate(roomId, updates, { new: true, runValidators: true });
+    if (!room) return res.status(404).send({ message: "Room not found" });
     res.json(room);
   } catch (err) {
     next(err);

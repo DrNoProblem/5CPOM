@@ -1,18 +1,34 @@
-import React, { FC, FunctionComponent, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { FC, useEffect, useState } from "react";
+import { Link, RouteComponentProps } from "react-router-dom";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
 import ConsoleDrawComponent from "../components/console-draw";
+import DataModel from "../../../models/data-model";
+import DrawModel from "../../../models/draw-model";
 
-type Props = {
+interface Props extends RouteComponentProps<{ drawid: string }> {
   currentUser: UserModel;
   SetLog: Function;
-  script: string;
-};
+  Data: DataModel;
+}
 
-const DrawPage: FC<Props> = ({ currentUser, script, SetLog }) => {
+const DrawPageById: FC<Props> = ({ match, currentUser, Data, SetLog }) => {
+  const [Draw, setDraw] = useState<DrawModel>();
+  const [IsOwner, setIsOwner] = useState<Boolean>(false);
+  
   const [ParamsActive, setParamsActive] = useState<Boolean>(false);
   const [user, setUser] = useState<UserModel>(currentUser);
+
+
+  useEffect(() => {
+    Data.draws.forEach((draw) => {
+      if (draw._id === match.params.drawid) {
+        setDraw(draw);
+        setIsOwner(currentUser.draws.includes(draw._id));
+      }
+    });
+  }, [match.params, Data, currentUser]);
+
 
   return (
     <div className="main p20 flex-col flex-end-align g20">
@@ -28,7 +44,13 @@ const DrawPage: FC<Props> = ({ currentUser, script, SetLog }) => {
         </div>
 
         <div className="flex-row g50">
-          <ConsoleDrawComponent DefaultScript={""} correction={false} returnedScript={false} currentUser={currentUser} start={false} />
+          <ConsoleDrawComponent
+            DefaultScript={""}
+            correction={false}
+            returnedScript={false}
+            currentUser={currentUser}
+            start={false}
+          />
         </div>
         {ParamsActive ? (
           <div className="add-item-popup">
@@ -59,4 +81,4 @@ const DrawPage: FC<Props> = ({ currentUser, script, SetLog }) => {
   );
 };
 
-export default DrawPage;
+export default DrawPageById;

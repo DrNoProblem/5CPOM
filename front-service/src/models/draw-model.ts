@@ -1,19 +1,13 @@
 
 
 export default class DrawModel {
-    id: string;
-    date: Date;
+    _id: string;
     script: string;
-    url: string;
   constructor(
-    id: string,
-    date: Date,
+    _id: string,
     script: string,
-    url: string,
   ) {
-      this.id = id;
-      this.date = date;
+      this._id = _id;
       this.script = script;
-      this.url = url;
   }
 }

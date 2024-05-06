@@ -16,7 +16,7 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title, DrawsList, d
   const [DrawView, setDrawView] = useState<string | false>(false);
   let counter = 0;
   return (
-    <div className="table-list flex-col p50 dark-bg dark-container display-from-left w100">
+    <div className="table-list flex-col p50 dark-bg dark-container display-from-left">
       {title !== "" ? <h2 className="">{title}</h2> : null}
       <ul className="table-list flex-col mb0">
         <li className="legend">

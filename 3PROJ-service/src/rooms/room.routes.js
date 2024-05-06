@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const roomController = require("./room.controller");
 const { body, param } = require("express-validator");
-
+const authController = require("../auth.controller");
 /// create a Room
 router.post(
   "/add",
@@ -28,6 +28,7 @@ router.get(
 router.patch(
   "/updateRoom/:roomId",
   [param("roomId").isMongoId().withMessage("Invalid room ID"),],
+  authController.protect,
   roomController.updateRoomById
 );// Owner + co-Owner
 
@@ -35,6 +36,7 @@ router.patch(
 router.delete(
   "/deleteRoom/:roomId",
   [param("roomId").isMongoId().withMessage("Invalid room ID"),],
+  authController.protect,
   roomController.deleteRoomById
 );// Owner + co-Owner
 

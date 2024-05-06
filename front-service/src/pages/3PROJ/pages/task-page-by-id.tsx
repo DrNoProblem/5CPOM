@@ -172,7 +172,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
   };
   const ConfirmToDeleteDraw = (value: boolean) => {
     if (deleteActive && value) {
-      Promise.all([DeleteDrawById(getToken()!, deleteActive), CurrentUserDrawsUpdate([""])]).then((result) => {
+      Promise.all([DeleteDrawById(deleteActive), CurrentUserDrawsUpdate([""])]).then((result) => {
         const [DeleteDrawResult, UpdateUserResult] = result;
 
         if (!isHttpStatusValid(DeleteDrawResult.status))

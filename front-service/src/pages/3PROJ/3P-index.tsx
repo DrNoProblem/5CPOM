@@ -148,7 +148,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
                   open_in_new
                 </i>
               </h2>
-              <TableRenderSubmitStatusComp limite={3} tableList={renderList} submit={false} />
+              <TableRenderSubmitStatusComp limite={4} tableList={renderList} submit={false} />
             </div>
           </div>
         </div>

@@ -54,11 +54,13 @@ exports.updateDrawById = async (req, res, next) => {
 };
 exports.deleteDrawById = async (req, res, next) => {
   try {
-    if (!token) return next(new AppError("You are not logged in! Please log in to get access.", 401));
+    let message = "";
+    let token = req.token;
+    if (!token) return res.status(400).send({ message: `You are not logged in! Please log in to get access` });
     try {
       const deleteDraw = await Draw.findByIdAndDelete(req.params.drawnId);
-      if (!deleteDraw) message += `\n Draw with id : '${task._id}' not found`;
-      else message += `\n Draw with id : '${task._id}' deleted successfully`;
+      if (!deleteDraw) return res.status(400).send({ message: `Draw with id : '${deleteDraw._id}' not found` });
+      else message += `\n Draw with id : '${deleteDraw._id}' deleted successfully`;
     } catch (err) {
       next(err);
     }

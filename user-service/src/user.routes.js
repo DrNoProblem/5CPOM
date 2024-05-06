@@ -62,12 +62,20 @@ router.get(
 router.patch(
   "/updateDraws/",
   [
-    body("draws").notEmpty().withMessage("draws is required"),
+    body("draws").notEmpty().withMessage("Draws is required"),
   ],
   authController.protect,
   userController.updateDrawsCurrentUser
 );
 
+router.patch(
+  "/updateNotes/",
+  [
+    body("notes").notEmpty().withMessage("Notes is required"),
+  ],
+  authController.protect,
+  userController.updateNotesCurrentUser
+);
 
 //! private route for updating current user's info
 router.patch(

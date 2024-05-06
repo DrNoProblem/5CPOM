@@ -66,10 +66,11 @@ exports.login = async (req, res, next) => {
       return next(new AppError('No user found', 401));
     }
 
+    console.log(await bcrypt.hash(password, 10));
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      return next(new AppError('Incorrect email or password maybe', 401));
+      return res.status(401).json({ status: 'fail', message: 'Incorrect email or password maybe error' });
     }
 
     const token = signToken(user._id);

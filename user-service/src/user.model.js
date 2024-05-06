@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
   draws: {
     type: Array,
     required: false
+  },
+  draws: {
+    type: Array,
+    required: false
   }
 });
 

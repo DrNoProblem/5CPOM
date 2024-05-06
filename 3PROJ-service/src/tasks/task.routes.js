@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 const taskController = require("./task.controller.js");
 const { body, param } = require("express-validator");
+const authController = require("../auth.controller");
 
 /// create a Task
 router.post(
   "/add",
   [],
+  authController.protect,
   taskController.AddTask
 );// Owner + co-Owner
 
@@ -21,6 +23,7 @@ router.get(
 router.get(
   "/:taskId",
   [param("taskId").isMongoId().withMessage("Invalid task ID"),],
+  authController.protect,
   taskController.GetTaskById
 );// Owner + co-Owner + User
 
@@ -28,6 +31,7 @@ router.get(
 router.post(
   "/updateTask/:taskId",
   [param("taskId").isMongoId().withMessage("Invalid task ID"),],
+  authController.protect,
   taskController.updateTaskById
 );// Owner + co-Owner
 
@@ -35,6 +39,7 @@ router.post(
 router.delete(
   "/deleteTask/:taskId",
   [param("taskId").isMongoId().withMessage("Invalid task ID"),],
+  authController.protect,
   taskController.deleteTaskById
 );// Owner + co-Owner
 
@@ -43,6 +48,7 @@ router.delete(
 router.post(
   "/addRender/:taskId",
   [param("taskId").isMongoId().withMessage("Invalid task ID"),],
+  authController.protect,
   taskController.AddRender
 );// User
 
@@ -50,6 +56,7 @@ router.post(
 router.post(
   "/updateNote/:taskId",
   [param("taskId").isMongoId().withMessage("Invalid task ID"),],
+  authController.protect,
   taskController.UpdateNoteRender
 );// User
 
@@ -57,6 +64,7 @@ router.post(
 router.post(
   "/addCorrection/:taskId",
   [param("taskId").isMongoId().withMessage("Invalid task ID"),],
+  authController.protect,
   taskController.updateTaskById
 );// Owner + co-Owner
 

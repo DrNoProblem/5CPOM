@@ -1,6 +1,6 @@
 import { getToken } from "../../helpers/token-verifier";
 
-async function DeleteDrawById(token:string, id: string) {
+async function DeleteDrawById(id: string) {
     var data: any = []
     const response = await fetch(`http://localhost:4100/draw/deleteDraw/${id}`, {
         method: 'DELETE',

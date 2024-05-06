@@ -50,6 +50,19 @@ exports.updateDrawsCurrentUser = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.updateNotesCurrentUser = async (req, res, next) => {
+  try {
+    const { notes, userId } = req.body;
+    const user = await User.findById(userId);
+    if (notes) user.notes = notes;
+    await user.save();
+    res.json({ message: "User updated successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.deleteCurrentUser = async (req, res, next) => {
   try {
     await User.findByIdAndDelete(req.user._id);

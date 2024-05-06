@@ -1,10 +1,14 @@
 import React, { FC, useState } from "react";
 import { Link } from "react-router-dom";
+import DeleteDrawById from "../../../api-request/draw/draw-delete";
+import CurrentUserDrawsUpdate from "../../../api-request/user/update-draw";
+import isHttpStatusValid from "../../../helpers/check-status";
 import DataModel from "../../../models/data-model";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
 import ModalConfirmDelete from "../components/confirmation-delete";
 import TableDraw from "../components/table-draw-list";
+import displayStatusRequest from "../../../helpers/display-status-request";
 
 type Props = {
   currentUser: UserModel;
@@ -22,6 +26,18 @@ const DrawnListPage: FC<Props> = ({ currentUser, Data, SetLog }) => {
   };
   const ConfirmToDeleteDraw = () => {
     console.log('test');
+
+    if (deleteActive) {
+      Promise.all([DeleteDrawById(deleteActive), CurrentUserDrawsUpdate(currentUser.draws.filter(e => e !== deleteActive))]).then((results) => {
+        const [DeleteDrawResult, UpdateUserResult] = results;
+        if (isHttpStatusValid(DeleteDrawResult.status) && isHttpStatusValid(UpdateUserResult.status)) {
+          SetLog();
+          SuccessInfoSubmited("succes");
+          displayStatusRequest(`Draw deleted successfully`, false);
+        }
+        else displayStatusRequest(`error`, true);
+      })
+    }
     SuccessInfoSubmited("");
   };
   const SuccessInfoSubmited = (update: string) => {

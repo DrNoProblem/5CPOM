@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const drawController = require("./draw.controller");
 const { body, param } = require("express-validator");
+const authController = require("../auth.controller");
 
 /// get Draw by id
 router.get(
@@ -14,6 +15,7 @@ router.get(
 router.post(
   "/add",
   [],
+  authController.protect,
   drawController.AddDraw
 );
 
@@ -21,6 +23,7 @@ router.post(
 router.patch(
     "/updateDraw/:drawnId",
     [param("drawnId").isMongoId().withMessage("Invalid drawn ID"),],
+    authController.protect,
     drawController.updateDrawById
   );
 
@@ -28,6 +31,7 @@ router.patch(
 router.delete(
     "/deleteDraw/:drawnId",
     [param("drawnId").isMongoId().withMessage("Invalid drawn ID"),],
+    authController.protect,
     drawController.deleteDrawById
   );
 

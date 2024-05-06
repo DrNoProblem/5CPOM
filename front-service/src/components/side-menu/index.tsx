@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./style.scss";
 type Props = {
@@ -15,18 +15,22 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
     setMiniMenu(value);
   };
 
+  useEffect(() => {
+    const checkWindowSize = () => {
+      if (window.innerWidth > 1080) toggleSizeMenu(false);
+      else toggleSizeMenu(true);
+    };
+    checkWindowSize();
+    window.addEventListener("resize", checkWindowSize);
+    return () => window.removeEventListener("resize", checkWindowSize);
+  }, []);
+
   return (
-    <div
-      className={`side-menu dark-container relative flex-col g5 display-from-left ${
-        MiniMenu ? "mini-menu" : ""
-      }`}
-    >
+    <div className={`side-menu dark-container relative flex-col g5 display-from-left ${MiniMenu ? "mini-menu" : ""}`}>
       <Link
         to={"/"}
         data-title={"Home"}
-        className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${
-          actualPage === "/" ? " blue" : ""
-        }`}
+        className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${actualPage === "/" ? " blue" : ""}`}
       >
         <i className="">home</i>
         {!MiniMenu ? <p className="pl10 m0">Home</p> : null}
@@ -38,9 +42,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
         <Link
           to={`/1PROJ`}
           data-title={"1PROJ"}
-          className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${
-            actualPage === "/1PROJ" ? " blue" : ""
-          }`}
+          className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${actualPage === "/1PROJ" ? " blue" : ""}`}
         >
           <i className="">web</i>
           {!MiniMenu ? <p className="pl10 m0">1PROJ</p> : null}
@@ -48,9 +50,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
         <Link
           to={`/2PROJ`}
           data-title={"2PROJ"}
-          className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${
-            actualPage === "/2PROJ" ? " blue" : ""
-          }`}
+          className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${actualPage === "/2PROJ" ? " blue" : ""}`}
         >
           <i className="">web</i>
           {!MiniMenu ? <p className="pl10 m0">2PROJ</p> : null}
@@ -58,9 +58,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
         <Link
           to={`/3PROJ`}
           data-title={"3PROJ"}
-          className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${
-            actualPage === "/3PROJ" ? " blue" : ""
-          }`}
+          className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${actualPage === "/3PROJ" ? " blue" : ""}`}
         >
           <i className="">web</i>
           {!MiniMenu ? <p className="pl10 m0">3PROJ</p> : null}
@@ -82,17 +80,11 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
       </Link>
 
       {!MiniMenu ? (
-        <i
-          className=" normal-bg-h blue-h retactor"
-          onClick={() => toggleSizeMenu(true)}
-        >
+        <i className=" normal-bg-h blue-h retactor" onClick={() => toggleSizeMenu(true)}>
           first_page
         </i>
       ) : (
-        <i
-          className=" normal-bg-h blue-h retactor"
-          onClick={() => toggleSizeMenu(false)}
-        >
+        <i className=" normal-bg-h blue-h retactor" onClick={() => toggleSizeMenu(false)}>
           last_page
         </i>
       )}

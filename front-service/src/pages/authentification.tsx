@@ -35,8 +35,11 @@ const UserHeader: FunctionComponent<Props> = ({ ValidLogIn }) => {
   const signIn = (email: string, password: string) => {
     logIn(email, password).then((result) => {
       if (isHttpStatusValid(result.status)) {
-        ValidLogIn();
         storeToken(result.response.token);
+        ValidLogIn();
+      } else {
+        console.log(result);
+        displayStatusRequest(`error ${result.status} : ${result.response.message}`, true);
       }
     });
   };
@@ -68,6 +71,7 @@ const UserHeader: FunctionComponent<Props> = ({ ValidLogIn }) => {
 
   return (
     <div className="user-login flex-center-justify">
+      <div className="absolute header__marge t0 w100"></div>
       <span className="absolute flex-center h100 blur">
         <Logo sizeblocs={7} hover={false} />
       </span>

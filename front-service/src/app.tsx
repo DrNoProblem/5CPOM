@@ -97,6 +97,12 @@ const App: FunctionComponent = () => {
               if (isHttpStatusValid(DrawsResult.status)) DrawsList = DrawsResult.response;
               if (isHttpStatusValid(UsersResult.status)) UsersList = UsersResult.response;
 
+              console.log({
+                rooms: RoomsList,
+                tasks: TasksList,
+                draws: DrawsList,
+                users: UsersList,
+              });
               setData({
                 rooms: RoomsList,
                 tasks: TasksList,
@@ -110,7 +116,6 @@ const App: FunctionComponent = () => {
         } else displayStatusRequest("error " + CurrentUserResult.status + " : " + CurrentUserResult.response.message, true);
       });
     }
-    console.log(Data);
     setIsLog(token);
   };
 
@@ -155,12 +160,12 @@ const App: FunctionComponent = () => {
                   render={(props) => <RoomPageById {...props} currentUser={currentUser} SetLog={SetLog} Data={Data} />}
                 />
                 <Route
-                  path="/3PROJ/draw/"
-                  render={() => <DrawPage currentUser={currentUser} SetLog={SetLog} script={""} Data={Data} />}
-                />
-                <Route
                   path="/3PROJ/draw/:drawid"
                   render={(props) => <DrawPageById {...props} currentUser={currentUser} SetLog={SetLog} Data={Data} />}
+                />
+                <Route
+                  path="/3PROJ/draw/"
+                  render={() => <DrawPage currentUser={currentUser} SetLog={SetLog} script={""} Data={Data} />}
                 />
                 <Route
                   path="/3PROJ/draw-history/"

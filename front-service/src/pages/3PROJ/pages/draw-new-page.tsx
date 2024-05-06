@@ -31,7 +31,7 @@ const DrawPage: FC<Props> = ({ currentUser, script, SetLog, Data }) => {
             correction={false}
             returnedScript={false}
             currentUser={currentUser}
-            start={false}
+            SetLog={SetLog}
           />
         </div>
       </div>

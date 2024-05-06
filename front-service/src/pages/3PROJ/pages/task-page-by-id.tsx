@@ -15,9 +15,11 @@ import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
 import ModalConfirmDelete from "../components/confirmation-delete";
 import ConsoleDrawComponent from "../components/console-draw";
-import TableDraw from "../components/draw-list";
+import TableDraw from "../components/table-draw-list";
 import EditTaskInfo from "../components/fields-task-info";
 import DataModel from "../../../models/data-model";
+import DeleteDrawById from "../../../api-request/draw/draw-delete";
+import CurrentUserDrawsUpdate from "../../../api-request/user/update-draw";
 
 interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
   currentUser: UserModel;
@@ -157,9 +159,34 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
           history.push(`/room/${currentUser!._id}`);
         } else displayStatusRequest("error " + result.status + " : " + result.response.message, true);
       });
+    } else {
+      SuccessInfoSubmited("");
     }
-    else{
-      SuccessInfoSubmited('')
+  };
+
+  const [deleteActive, setdeleteActive] = useState<string | false>(false);
+
+  const SetDeleteDraw = (value: string) => {
+    setdeleteActive(value);
+    setPopUpActive("delete draw");
+  };
+  const ConfirmToDeleteDraw = (value: boolean) => {
+    if (deleteActive && value) {
+      Promise.all([DeleteDrawById(getToken()!, deleteActive), CurrentUserDrawsUpdate([""])]).then((result) => {
+        const [DeleteDrawResult, UpdateUserResult] = result;
+
+        if (!isHttpStatusValid(DeleteDrawResult.status))
+          displayStatusRequest("error " + DeleteDrawResult.status + " : " + DeleteDrawResult.response.message, true);
+        if (!isHttpStatusValid(UpdateUserResult.status))
+          displayStatusRequest("error " + UpdateUserResult.status + " : " + UpdateUserResult.response.message, true);
+        if (isHttpStatusValid(DeleteDrawResult.status) && isHttpStatusValid(UpdateUserResult.status)) {
+          SetLog();
+          setdeleteActive(false);
+          setPopUpActive(false);
+        }
+      });
+    } else {
+      SuccessInfoSubmited("");
     }
   };
 
@@ -536,7 +563,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                       correction={true}
                       returnedScript={false}
                       currentUser={currentUser}
-                      start={true}
+                      SetLog={SetLog}
                     />
                   ) : (
                     <ConsoleDrawComponent
@@ -544,7 +571,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                       correction={true}
                       returnedScript={false}
                       currentUser={currentUser}
-                      start={true}
+                      SetLog={SetLog}
                     />
                   )}
                 </div>
@@ -552,7 +579,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
             ) : null}
 
             {PopUpActive === "choose render" ? (
-              <TableDraw currentUser={currentUser} returnFunction={submitUserRender} title="" DrawsList={[]} />
+              <TableDraw
+                currentUser={currentUser}
+                returnFunction={submitUserRender}
+                title=""
+                DrawsList={[]}
+                deleteFunction={SetDeleteDraw}
+              />
             ) : null}
 
             {PopUpActive === "submit render" ? (
@@ -561,7 +594,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 correction={false}
                 returnedScript={submitUserRender}
                 currentUser={currentUser}
-                start={true}
+                SetLog={SetLog}
               />
             ) : null}
             {PopUpActive === "view render" ? (
@@ -570,12 +603,18 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 correction={false}
                 returnedScript={false}
                 currentUser={currentUser}
-                start={true}
+                SetLog={SetLog}
               />
             ) : null}
 
             {PopUpActive === "choose correction" ? (
-              <TableDraw currentUser={currentUser} returnFunction={submitOwnerCorrection} title="" DrawsList={[]} />
+              <TableDraw
+                currentUser={currentUser}
+                returnFunction={submitOwnerCorrection}
+                title=""
+                DrawsList={[]}
+                deleteFunction={SetDeleteDraw}
+              />
             ) : null}
             {PopUpActive === "submit correction" ? (
               <ConsoleDrawComponent
@@ -583,7 +622,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 correction={false}
                 returnedScript={submitOwnerCorrection}
                 currentUser={currentUser}
-                start={true}
+                SetLog={SetLog}
               />
             ) : null}
             {PopUpActive === "view correction" ? (
@@ -592,7 +631,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 correction={false}
                 returnedScript={false}
                 currentUser={currentUser}
-                start={true}
+                SetLog={SetLog}
               />
             ) : null}
             {PopUpActive === "edit correction" ? (
@@ -601,7 +640,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 correction={false}
                 returnedScript={submitOwnerCorrection}
                 currentUser={currentUser}
-                start={true}
+                SetLog={SetLog}
               />
             ) : null}
 
@@ -611,7 +650,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 correction={false}
                 returnedScript={submitUserRender}
                 currentUser={currentUser}
-                start={true}
+                SetLog={SetLog}
               />
             ) : null}
 
@@ -626,6 +665,9 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
 
             {PopUpActive === "delete task" ? (
               <ModalConfirmDelete functionReturned={ConfirmToDelete} itemTitle={Task.title} />
+            ) : null}
+            {PopUpActive === "delete draw" ? (
+              <ModalConfirmDelete functionReturned={ConfirmToDeleteDraw} itemTitle={"the draw"} />
             ) : null}
           </div>
         ) : null}

@@ -2,14 +2,12 @@ import { getToken } from "../../helpers/token-verifier";
 import UserModel from "../../models/user-model";
 
 async function CurrentUserDrawsUpdate(
-  user: UserModel,
-  valueType: string,
-  value: { date: Date; script: string }[],
+  value: string[],
 ) {
   var data: any = [];
-  const response = await fetch("http://localhost:4000/users/updateMe", {
+  const response = await fetch("http://localhost:4000/users/updateDraws", {
     method: "PATCH",
-    body: JSON.stringify({ ...user, [valueType]: value }),
+    body: JSON.stringify({ draws: value }),
     headers: {
       "Content-Type": "application/json",
       authorization: `Bearer ${getToken()}`,

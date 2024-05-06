@@ -1,9 +1,10 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Link } from "react-router-dom";
+import DataModel from "../../../models/data-model";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
-import TableDraw from "../components/draw-list";
-import DataModel from "../../../models/data-model";
+import ModalConfirmDelete from "../components/confirmation-delete";
+import TableDraw from "../components/table-draw-list";
 
 type Props = {
   currentUser: UserModel;
@@ -11,9 +12,22 @@ type Props = {
   Data: DataModel;
 };
 
-const DrawnListPage: FC<Props> = ({ currentUser, Data }) => {
-
+const DrawnListPage: FC<Props> = ({ currentUser, Data, SetLog }) => {
   let DrawsList = Data.draws.filter((draw) => currentUser.draws.includes(draw._id));
+
+  const [deleteActive, setdeleteActive] = useState<string | false>(false);
+
+  const SetDeleteDraw = (value: string) => {
+    setdeleteActive(value);
+  };
+  const ConfirmToDeleteDraw = () => {
+    console.log('test');
+    SuccessInfoSubmited("");
+  };
+  const SuccessInfoSubmited = (update: string) => {
+    if (update === "succes") SetLog();
+    else setdeleteActive(false);
+  };
 
   return (
     <div className="main p20 flex-col relative flex-end-align g20">
@@ -25,8 +39,22 @@ const DrawnListPage: FC<Props> = ({ currentUser, Data }) => {
           <h2 className="m0">Draw list :</h2>
         </div>
 
-        <TableDraw currentUser={currentUser} returnFunction={false} title="List of script saved online :" DrawsList={DrawsList} />
+        <TableDraw
+          currentUser={currentUser}
+          returnFunction={false}
+          title="List of script saved online :"
+          DrawsList={DrawsList}
+          deleteFunction={SetDeleteDraw}
+        />
       </div>
+
+      {deleteActive ? (
+        <div className="add-item-popup">
+          <div className="dark-background" onClick={() => setdeleteActive(false)} />
+
+          <ModalConfirmDelete functionReturned={ConfirmToDeleteDraw} itemTitle={"the draw"} />
+        </div>
+      ) : null}
     </div>
   );
 };

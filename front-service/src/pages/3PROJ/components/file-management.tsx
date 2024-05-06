@@ -1,17 +1,21 @@
-import React, {FC, useRef, useState} from "react";
+import React, { FC, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
+import addDraw from "../../../api-request/draw/draw-add";
 import CurrentUserDrawsUpdate from "../../../api-request/user/update-draw";
-import {getToken} from "../../../helpers/token-verifier";
-import UserModel from "../../../models/user-model";
 import isHttpStatusValid from "../../../helpers/check-status";
 import displayStatusRequest from "../../../helpers/display-status-request";
+import { getToken } from "../../../helpers/token-verifier";
+import UserModel from "../../../models/user-model";
 
 type Props = {
   script: string;
   functionReturned: Function;
   currentUser: UserModel;
+  SetLog: Function;
 };
 
-const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUser}) => {
+const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentUser, SetLog }) => {
+  const history = useHistory();
   const [SelectedFileToUpload, setSelectedFileToUpload] = useState<File | null>();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -41,7 +45,7 @@ const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUs
   };
 
   const UploadFileContent = async () => {
-    console.log(await readFileContent());
+    SaveScriptOnDataBase(await readFileContent());
   };
 
   const readFileContent = async (): Promise<string> => {
@@ -63,8 +67,8 @@ const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUs
   const createScriptFile = (script: string, currentUserId: string) => {
     if (script !== "") {
       const fileName = `script${currentUserId}.txt`;
-      const fileBlob = new Blob([script], {type: "text/plain"});
-      return {fileBlob, fileName};
+      const fileBlob = new Blob([script], { type: "text/plain" });
+      return { fileBlob, fileName };
     }
     return null;
   };
@@ -75,29 +79,26 @@ const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUs
       const element = document.createElement("a");
       element.href = URL.createObjectURL(fileData.fileBlob);
       element.download = fileData.fileName;
-      document.body.appendChild(element); // Required for this to work in FireFox
+      document.body.appendChild(element);
       element.click();
-      document.body.removeChild(element); // Clean up
+      document.body.removeChild(element);
     }
   };
 
-  const uploadScriptOnDataBase = () => {
-    const fileData = createScriptFile(script, currentUser._id);
-    if (fileData) {
-      console.log(fileData.fileBlob);
-      const token = getToken();
-      if (token) {/* 
-        CurrentUserDrawsUpdate(currentUser, "draws", [...currentUser.draws, {date: new Date(), script: script}]).then(
-          (result) => {
+  const SaveScriptOnDataBase = (script: string) => {
+    const token = getToken();
+    if (token) {
+      addDraw(script).then((AddDrawResult) => {
+        if (isHttpStatusValid(AddDrawResult.status)) {
+          CurrentUserDrawsUpdate([...currentUser.draws, AddDrawResult.response.data._id]).then((result) => {
             if (isHttpStatusValid(result.status)) {
-              functionReturned(script);
+              SetLog();
+              history.push("/3PROJ/draw/" + AddDrawResult.response.data._id);
               displayStatusRequest("Script uploaded successfully", false);
-            } else displayStatusRequest("error : uploading script", true);
-          }
-        ); */
-      }
-
-      // Logic to upload `fileData.fileBlob` to your database
+            } else displayStatusRequest("error : updating user", true);
+          });
+        } else displayStatusRequest("error : uploading script", true);
+      });
     }
   };
 
@@ -109,7 +110,7 @@ const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUs
             <span className="mr10 w50 txt-end">Drag & Drop</span>|<span className="ml10 w50">Click here</span>
           </h2>
           <span>to import a script file</span>
-          <input type="file" accept=".txt" style={{display: "none"}} ref={fileInputRef} onChange={handleFileChange} />
+          <input type="file" accept=".txt" style={{ display: "none" }} ref={fileInputRef} onChange={handleFileChange} />
         </div>
       </div>
       {SelectedFileToUpload ? (
@@ -131,7 +132,7 @@ const FileManagementComponent: FC<Props> = ({script, functionReturned, currentUs
       ) : null}
 
       <div className="flex-wrap g15">
-        <div className="cta blue-h normal-bg" onClick={uploadScriptOnDataBase}>
+        <div className="cta blue-h normal-bg" onClick={() => SaveScriptOnDataBase(script)}>
           <span className="add-user flex-row flex-center-align flex-start-justify g15">
             <i className="">save</i>Save script
           </span>

@@ -15,22 +15,22 @@ interface Props extends RouteComponentProps<{ drawid: string }> {
 const DrawPageById: FC<Props> = ({ match, currentUser, Data, SetLog }) => {
   const [Draw, setDraw] = useState<DrawModel>();
   const [IsOwner, setIsOwner] = useState<Boolean>(false);
-  
+
   const [ParamsActive, setParamsActive] = useState<Boolean>(false);
   const [user, setUser] = useState<UserModel>(currentUser);
 
-
   useEffect(() => {
+    console.log("okkk");
     Data.draws.forEach((draw) => {
       if (draw._id === match.params.drawid) {
         setDraw(draw);
+        console.log(draw);
         setIsOwner(currentUser.draws.includes(draw._id));
       }
     });
   }, [match.params, Data, currentUser]);
 
-
-  return (
+  return Draw ? (
     <div className="main p20 flex-col flex-end-align g20">
       <div className="flex-col g20 w100">
         <div className="g20 flex-center-align ">
@@ -38,18 +38,18 @@ const DrawPageById: FC<Props> = ({ match, currentUser, Data, SetLog }) => {
             <span>Back</span>
           </Link>
           <h2 className="mb0">Draw :</h2>
-          <i className="" onClick={() => setParamsActive(true)}>
+          <i className="mt5" onClick={() => setParamsActive(true)}>
             settings
           </i>
         </div>
 
         <div className="flex-row g50">
           <ConsoleDrawComponent
-            DefaultScript={""}
+            DefaultScript={Draw.script}
             correction={false}
             returnedScript={false}
             currentUser={currentUser}
-            start={false}
+            SetLog={SetLog}
           />
         </div>
         {ParamsActive ? (
@@ -78,7 +78,7 @@ const DrawPageById: FC<Props> = ({ match, currentUser, Data, SetLog }) => {
         ) : null}
       </div>
     </div>
-  );
+  ) : null;
 };
 
 export default DrawPageById;

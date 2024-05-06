@@ -29,10 +29,10 @@ type Props = {
   correction: boolean;
   returnedScript: Function | false;
   currentUser: UserModel;
-  start: boolean;
+  SetLog: Function;
 };
 
-const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedScript, currentUser, start }) => {
+const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedScript, currentUser, SetLog }) => {
   const [ZoneTXT, setZoneTXT] = useState<Boolean>(true);
   const [ConsoleTXT, setConsoleTXT] = useState<string[]>(["> reset draw"]);
 
@@ -108,9 +108,6 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
       setConsoleTXT(["> reset draw"]);
       console.log(DefaultScript);
       setScriptValue(DefaultScript.split(/\r?\n/));
-      if (start) {
-        //parseAndExecuteLogoScript(DefaultScript.split(/\r?\n/)!)
-      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [DefaultScript]);
@@ -345,25 +342,15 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
       lineIndex++;
     }
   };
-  const applyScriptFromFile = (file: File) => {
-    const reader = new FileReader();
+  const applyScriptFromFile = (script: string) => {
+    if (document.querySelector("textarea[name=draw-script]") as HTMLInputElement) {
+      (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value = script;
+      setLoadPopUp(false);
+    }
+  };
 
-    // Fonction exécutée après que le fichier a été lu
-    reader.onload = (event) => {
-      const fileContent = event.target!.result as string;
-
-      // Log le contenu du fichier
-      console.log(fileContent);
-
-      // Mettre à jour le state qui contrôle le contenu du textarea
-      if (document.querySelector("textarea[name=draw-script]") as HTMLInputElement) {
-        (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value = fileContent;
-        setLoadPopUp(false);
-      }
-    };
-
-    // Début de la lecture du fichier en tant que texte
-    reader.readAsText(file);
+  const onReturnFileManage = (value: string | false) => {
+    if (value) applyScriptFromFile(value);
   };
 
   return (
@@ -400,8 +387,9 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
                   ? (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value
                   : ""
               }
-              functionReturned={applyScriptFromFile}
+              functionReturned={onReturnFileManage}
               currentUser={currentUser}
+              SetLog={SetLog}
             />
           </div>
         ) : null}

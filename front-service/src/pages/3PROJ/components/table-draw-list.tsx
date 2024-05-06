@@ -8,9 +8,10 @@ type Props = {
   currentUser: UserModel;
   title: string;
   returnFunction: Function | false;
+  deleteFunction: Function;
   DrawsList: DrawModel[];
 };
-const TableDraw: FC<Props> = ({ currentUser, returnFunction, title, DrawsList }) => {
+const TableDraw: FC<Props> = ({ currentUser, returnFunction, title, DrawsList, deleteFunction }) => {
   const [ActiveRow, setActiveRow] = useState<string>("");
   const [DrawView, setDrawView] = useState<string | false>(false);
   let counter = 0;
@@ -46,23 +47,13 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title, DrawsList })
                 </div>
                 {ActiveRow === draw._id + "" ? (
                   <div className="border-top-normal flex-start-justify g15 pt15 pb5 row-detail">
-                    <div className="flex-col g15">
-                      <div
-                        className="cta normal-bg mrauto blue-h"
-                        onClick={() => (draw.script === DrawView ? setDrawView(false) : setDrawView(draw.script))}
-                      >
-                        {draw.script === DrawView ? (
-                          <span className="add-user flex-center g15">
-                            <i className="">visibility_off</i>
-                            Hide
-                          </span>
-                        ) : (
-                          <span className="add-user flex-center g15">
-                            <i className="">visibility</i>
-                            View
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex-wrap g15">
+                      <Link to={`/3PROJ/draw/${draw._id}`} className="cta normal-bg mrauto blue-h">
+                        <span className="add-user flex-center g15">
+                          <i className="">visibility</i>
+                          View
+                        </span>
+                      </Link>
 
                       {returnFunction ? (
                         <div className="cta cta-blue mrauto" onClick={() => returnFunction(draw.script)}>
@@ -72,18 +63,12 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title, DrawsList })
                           </span>
                         </div>
                       ) : null}
-                    </div>
-
-                    <div className="mlauto">
-                      {DrawView ? (
-                        <ConsoleDrawComponent
-                          DefaultScript={DrawView}
-                          correction={true}
-                          returnedScript={false}
-                          currentUser={currentUser}
-                          start={true}
-                        />
-                      ) : null}
+                      <div className="cta cta-red" onClick={() => deleteFunction(draw._id)}>
+                        <span className="flex-center g10">
+                          <i>delete</i>
+                          Delete
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ) : null}

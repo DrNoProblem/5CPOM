@@ -20,6 +20,9 @@ import EditTaskInfo from "../components/fields-task-info";
 import DataModel from "../../../models/data-model";
 import DeleteDrawById from "../../../api-request/draw/draw-delete";
 import CurrentUserDrawsUpdate from "../../../api-request/user/update-draw";
+import addDetailToTask from "../../../api-request/task/detail-add";
+import UserNotesUpdate from "../../../api-request/user/update-notes";
+import updateRenderNotes from "../../../api-request/task/note-update";
 
 interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
   currentUser: UserModel;
@@ -107,7 +110,6 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
   };
 
   const submitOwnerCorrection = (script: string) => {
-    console.log(script);
     addCorrectionToTask(Task!._id, script).then((result) => {
       if (isHttpStatusValid(result.status)) {
         displayStatusRequest("Correction submited", false);
@@ -117,19 +119,23 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
         displayStatusRequest("Correction fail to sumbit", true);
       }
     });
-    //! function to submit correction
   };
 
   const submitOwnerDetail = () => {
     const detail: string = (document.querySelector("textarea[name=deatil-input]") as HTMLInputElement)
       ? (document.querySelector("textarea[name=deatil-input]") as HTMLInputElement).value
       : "";
-    console.log(detail);
-    //! function to submit detail
+    addDetailToTask(Task!._id, detail).then((result) => {
+      if (isHttpStatusValid(result.status)) {
+        displayStatusRequest("Detail submited successfully", false);
+        setPopUpActive(false);
+        SetLog();
+      } else displayStatusRequest("Detail fail to sumbit", true);
+      
+    });
   };
 
   const UpdateNotes = () => {
-    console.log(TempoTaskRender);
     const updatedTempoTaskRender: UserListNote[] = Room!.users.reduce((acc, userId) => {
       const existingTask = TempoTaskRender!.find((task) => task.id === userId);
       if (!existingTask) {
@@ -137,10 +143,17 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
       }
       return acc;
     }, [] as UserListNote[]);
-    console.log([...TempoTaskRender!, ...updatedTempoTaskRender]);
-    //! funcntion to update the notes
-    setWorkView(false);
-    setPopUpActive(false);
+    Promise.all([
+      updateRenderNotes(Task!._id, [...TempoTaskRender!, ...updatedTempoTaskRender]),
+      UserNotesUpdate([...TempoTaskRender!, ...updatedTempoTaskRender]),
+    ]).then((result) => {
+      const [UpdateRenderNotesResult, UpdateUserNotesResult] = result;
+      if (isHttpStatusValid(UpdateRenderNotesResult.status) && isHttpStatusValid(UpdateUserNotesResult.status)) {
+        setWorkView(false);
+        setPopUpActive(false);
+        displayStatusRequest("Notes submited successfully", false);
+      }else displayStatusRequest("Notes fail to sumbit", true);
+    });
   };
 
   const SuccessInfoSubmited = (update: string) => {
@@ -587,7 +600,6 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 deleteFunction={SetDeleteDraw}
               />
             ) : null}
-
             {PopUpActive === "submit render" ? (
               <ConsoleDrawComponent
                 DefaultScript={""}

@@ -1,10 +1,10 @@
 import { getToken } from "../../helpers/token-verifier";
 
-async function UserNotesUpdate(value: { taskId: string; note: number }[], userId: string[]) {
+async function UserNotesUpdate(value: { id: string; script: string; note: number  }[]) {
   var data: any = [];
   const response = await fetch("http://localhost:4000/users/updateNotes", {
     method: "PATCH",
-    body: JSON.stringify({ notes: value, userId: userId }),
+    body: JSON.stringify(value),
     headers: {
       "Content-Type": "application/json",
       authorization: `Bearer ${getToken()}`,

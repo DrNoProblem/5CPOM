@@ -16,15 +16,9 @@ exports.GetAllDraws = async (req, res, next) => {
 exports.AddDraw = async (req, res, next) => {
   try {
     const { script } = req.body;
-    let token;
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-      token = req.headers.authorization.split(" ")[1];
-    }
-    if (!token) return next(new AppError("You are not logged in! Please log in to get access.", 401));
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
     let existingDraw;
     try {
-      existingDraw = await Draw.findOne({ owner: decoded.id, script: script });
+      existingDraw = await Draw.findOne({ owner: req.userId, script: script });
     } catch (err) {
       return next(err);
     }
@@ -33,7 +27,7 @@ exports.AddDraw = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ status: "fail", message: "Validation error", errors: errors.array() });
     }
-    const newDraw = await Draw.create({ owner: decoded.id, script: script });
+    const newDraw = await Draw.create({ owner: req.userId, script: script });
     res.status(201).json({
       status: "success",
       data: newDraw,

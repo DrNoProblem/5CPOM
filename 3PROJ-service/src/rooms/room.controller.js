@@ -8,13 +8,6 @@ const jwt = require("jsonwebtoken");
 exports.AddRoom = async (req, res, next) => {
   try {
     const { name, co_owner, users } = req.body;
-    let token;
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-      token = req.headers.authorization.split(" ")[1];
-    }
-    if (!token) {
-      return next(new AppError("You are not logged in! Please log in to get access.", 401));
-    }
     let existingRoom;
     try {
       existingRoom = await Room.findOne({ name });
@@ -26,8 +19,7 @@ exports.AddRoom = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ status: "fail", message: "Validation error", errors: errors.array() });
     }
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    const newRoom = await Room.create({ name, owner: decoded.id, co_owner, users, tasks: [""] });
+    const newRoom = await Room.create({ name, owner: req.userId, co_owner, users, tasks: [""] });
     res.status(201).json({
       status: "success",
       data: {

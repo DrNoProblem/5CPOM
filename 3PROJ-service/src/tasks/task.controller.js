@@ -13,15 +13,7 @@ exports.AddTask = async (req, res, next) => {
     }
     const room = await Room.findById(roomId);
     if (!room) return res.status(404).json({ message: "Room not found" });
-    let token;
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-      token = req.headers.authorization.split(" ")[1];
-    }
-    if (!token) {
-      return next(new AppError("You are not logged in! Please log in to get access.", 401));
-    }
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    if (decoded.id !== room.owner && decoded.id !== room.co_owner) return res.status(404).json({ message: "Not permitted" });
+    if (req.userId !== room.owner && req.userId !== room.co_owner) return res.status(404).json({ message: "Not permitted" });
     const newTask = await Task.create({ title, details, datelimit, render: [] });
     room.tasks = [...room.tasks, newTask.id];
     await room.save();
@@ -88,19 +80,14 @@ exports.AddRender = async (req, res, next) => {
     const { render, roomId } = req.body;
     const room = await Room.findById(roomId);
     if (!room) return res.status(404).json({ message: "Room not found" });
-    let token;
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer"))
-      token = req.headers.authorization.split(" ")[1];
-    if (!token) return next(new AppError("You are not logged in! Please log in to get access.", 401));
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    if (decoded.id === room.owner || decoded.id === room.co_owner)
+    if (req.userId === room.owner || req.userId === room.co_owner)
       return res.status(404).json({ message: "You can not submit a render as owner or co-owner for this room" });
     const task = await Task.findById(req.params.taskId);
     if (!task) return res.status(404).json({ message: "Task not found" });
-    const renderIndex = task.renders.findIndex((r) => r.id === decoded.id);
+    const renderIndex = task.renders.findIndex((r) => r.id === req.userId);
     if (renderIndex !== -1)
-      task.renders.set(renderIndex, { id: decoded.id, script: render, note: task.renders[renderIndex].note });
-    else task.renders = [...task.renders, { id: decoded.id, script: render, note: 0 }];
+      task.renders.set(renderIndex, { id: req.userId, script: render, note: task.renders[renderIndex].note });
+    else task.renders = [...task.renders, { id: req.userId, script: render, note: 0 }];
 
     await task.save();
     res.status(201).json({
@@ -116,12 +103,7 @@ exports.UpdateNoteRender = async (req, res, next) => {
     const { roomId, updates } = req.body;
     const room = await Room.findById(roomId);
     if (!room) return res.status(404).json({ message: "Room not found" });
-    let token;
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer"))
-      token = req.headers.authorization.split(" ")[1];
-    if (!token) return next(new AppError("You are not logged in! Please log in to get access.", 401));
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    if (decoded.id === room.owner || decoded.id === room.co_owner)
+    if (req.userId === room.owner || req.userId === room.co_owner)
       return res.status(404).json({ message: "You can not submit a render as owner or co-owner for this room" });
     const task = await Task.findById(req.params.taskId);
     if (!task) return res.status(404).json({ message: "Task not found" });

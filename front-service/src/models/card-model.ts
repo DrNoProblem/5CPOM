@@ -2,58 +2,40 @@ export default class CardModel {
   _id: string;
   name: string;
   description: string;
-  costType: "brick" | "weapon" | "crystal";
+  costType: "brick"  | "weapon"  | "crystal";
   costValue: number;
-  ownerTargetType: (
-    | "generatorBrick"
-    | "brick"
-    | "generatorWeapon"
-    | "weapon"
-    | "generatorCrystal"
-    | "crystal"
-    | "hp"
-    | "shield"
-  )[];
-  ownerTargetValue: number[];
-  enemyTargetType: (
-    | "generatorBrick"
-    | "brick"
-    | "generatorWeapon"
-    | "weapon"
-    | "generatorCrystal"
-    | "crystal"
-    | "hp"
-    | "shield"
-  )[];
-  enemyTargetValue: number[];
+  ownerTargetType: ( | "generatorBrick" | "brick" | "generatorWeapon" | "weapon" | "generatorCrystal" | "crystal" | "hp" | "shield" | "all" );
+  ownerTargetValue: number;
+  opponentTargetType: ( | "generatorBrick" | "brick" | "generatorWeapon" | "weapon" | "generatorCrystal" | "crystal" | "hp" | "shield" | "all"  );
+  opponentTargetValue: number;
   constructor(
     _id: string,
     name: string,
     description: string,
-    costType: "brick" | "weapon" | "crystal",
+    costType: "brick"  | "weapon"  | "crystal",
     costValue: number,
     ownerTargetType: (
-      | "generatorBrick"
-      | "brick"
-      | "generatorWeapon"
-      | "weapon"
-      | "generatorCrystal"
-      | "crystal"
-      | "hp"
-      | "shield"
-    )[],
-    ownerTargetValue: number[],
-    enemyTargetType: (
-      | "generatorBrick"
-      | "brick"
-      | "generatorWeapon"
-      | "weapon"
-      | "generatorCrystal"
-      | "crystal"
-      | "hp"
-      | "shield"
-    )[],
-    enemyTargetValue: number[]
+       | "generatorBrick"
+       | "brick"
+       | "generatorWeapon"
+       | "weapon"
+       | "generatorCrystal"
+       | "crystal"
+       | "hp"
+       | "shield"
+    ),
+    ownerTargetValue: number,
+    opponentTargetType: (
+       | "generatorBrick"
+       | "brick"
+       | "generatorWeapon"
+       | "weapon"
+       | "generatorCrystal"
+       | "crystal"
+       | "hp"
+       | "shield"
+    ),
+    opponentTargetValue: number
   ) {
     this._id = _id;
     this.name = name;
@@ -62,7 +44,7 @@ export default class CardModel {
     this.costValue = costValue;
     this.ownerTargetType = ownerTargetType;
     this.ownerTargetValue = ownerTargetValue;
-    this.enemyTargetType = enemyTargetType;
-    this.enemyTargetValue = enemyTargetValue;
+    this.opponentTargetType = opponentTargetType;
+    this.opponentTargetValue = opponentTargetValue;
   }
 }

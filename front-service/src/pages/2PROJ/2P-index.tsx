@@ -2,9 +2,13 @@ import React, { FunctionComponent, useState } from "react";
 import UserModel from "../../models/user-model";
 import "./2P-style.scss";
 import CardModel from "../../models/card-model";
+import { AddCardToHand } from "./game-function";
+import getCardInfoById from "../../helpers/getCardInfoById";
+import DataModel from "../../models/data-model";
 
 type Props = {
   currentUser: UserModel;
+  Data : DataModel;
 };
 
 interface PlayerDataMode2PROJ {
@@ -18,7 +22,7 @@ interface PlayerDataMode2PROJ {
     weapon: number;
     generatorCrystal: number;
     crystal: number;
-    hp: number;
+    health: number;
     shield: number;
   };
   turnInfo: {
@@ -27,81 +31,110 @@ interface PlayerDataMode2PROJ {
   };
 }
 
-const AddCardToHand = (cardDeck: string[], cardHand: string[]) => {
-  if (cardDeck.length !== 0) {
-    const card = cardDeck.pop()!;
-    cardHand.push(card);
-  }
-  return { cardDeck: cardDeck, cardHand: cardHand };
-};
-
-const RemoveCardFromHand = (cardHand: string[], cardId: string) => {
-  cardHand = cardHand.filter((card) => card !== cardId);
-  return cardHand;
-};
-
-const ReturnCardInDeck = (cardDeck: string[], cardId: string) => {
-  cardDeck.push(cardId);
-  return cardDeck;
-};
-
-const HomePage2PROJ: FunctionComponent<Props> = ({ currentUser }) => {
+const HomePage2PROJ: FunctionComponent<Props> = ({ currentUser, Data }) => {
   const [user, setUser] = useState<UserModel>(currentUser);
 
-  const [PlayerData, setPlayerData] = useState<PlayerDataMode2PROJ>();
-  const [OpponentData, setOpponentData] = useState<PlayerDataMode2PROJ>();
+  const [Cards, setCards] = useState<CardModel[]>(Data.cards);
 
-  const ApplyPlayerCardEffect = (card: CardModel, cardOwner: PlayerDataMode2PROJ) => {
-    if (PlayerData && OpponentData) {
-      if (card.ownerTargetType !== "all")
-        setPlayerData({
-          ...PlayerData,
-          statRessources: {
-            ...PlayerData.statRessources,
-            [card.costType]:
-              PlayerData.statRessources[card.costType] - card.costValue === 0
-                ? 0
-                : PlayerData.statRessources[card.costType] - card.costValue,
-            [card.ownerTargetType]:
-              PlayerData.statRessources[card.ownerTargetType] + card.ownerTargetValue === 0
-                ? 0
-                : PlayerData.statRessources[card.ownerTargetType] + card.ownerTargetValue,
-          },
-        });
-      if (card.opponentTargetType !== "all") {
-        let dataOpponentTarget: string = "";
-        if (card.opponentTargetType === "hp") {
-          if (OpponentData.statRessources.shield - card.opponentTargetValue > 0) {
-            let hpToSubstract = card.opponentTargetValue - OpponentData.statRessources.shield;
-            //! revview here function decrease hp and shield calculate
-          }
-        }
+  const [Player1Data, setPlayer1Data] = useState<PlayerDataMode2PROJ>();
+  const [Player2Data, setPlayer2Data] = useState<PlayerDataMode2PROJ>();
 
-        setOpponentData({
-          ...OpponentData,
-          statRessources: {
-            ...OpponentData.statRessources,
-            [card.opponentTargetType]:
-              OpponentData.statRessources[card.opponentTargetType] + card.opponentTargetValue === 0
-                ? 0
-                : OpponentData.statRessources[card.opponentTargetType] + card.opponentTargetValue,
-          },
-        });
-      }
+  const initGame = () => {
+    let TempoPlayer1Data: PlayerDataMode2PROJ = {
+      username: "Player1",
+      cardDeck: currentUser!.deck,
+      cardHand: [],
+      statRessources: {
+        generatorBrick: 0,
+        brick: 0,
+        generatorWeapon: 0,
+        weapon: 0,
+        generatorCrystal: 0,
+        crystal: 0,
+        health: 30,
+        shield: 10,
+      },
+      turnInfo: {
+        trash: null,
+        played: null,
+      },
+    };
+    let TempoOpponentData: PlayerDataMode2PROJ = {
+      username: "Player2",
+      cardDeck: currentUser!.deck,
+      cardHand: [],
+      statRessources: {
+        generatorBrick: 0,
+        brick: 0,
+        generatorWeapon: 0,
+        weapon: 0,
+        generatorCrystal: 0,
+        crystal: 0,
+        health: 30,
+        shield: 10,
+      },
+      turnInfo: {
+        trash: null,
+        played: null,
+      },
+    };
+    for (let i = 0; i < 8; i++) {
+      TempoPlayer1Data = {
+        ...TempoPlayer1Data,
+        cardDeck: AddCardToHand(TempoPlayer1Data.cardDeck, TempoPlayer1Data.cardHand).cardDeck,
+        cardHand: AddCardToHand(TempoPlayer1Data.cardDeck, TempoPlayer1Data.cardHand).cardHand,
+      };
     }
+    for (let i = 0; i < 8; i++) {
+      TempoOpponentData = {
+        ...TempoOpponentData,
+        cardDeck: AddCardToHand(TempoOpponentData.cardDeck, TempoOpponentData.cardHand).cardDeck,
+        cardHand: AddCardToHand(TempoOpponentData.cardDeck, TempoOpponentData.cardHand).cardHand,
+      };
+    }
+    setPlayer1Data(TempoPlayer1Data);
+    setPlayer2Data(TempoOpponentData);
   };
 
-  return (
+  return Player1Data && Player2Data ? (
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
         <h2 className="">Projects : 2PROJ</h2>
         <div className="flex-wrap g20 w80 mb15 flex-center-align">
-          <i>handyman</i>
-          <i>view_quilt</i>
+          <div className="dark-container flex-col flex-bet">
+            <div className="PlayerBoard flex-col">
+              <div className="resource-player-info">
+                <div className="resource-container">{`Bricks (+${Player1Data.statRessources.generatorBrick}) ${Player1Data.statRessources.brick}`}</div>
+                <div className="resource-container">{`Weapons (+${Player1Data.statRessources.generatorWeapon}) ${Player1Data.statRessources.weapon}`}</div>
+                <div className="resource-container">{`Crystals (+${Player1Data.statRessources.generatorCrystal}) ${Player1Data.statRessources.crystal}`}</div>
+              </div>
+              <div className="card-hand">
+                {Player1Data.cardHand.map((cardId) => {
+                  let CardHandValue = getCardInfoById(cardId, Cards);
+                  return CardHandValue ? (
+                    <div className="card" key={CardHandValue._id}>
+                      <span className="cost">{CardHandValue.costType}</span>
+                      <span className="name">{CardHandValue._id}</span>
+                      <span className="effects">{CardHandValue._id}</span>
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            </div>
+            <div className="GameBoard flex-bet">
+              <div className="player1-life"></div>
+              <div className="card-turn-placement">
+                {Player1Data.turnInfo.played ? <div className="card"></div> : <div className="card empty-card-place"></div>}
+                {Player2Data.turnInfo.played ? <div className="card"></div> : <div className="card empty-card-place"></div>}
+              </div>
+              <div className="player2-life"></div>
+            </div>
+            <div className="PlayerBoard flex-col"></div>
+          </div>
         </div>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 export default HomePage2PROJ;

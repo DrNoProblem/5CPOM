@@ -4,9 +4,9 @@ export default class CardModel {
   description: string;
   costType: "brick"  | "weapon"  | "crystal";
   costValue: number;
-  ownerTargetType: ( | "generatorBrick" | "brick" | "generatorWeapon" | "weapon" | "generatorCrystal" | "crystal" | "hp" | "shield" | "all" );
+  ownerTargetType: ( | "generatorBrick" | "brick" | "generatorWeapon" | "weapon" | "generatorCrystal" | "crystal" | "health" | "shield" | "all" );
   ownerTargetValue: number;
-  opponentTargetType: ( | "generatorBrick" | "brick" | "generatorWeapon" | "weapon" | "generatorCrystal" | "crystal" | "hp" | "shield" | "all"  );
+  opponentTargetType: ( | "generatorBrick" | "brick" | "generatorWeapon" | "weapon" | "generatorCrystal" | "crystal" | "health" | "shield" | "all"  );
   opponentTargetValue: number;
   constructor(
     _id: string,
@@ -21,7 +21,7 @@ export default class CardModel {
        | "weapon"
        | "generatorCrystal"
        | "crystal"
-       | "hp"
+       | "health"
        | "shield"
     ),
     ownerTargetValue: number,
@@ -32,7 +32,7 @@ export default class CardModel {
        | "weapon"
        | "generatorCrystal"
        | "crystal"
-       | "hp"
+       | "health"
        | "shield"
     ),
     opponentTargetValue: number

@@ -54,6 +54,7 @@ import UserModel from "./models/user-model";
 
 //? mocks
 import voidUser from "./models/mocks/void-user";
+import CardModel from "./models/card-model";
 
 const App: FunctionComponent = () => {
   const [isLog, setIsLog] = useState<string | Boolean>(false);
@@ -90,6 +91,7 @@ const App: FunctionComponent = () => {
               let RoomsList: RoomModel[] = [];
               let TasksList: TaskModel[] = [];
               let DrawsList: DrawModel[] = [];
+              let CardList: CardModel[] = [];
               let UsersList: UserModel[] | MiniUserModel[] = [];
 
               if (isHttpStatusValid(RoomsResult.status)) RoomsList = RoomsResult.response;
@@ -101,12 +103,14 @@ const App: FunctionComponent = () => {
                 rooms: RoomsList,
                 tasks: TasksList,
                 draws: DrawsList,
+                cards: CardList,
                 users: UsersList,
               });
               setData({
                 rooms: RoomsList,
                 tasks: TasksList,
                 draws: DrawsList,
+                cards: CardList,
                 users: UsersList,
               });
             })
@@ -150,7 +154,7 @@ const App: FunctionComponent = () => {
               <Switch>
                 <Route exact path="/" render={() => <HomePage currentUser={currentUser} />} />
                 <Route exact path="/1PROJ" render={() => <HomePage1PROJ currentUser={currentUser} />} />{" "}
-                <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} />} />{" "}
+                <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} Data={Data}/>} />{" "}
                 <Route
                   path="/3PROJ/room/:roomid/task/:taskid"
                   render={(props) => <RoomTaskPageById {...props} currentUser={currentUser} SetLog={SetLog} Data={Data} />}

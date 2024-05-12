@@ -8,7 +8,7 @@ import DataModel from "../../models/data-model";
 
 type Props = {
   currentUser: UserModel;
-  Data : DataModel;
+  Data: DataModel;
 };
 
 interface PlayerDataMode2PROJ {
@@ -129,7 +129,25 @@ const HomePage2PROJ: FunctionComponent<Props> = ({ currentUser, Data }) => {
               </div>
               <div className="player2-life"></div>
             </div>
-            <div className="PlayerBoard flex-col"></div>
+            <div className="PlayerBoard flex-col">
+              <div className="resource-player-info">
+                <div className="resource-container">{`Bricks (+${Player1Data.statRessources.generatorBrick}) ${Player1Data.statRessources.brick}`}</div>
+                <div className="resource-container">{`Weapons (+${Player1Data.statRessources.generatorWeapon}) ${Player1Data.statRessources.weapon}`}</div>
+                <div className="resource-container">{`Crystals (+${Player1Data.statRessources.generatorCrystal}) ${Player1Data.statRessources.crystal}`}</div>
+              </div>
+              <div className="card-hand">
+                {Player1Data.cardHand.map((cardId) => {
+                  let CardHandValue = getCardInfoById(cardId, Cards);
+                  return CardHandValue ? (
+                    <div className="card" key={CardHandValue._id}>
+                      <span className="cost">{CardHandValue.costType}</span>
+                      <span className="name">{CardHandValue._id}</span>
+                      <span className="effects">{CardHandValue._id}</span>
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -382,6 +382,14 @@ h2 {
   }
 }
 
+.cta-full-green {
+  background-color: var(--color-green);
+  border: 2px solid var(--color-green);
+  * {
+    color: var(--color-white);
+  }
+}
+
 .cta-disable {
   background-color: #ff276820;
   border: 2px solid var(--color-red);
@@ -1046,7 +1054,6 @@ input.error-input {
 .home-tile {
   border: 2px solid var(--color-dark-bg);
   text-transform: uppercase;
-  word-spacing: 10px;
   border-radius: 8px;
 }
 

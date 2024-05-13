@@ -55,6 +55,9 @@ import UserModel from "./models/user-model";
 //? mocks
 import voidUser from "./models/mocks/void-user";
 import CardModel from "./models/card-model";
+import DeckEdition from "./pages/2PROJ/deck-edition";
+import GameBoard from "./pages/2PROJ/game-board";
+import FindOpponentLocal from "./pages/2PROJ/find-opponent-local";
 
 const App: FunctionComponent = () => {
   const [isLog, setIsLog] = useState<string | Boolean>(false);
@@ -153,8 +156,11 @@ const App: FunctionComponent = () => {
             <div className={`w80-tab${MiniMenu ? " side-menu-mini" : ""}`}>
               <Switch>
                 <Route exact path="/" render={() => <HomePage currentUser={currentUser} />} />
-                <Route exact path="/1PROJ" render={() => <HomePage1PROJ currentUser={currentUser} />} />{" "}
-                <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} Data={Data}/>} />{" "}
+                <Route exact path="/1PROJ" render={() => <HomePage1PROJ currentUser={currentUser} />} />
+                <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} Data={Data} />} />
+                <Route exact path="/2PROJ/game" render={() => <GameBoard currentUser={currentUser} Data={Data} />} />
+                <Route exact path="/2PROJ/find-local" render={() => <FindOpponentLocal />} />
+                <Route exact path="/2PROJ/deck" render={() => <DeckEdition currentUser={currentUser} />} />
                 <Route
                   path="/3PROJ/room/:roomid/task/:taskid"
                   render={(props) => <RoomTaskPageById {...props} currentUser={currentUser} SetLog={SetLog} Data={Data} />}

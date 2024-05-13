@@ -1,7 +1,7 @@
 .card {
   width: 100px;
   height: 150px;
-  border-radius: 30px;
+  border-radius: 15px;
   background-color: var(--color-normal-bg);
   border: 2px solid var(--color-normal-bg);
 }
@@ -17,6 +17,10 @@
   border: 2px dashed var(--color-blue);
 }
 
+.green-border {
+  border: 2px solid var(--color-green);
+
+}
 .red-player-border {
   border: 2px solid var(--color-red);
 }
@@ -32,7 +36,9 @@
   flex-direction: column;
   overflow: hidden;
 }
-
+.card-hand.player-blue {
+  min-height: 250px;
+}
 .card-hand.player-red .card {
   transform: translateY(-50%);
 }
@@ -47,6 +53,8 @@
 .card-hand.player-blue .card:hover {
   transform: translateY(0);
   cursor: pointer;
+  scale: 1.5;
+  margin: 0 30px 0 30px;
 }
 
 .card-turn-placement {
@@ -83,7 +91,7 @@
 }
 
 .shield {
-    position: absolute; 
+  position: absolute;
   i {
     font-size: 50px;
     z-index: 0;
@@ -93,6 +101,6 @@
   }
 }
 .resource-container {
-    padding: 10px 15px;
-    border-radius: 5px;
+  padding: 10px 15px;
+  border-radius: 5px;
 }

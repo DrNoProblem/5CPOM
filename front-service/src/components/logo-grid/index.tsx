@@ -10,7 +10,7 @@ type Props = {
 const Logo: FunctionComponent<Props> = ({ sizeblocs, hover }) => {
 
     return (
-        <div className="flex-center logo">
+        <div className="flex-center-align logo">
             {
                 hover ? (
 

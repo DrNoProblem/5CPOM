@@ -58,6 +58,7 @@ import CardModel from "./models/card-model";
 import DeckEdition from "./pages/2PROJ/deck-edition";
 import GameBoard from "./pages/2PROJ/game-board";
 import FindOpponentLocal from "./pages/2PROJ/find-opponent-local";
+import getCardsList from "./api-request/card/card-get-all";
 
 const App: FunctionComponent = () => {
   const [isLog, setIsLog] = useState<string | Boolean>(false);
@@ -87,9 +88,9 @@ const App: FunctionComponent = () => {
             usersPromise = getUsersList();
           } else displayStatusRequest("error  : Unreconized User", true);
 
-          Promise.all([getRoomsList(), getTasksList(), getDrawsList(), usersPromise])
+          Promise.all([getRoomsList(), getTasksList(), getDrawsList(), getCardsList(), usersPromise])
             .then((results) => {
-              const [RoomsResult, TasksResult, DrawsResult, UsersResult] = results;
+              const [RoomsResult, TasksResult, DrawsResult, CardsResult, UsersResult] = results;
 
               let RoomsList: RoomModel[] = [];
               let TasksList: TaskModel[] = [];
@@ -100,6 +101,7 @@ const App: FunctionComponent = () => {
               if (isHttpStatusValid(RoomsResult.status)) RoomsList = RoomsResult.response;
               if (isHttpStatusValid(TasksResult.status)) TasksList = TasksResult.response;
               if (isHttpStatusValid(DrawsResult.status)) DrawsList = DrawsResult.response;
+              if (isHttpStatusValid(DrawsResult.status)) CardList = CardsResult.response;
               if (isHttpStatusValid(UsersResult.status)) UsersList = UsersResult.response;
 
               console.log({

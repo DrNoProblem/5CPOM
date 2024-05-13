@@ -10,11 +10,12 @@ const config = require("./config");
 const drawRoutes = require("./draws/draw.routes");
 const roomRoutes = require("./rooms/room.routes");
 const taskRoutes = require("./tasks/task.routes");
+const cardsRoutes = require("./cards/card.routes");
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 app.use(cors());
 app.use(morgan("dev"));
 app.use(helmet());
@@ -28,11 +29,11 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Could not connect to MongoDB", err));
 
-  
 // Routes
 app.use("/room", roomRoutes);
 app.use("/task", taskRoutes);
 app.use("/draw", drawRoutes);
+app.use("/card", cardsRoutes);
 
 // Default route
 app.get("/", (req, res) => {

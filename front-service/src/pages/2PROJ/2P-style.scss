@@ -3,7 +3,19 @@
   height: 150px;
   border-radius: 15px;
   background-color: var(--color-normal-bg);
-  border: 2px solid var(--color-normal-bg);
+  border: 3px solid var(--color-normal-bg);
+  position: relative;
+}
+.card .red-player-border,
+.card .blue-player-border {
+  border-radius: 13px;
+  padding: 5px;
+  width: calc(100% - 14px);
+  height: calc(100% - 14px);
+}
+
+.card.can-not-play {
+  filter: brightness(0.5);
 }
 
 .card.empty-card-place {
@@ -19,7 +31,6 @@
 
 .green-border {
   border: 2px solid var(--color-green);
-
 }
 .red-player-border {
   border: 2px solid var(--color-red);
@@ -51,10 +62,15 @@
 }
 .card-hand.player-blue .card.selected-card,
 .card-hand.player-blue .card:hover {
-  transform: translateY(0);
+  transform: translateY(1px);
   cursor: pointer;
   scale: 1.5;
   margin: 0 30px 0 30px;
+}
+
+
+.card-hand.player-blue .card.selected-card {
+  box-shadow: var(--color-blue) 0px 0px 2px 1px;
 }
 
 .card-turn-placement {

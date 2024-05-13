@@ -57,10 +57,10 @@ export const ApplyPlayerCardEffect = (card: CardModel, OwnerTempoData: PlayerDat
               : OwnerTempoData.statRessources[card.ownerTargetType] + card.ownerTargetValue,
         },
       };
-    if (card.opponentTargetType !== "all") {
-      if (card.opponentTargetType === "health") {
-        let tempoShield = OpponentTempoData.statRessources.shield - card.opponentTargetValue;
-        let tempoAttack = card.opponentTargetValue;
+    if (card.enemyTargetType !== "all") {
+      if (card.enemyTargetType === "health") {
+        let tempoShield = OpponentTempoData.statRessources.shield - card.enemyTargetValue;
+        let tempoAttack = card.enemyTargetValue;
         let tempoHealth = OpponentTempoData.statRessources.health;
         if (tempoAttack <= tempoShield) {
           tempoShield -= tempoAttack;
@@ -82,10 +82,10 @@ export const ApplyPlayerCardEffect = (card: CardModel, OwnerTempoData: PlayerDat
           ...OpponentTempoData,
           statRessources: {
             ...OpponentTempoData.statRessources,
-            [card.opponentTargetType]:
-              OpponentTempoData.statRessources[card.opponentTargetType] + card.opponentTargetValue === 0
+            [card.enemyTargetType]:
+              OpponentTempoData.statRessources[card.enemyTargetType] + card.enemyTargetValue === 0
                 ? 0
-                : OpponentTempoData.statRessources[card.opponentTargetType] + card.opponentTargetValue,
+                : OpponentTempoData.statRessources[card.enemyTargetType] + card.enemyTargetValue,
           },
         };
       }
@@ -93,6 +93,6 @@ export const ApplyPlayerCardEffect = (card: CardModel, OwnerTempoData: PlayerDat
   }
   return {
     player: returnPlayerData,
-    opponent: returnOpponentData,
+    enemy: returnOpponentData,
   };
 };

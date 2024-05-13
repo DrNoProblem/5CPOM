@@ -19,7 +19,7 @@ const HomePage2PROJ: FunctionComponent<Props> = ({ currentUser, Data }) => {
           </Link>
 
           <Link className="home-tile dark-container" to={"/2PROJ/find-local"}>
-            <span className="ml15 mr15">Start Game vs Local opponent</span>
+            <span className="ml15 mr15">Start Game vs Local enemy</span>
           </Link>
 
           <Link className="home-tile dark-container" to={"/2PROJ/deck"}>

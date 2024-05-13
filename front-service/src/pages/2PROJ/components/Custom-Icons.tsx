@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 
 type Props = {
-  icon: "brick" | "bow" | "crystal";
+  icon: "brick" | "weapon" | "crystal";
   color: string;
 };
 
@@ -29,7 +29,7 @@ const CustomIcons: FunctionComponent<Props> = ({ color, icon }) => {
         </g>
       </svg>
     );
-  else if (icon === "bow")
+  else if (icon === "weapon")
     return (
       <svg
         fill={`${color}`}
@@ -72,7 +72,7 @@ const CustomIcons: FunctionComponent<Props> = ({ color, icon }) => {
         width="30px"
         height="30px"
         viewBox="0 0 256 256"
-        enable-background="new 0 0 256 256"
+        enableBackground="new 0 0 256 256"
       >
         <path
           d="M211.3,86.9l-40.5,15.7l7.5-47.8L120.6,8L62.9,54.7l13.3,84.4l-35.5-13.9l-27.8,42.1l40,80.6h133.9l29.6-59.8l26.7-52.7

@@ -4,7 +4,9 @@ import CardModel from "../../models/card-model";
 import DataModel from "../../models/data-model";
 import UserModel from "../../models/user-model";
 import "./2P-style.scss";
-import CustomIcons from "./custom-icons/Custom-Icons";
+import CustomIcons from "./components/Custom-Icons";
+import Card from "./components/card";
+
 
 type Props = {
   currentUser: UserModel;
@@ -47,20 +49,18 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
     }));
   }, [SelectedCard]);
 
-  useEffect(() => {}, []);
-
   const initGame = () => {
     let TempoPlayer1Data: PlayerDataMode2PROJ = {
       username: "Player1",
       cardDeck: currentUser!.deck,
-      cardHand: [],
+      cardHand: ["664278bfe74300c36269666f", "6642974ee74300c3627c8b4e"],
       statRessources: {
         generatorBrick: 1,
-        brick: 0,
+        brick: 5,
         generatorWeapon: 1,
         weapon: 0,
         generatorCrystal: 1,
-        crystal: 0,
+        crystal: 5,
         health: 30,
         shield: 10,
       },
@@ -106,6 +106,18 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
     setPlayer2Data(TempoOpponentData);
   };
 
+  const ClickCard = (cardId: string) => {
+    SelectedCard === cardId ? setSelectedCard(null) : setSelectedCard(cardId);
+  };
+
+  const cardCanBePlayed = (CardHandValue: CardModel, Owner: PlayerDataMode2PROJ) => {
+    if (Owner.statRessources[CardHandValue.costType] >= CardHandValue.costValue) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
@@ -126,8 +138,8 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
                   }`}
                 </div>
                 <div className="dark-container resource-container flex-center g10">
-                  <CustomIcons icon="bow" color="#dee0df" />
-                  {`Weapons (+${Player2Data ? Player2Data.statRessources.generatorWeapon : "0"}) : ${
+                  <CustomIcons icon="weapon" color="#dee0df" />
+                  {`weapons (+${Player2Data ? Player2Data.statRessources.generatorWeapon : "0"}) : ${
                     Player2Data ? Player2Data.statRessources.weapon : "0"
                   }`}
                 </div>
@@ -156,22 +168,34 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
               </div>
               <div className="card-turn-placement g20 flex-center">
                 <div
-                  className={`player-blue normal-container flex-center ${
+                  className={`player-blue normal-container flex-center absolute ${
                     Player2Data && Player2Data.turnInfo.trash ? "on-delete" : ""
                   }`}
                 >
-                  <i className="blue">delete</i>
+                  <i className="blue fs30">delete</i>
                 </div>
+
                 {Player1Data && Player1Data.turnInfo.played ? (
-                  <div className="card"></div>
+                  <Card
+                    color={"#0084ff"}
+                    card={getCardInfoById(Player1Data.turnInfo.played, Cards)!}
+                    AddedClass={""}
+                    ClickFunction={() => {}}
+                  />
                 ) : (
                   <div className="card empty-card-place blue-player-border-dash"></div>
                 )}
                 {Player2Data && Player2Data.turnInfo.played ? (
-                  <div className="card"></div>
+                  <Card
+                    color={"#ff2768"}
+                    card={getCardInfoById(Player2Data.turnInfo.played, Cards)!}
+                    AddedClass={""}
+                    ClickFunction={() => {}}
+                  />
                 ) : (
                   <div className="card empty-card-place red-player-border-dash"></div>
                 )}
+
                 <div
                   className={`player-red normal-container flex-center ${
                     Player1Data && Player1Data.turnInfo.trash ? "on-delete" : ""
@@ -200,18 +224,17 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
                 {Player1Data && Player1Data.cardHand
                   ? Player1Data.cardHand.map((cardId) => {
                       let CardHandValue = getCardInfoById(cardId, Cards);
+                      console.log(CardHandValue);
                       return CardHandValue ? (
-                        <div
-                          className={`card ${SelectedCard === CardHandValue._id ? "selected-card" : ""}`}
-                          key={CardHandValue._id}
-                          onClick={() => {
-                            SelectedCard === CardHandValue!._id ? setSelectedCard(null) : setSelectedCard(CardHandValue!._id);
-                          }}
-                        >
-                          <span className="cost">{CardHandValue.costType}</span>
-                          <span className="name">{CardHandValue._id}</span>
-                          <span className="effects">{CardHandValue._id}</span>
-                        </div>
+                        <Card
+                          key={cardId}
+                          color={"#0084ff"}
+                          card={CardHandValue}
+                          AddedClass={`${SelectedCard === CardHandValue._id ? "selected-card" : ""} ${
+                            cardCanBePlayed(CardHandValue, Player1Data) ? "" : "can-not-play"
+                          }`}
+                          ClickFunction={cardCanBePlayed(CardHandValue, Player1Data) ? ClickCard : () => {}}
+                        />
                       ) : null;
                     })
                   : null}
@@ -228,8 +251,8 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
                   }`}
                 </div>
                 <div className="dark-container resource-container flex-center g10">
-                  <CustomIcons icon="bow" color="#dee0df" />
-                  {`Weapons (+${
+                  <CustomIcons icon="weapon" color="#dee0df" />
+                  {`weapons (+${
                     Player1Data && Player1Data.statRessources ? Player1Data.statRessources.generatorWeapon : "0"
                   }) : ${Player1Data && Player1Data.statRessources ? Player1Data!.statRessources.weapon : "0"}`}
                 </div>

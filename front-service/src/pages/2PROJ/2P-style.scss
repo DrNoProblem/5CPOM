@@ -1,0 +1,98 @@
+.card {
+  width: 100px;
+  height: 150px;
+  border-radius: 30px;
+  background-color: var(--color-normal-bg);
+  border: 2px solid var(--color-normal-bg);
+}
+
+.card.empty-card-place {
+  background-color: #00000000;
+}
+.red-player-border-dash {
+  border: 2px dashed var(--color-red);
+}
+
+.blue-player-border-dash {
+  border: 2px dashed var(--color-blue);
+}
+
+.red-player-border {
+  border: 2px solid var(--color-red);
+}
+
+.blue-player-border {
+  border: 2px solid var(--color-blue);
+}
+.PlayerBoard:has(.card-hand.player-red) {
+  flex-direction: column-reverse;
+  overflow: hidden;
+}
+.PlayerBoard:has(.card-hand.player-blue) {
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card-hand.player-red .card {
+  transform: translateY(-50%);
+}
+.card-hand.player-blue .card {
+  transform: translateY(50%);
+}
+
+.card-hand .card {
+  margin: 5px 0;
+}
+.card-hand.player-blue .card.selected-card,
+.card-hand.player-blue .card:hover {
+  transform: translateY(0);
+  cursor: pointer;
+}
+
+.card-turn-placement {
+  max-height: 150px;
+}
+.player-red.on-delete {
+  transform: translateX(calc(-100% - 20px - 43px));
+  border: 2px solid var(--color-red);
+}
+
+.player-blue.on-delete {
+  transform: translateX(calc(100% + 20px + 44px));
+  border: 2px solid var(--color-blue);
+}
+
+.next-turn {
+  position: absolute;
+  right: 0;
+  transform: translateX(25%);
+}
+
+.resource-player-info {
+  overflow: unset;
+  overflow-x: visible;
+}
+
+.life i {
+  font-size: 100px;
+  z-index: 0;
+}
+.life span {
+  transform: translateY(-5px);
+  z-index: 1;
+}
+
+.shield {
+    position: absolute; 
+  i {
+    font-size: 50px;
+    z-index: 0;
+  }
+  span {
+    z-index: 1;
+  }
+}
+.resource-container {
+    padding: 10px 15px;
+    border-radius: 5px;
+}

@@ -48,6 +48,9 @@
   flex-direction: column;
   overflow: hidden;
 }
+.card-hand {
+  width: calc(100%);
+}
 .card-hand.player-blue {
   min-height: 250px;
 }
@@ -95,6 +98,7 @@
 .resource-player-info {
   overflow: unset;
   overflow-x: visible;
+  width: calc(100% - 44px);
 }
 
 .life i {
@@ -119,4 +123,8 @@
 .resource-container {
   padding: 10px 15px;
   border-radius: 5px;
+}
+
+.turn-btn {
+  transform: translateY(-150%);
 }

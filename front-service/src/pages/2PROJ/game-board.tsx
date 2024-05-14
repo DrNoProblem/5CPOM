@@ -117,9 +117,12 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
     }
   };
 
-  const NextTurnClick = () => {
-    if (Player1Data && Player2Data) {
-      let tempoPlayerInfo: { blue: PlayerDataMode2PROJ; red: PlayerDataMode2PROJ } = { blue: Player1Data, red: Player2Data };
+  const NextTurnClick = (turnPlayer1Data: PlayerDataMode2PROJ, turnPlayer2Data: PlayerDataMode2PROJ) => {
+    if (turnPlayer1Data && turnPlayer2Data) {
+      let tempoPlayerInfo: { blue: PlayerDataMode2PROJ; red: PlayerDataMode2PROJ } = {
+        blue: turnPlayer1Data,
+        red: turnPlayer2Data,
+      };
       let blueCardId: string | undefined;
       let redCardId: string | undefined;
 
@@ -157,6 +160,8 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
           [card.ownerTargetType]: owner.statRessources[card.ownerTargetType] + card.ownerTargetValue,
         },
       };
+    } else if (card.ownerTargetType === "all") {
+      console.log("effect all resources");
     }
     if (card.enemyTargetType !== "all") {
       enemy = {
@@ -166,6 +171,8 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
           [card.enemyTargetType]: enemy.statRessources[card.enemyTargetType] + card.enemyTargetValue,
         },
       };
+    }else if (card.enemyTargetType === "all") {
+      console.log("effect all resources");
     }
     return { owner, enemy };
   };
@@ -232,109 +239,132 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
                 </div>
               </div>
             </div>
-            <div className="GameBoard flex-bet flex-center-align w80 g25">
-              <div className="player1-life normal-container flex-col">
-                <div className="life relative flex-center p25">
-                  <i className="blue absolute">favorite</i>
-                  <span className="fs30">{Player2Data ? Player2Data.statRessources.health : "0"}</span>
+            <div className="GameBoard flex-col flex-center relative w80">
+              {Player1Data && (Player1Data.turnInfo.played || Player1Data.turnInfo.trash) ? (
+                <div className="cta cta-full-green absolute t0 turn-btn">
+                  <span className="flex-center g15">
+                    <i>done</i>NEXT TURN
+                  </span>
                 </div>
-                <div
-                  className={`shield absolute r0 b0 flex-center p25 ${
-                    Player2Data && Player2Data.statRessources.shield === 0 ? "op0" : ""
-                  }`}
-                >
-                  <i className="absolute grey">shield</i>
-                  <span className="blue">{Player2Data ? Player2Data.statRessources.shield : "0"}</span>
+              ) : SelectedCard ? (
+                <div className="cta cta-blue absolute t0 turn-btn">
+                  <span className="flex-center g15 blue">
+                    <i className="blue">info</i>
+                    place card
+                  </span>
                 </div>
-              </div>
-              <div className="card-turn-placement g20 flex-center">
-                {Player1Data ? (
-                  <div className={`flex g20 ${SelectedCard ? "" : "darker"}`}>
-                    <div className={`player-blue flex-center `}>
-                      <i
-                        className={`blue fs30 normal-container zi1 absolute`}
-                        onClick={() => {
-                          if (SelectedCard && !Player1Data.turnInfo.trash) {
-                            SelectCardToPlay(SelectedCard, "trash", "blue");
-                          } else if (SelectedCard && Player1Data && Player1Data.turnInfo.trash) {
-                            SelectCardToPlay(null, "trash", "blue");
-                          }
-                        }}
-                      >
-                        delete
-                      </i>
-                      {Player1Data.turnInfo.trash ? (
+              ) : (
+                <div className="cta cta-blue absolute t0 turn-btn">
+                  <span className="flex-center g15 blue">
+                    <i className="blue">info</i>
+                    choose card
+                  </span>
+                </div>
+              )}
+              <div className="flex-bet flex-center-align g25">
+                <div className="player1-life normal-container flex-col">
+                  <div className="life relative flex-center p25">
+                    <i className="blue absolute">favorite</i>
+                    <span className="fs30">{Player2Data ? Player2Data.statRessources.health : "0"}</span>
+                  </div>
+                  <div
+                    className={`shield absolute r0 b0 flex-center p25 ${
+                      Player2Data && Player2Data.statRessources.shield === 0 ? "op0" : ""
+                    }`}
+                  >
+                    <i className="absolute grey">shield</i>
+                    <span className="blue">{Player2Data ? Player2Data.statRessources.shield : "0"}</span>
+                  </div>
+                </div>
+                <div className="card-turn-placement g20 flex-center">
+                  {Player1Data ? (
+                    <div className={`flex g20 ${SelectedCard ? "" : "darker"}`}>
+                      <div className={`player-blue flex-center `}>
+                        <i
+                          className={`blue fs30 normal-container zi1 absolute`}
+                          onClick={() => {
+                            if (SelectedCard && !Player1Data.turnInfo.trash) {
+                              SelectCardToPlay(SelectedCard, "trash", "blue");
+                            } else if (SelectedCard && Player1Data && Player1Data.turnInfo.trash) {
+                              SelectCardToPlay(null, "trash", "blue");
+                            }
+                          }}
+                        >
+                          delete
+                        </i>
+                        {Player1Data.turnInfo.trash ? (
+                          <Card
+                            color={"#0084ff"}
+                            card={getCardInfoById(Player1Data.turnInfo.trash, Cards)!}
+                            AddedClass={`${Player1Data.turnInfo.trash ? "darker" : ""}`}
+                            ClickFunction={() => {}}
+                          />
+                        ) : (
+                          <div className="op0 card"></div>
+                        )}
+                      </div>
+
+                      {Player1Data && Player1Data.turnInfo.played ? (
                         <Card
                           color={"#0084ff"}
-                          card={getCardInfoById(Player1Data.turnInfo.trash, Cards)!}
-                          AddedClass={`${Player1Data.turnInfo.trash ? "darker" : ""}`}
+                          card={getCardInfoById(Player1Data.turnInfo.played, Cards)!}
+                          AddedClass={""}
+                          ClickFunction={() => SelectCardToPlay(null, "played", "blue")}
+                        />
+                      ) : (
+                        <div
+                          className="card empty-card-place blue-player-border-dash"
+                          onClick={() => {
+                            console.log("test");
+                            SelectCardToPlay(SelectedCard, "played", "blue");
+                          }}
+                        ></div>
+                      )}
+                    </div>
+                  ) : null}
+
+                  {Player2Data ? (
+                    <div className={`flex g20 darker`}>
+                      {Player2Data && Player2Data.turnInfo.played ? (
+                        <Card
+                          color={"#0084ff"}
+                          card={getCardInfoById(Player2Data.turnInfo.played, Cards)!}
+                          AddedClass={""}
                           ClickFunction={() => {}}
                         />
                       ) : (
-                        <div className="op0 card"></div>
+                        <div className="card empty-card-place red-player-border-dash"></div>
                       )}
+
+                      <div className={`player-red flex-center `}>
+                        <i className={`red fs30 normal-container zi1 absolute`}>delete</i>
+                        {Player2Data.turnInfo.trash ? (
+                          <Card
+                            color={"#0084ff"}
+                            card={getCardInfoById(Player2Data.turnInfo.trash, Cards)!}
+                            AddedClass={`${Player2Data.turnInfo.trash ? "darker" : ""}`}
+                            ClickFunction={() => {}}
+                          />
+                        ) : (
+                          <div className="op0 card"></div>
+                        )}
+                      </div>
                     </div>
-
-                    {Player1Data && Player1Data.turnInfo.played ? (
-                      <Card
-                        color={"#0084ff"}
-                        card={getCardInfoById(Player1Data.turnInfo.played, Cards)!}
-                        AddedClass={""}
-                        ClickFunction={() => SelectCardToPlay(null, "played", "blue")}
-                      />
-                    ) : (
-                      <div
-                        className="card empty-card-place blue-player-border-dash"
-                        onClick={() => {
-                          console.log("test");
-                          SelectCardToPlay(SelectedCard, "played", "blue");
-                        }}
-                      ></div>
-                    )}
-                  </div>
-                ) : null}
-
-                {Player2Data ? (
-                  <div className={`flex g20 darker`}>
-                    {Player2Data && Player2Data.turnInfo.played ? (
-                      <Card
-                        color={"#0084ff"}
-                        card={getCardInfoById(Player2Data.turnInfo.played, Cards)!}
-                        AddedClass={""}
-                        ClickFunction={() => {}}
-                      />
-                    ) : (
-                      <div className="card empty-card-place red-player-border-dash"></div>
-                    )}
-
-                    <div className={`player-red flex-center `}>
-                      <i className={`red fs30 normal-container zi1 absolute`}>delete</i>
-                      {Player2Data.turnInfo.trash ? (
-                        <Card
-                          color={"#0084ff"}
-                          card={getCardInfoById(Player2Data.turnInfo.trash, Cards)!}
-                          AddedClass={`${Player2Data.turnInfo.trash ? "darker" : ""}`}
-                          ClickFunction={() => {}}
-                        />
-                      ) : (
-                        <div className="op0 card"></div>
-                      )}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-              <div className="player2-life normal-container flex-col">
-                <div className="life relative flex-center p25">
-                  <i className="red absolute">favorite</i>
-                  <span className="fs30">{Player2Data ? Player2Data.statRessources.health : "0"}</span>
+                  ) : null}
                 </div>
-                <div
-                  className={`shield absolute l0 b0 flex-center p25 ${
-                    Player2Data && Player2Data.statRessources.shield === 0 ? "op0" : ""
-                  }`}
-                >
-                  <i className="absolute lightgrey">shield</i>
-                  <span className="red">{Player2Data ? Player2Data.statRessources.shield : "0"}</span>
+                <div className="player2-life normal-container flex-col">
+                  <div className="life relative flex-center p25">
+                    <i className="red absolute">favorite</i>
+                    <span className="fs30">{Player2Data ? Player2Data.statRessources.health : "0"}</span>
+                  </div>
+                  <div
+                    className={`shield absolute l0 b0 flex-center p25 ${
+                      Player2Data && Player2Data.statRessources.shield === 0 ? "op0" : ""
+                    }`}
+                  >
+                    <i className="absolute lightgrey">shield</i>
+                    <span className="red">{Player2Data ? Player2Data.statRessources.shield : "0"}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -381,27 +411,6 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
                     Player1Data && Player1Data.statRessources ? Player1Data.statRessources.generatorCrystal : "0"
                   }) : ${Player1Data && Player1Data.statRessources ? Player1Data!.statRessources.crystal : "0"}`}
                 </div>
-                {Player1Data && (Player1Data.turnInfo.played || Player1Data.turnInfo.trash) ? (
-                  <div className="cta cta-full-green mlauto next-turn">
-                    <span className="flex-center g15">
-                      <i>done</i>NEXT TURN
-                    </span>
-                  </div>
-                ) : SelectedCard ? (
-                  <div className="cta mlauto next-turn blue-player-border dark-bg">
-                    <span className="flex-center g15 blue">
-                      <i className="blue">info</i>
-                      place card
-                    </span>
-                  </div>
-                ) : (
-                  <div className="cta mlauto next-turn blue-player-border dark-bg">
-                    <span className="flex-center g15 blue">
-                      <i className="blue">info</i>
-                      choose card
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
 

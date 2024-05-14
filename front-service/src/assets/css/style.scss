@@ -1270,3 +1270,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   filter: brightness(0) invert(0.8);
   cursor: pointer;
 }
+
+.darker {
+  filter: brightness(0.5);
+}

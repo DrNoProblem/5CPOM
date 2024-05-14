@@ -7,7 +7,6 @@ import "./2P-style.scss";
 import CustomIcons from "./components/Custom-Icons";
 import Card from "./components/card";
 
-
 type Props = {
   currentUser: UserModel;
   Data: DataModel;
@@ -118,6 +117,88 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
     }
   };
 
+  const NextTurnClick = () => {
+    if (Player1Data && Player2Data) {
+      let tempoPlayerInfo: { blue: PlayerDataMode2PROJ; red: PlayerDataMode2PROJ } = { blue: Player1Data, red: Player2Data };
+      let blueCardId: string | undefined;
+      let redCardId: string | undefined;
+
+      if (tempoPlayerInfo.blue.turnInfo.played && !tempoPlayerInfo.blue.turnInfo.trash)
+        blueCardId = tempoPlayerInfo.blue.turnInfo.played;
+      else if (tempoPlayerInfo.blue.turnInfo.trash && !tempoPlayerInfo.blue.turnInfo.played)
+        blueCardId = tempoPlayerInfo.blue.turnInfo.trash;
+      if (tempoPlayerInfo.red.turnInfo.played && !tempoPlayerInfo.red.turnInfo.trash)
+        redCardId = tempoPlayerInfo.red.turnInfo.played;
+      else if (tempoPlayerInfo.red.turnInfo.trash && !tempoPlayerInfo.red.turnInfo.played)
+        redCardId = tempoPlayerInfo.red.turnInfo.trash;
+
+      if (redCardId) {
+        let result = ApplyCardEffect(tempoPlayerInfo.red, tempoPlayerInfo.blue, getCardInfoById(redCardId, Cards)!);
+        tempoPlayerInfo = { blue: result.enemy, red: result.owner };
+      }
+
+      if (blueCardId) {
+        let result = ApplyCardEffect(tempoPlayerInfo.blue, tempoPlayerInfo.red, getCardInfoById(blueCardId, Cards)!);
+        tempoPlayerInfo = { blue: result.owner, red: result.enemy };
+      }
+    }
+  };
+
+  const ApplyCardEffect = (
+    owner: PlayerDataMode2PROJ,
+    enemy: PlayerDataMode2PROJ,
+    card: CardModel
+  ): { owner: PlayerDataMode2PROJ; enemy: PlayerDataMode2PROJ } => {
+    if (card.ownerTargetType !== "all") {
+      owner = {
+        ...owner,
+        statRessources: {
+          ...owner.statRessources,
+          [card.ownerTargetType]: owner.statRessources[card.ownerTargetType] + card.ownerTargetValue,
+        },
+      };
+    }
+    if (card.enemyTargetType !== "all") {
+      enemy = {
+        ...enemy,
+        statRessources: {
+          ...enemy.statRessources,
+          [card.enemyTargetType]: enemy.statRessources[card.enemyTargetType] + card.enemyTargetValue,
+        },
+      };
+    }
+    return { owner, enemy };
+  };
+
+  const SelectCardToPlay = (cardId: string | null, target: "trash" | "played", player: "blue" | "red") => {
+    if (player === "blue") {
+      if (target === "trash") {
+        console.log(cardId);
+        setPlayer1Data((prevData) => ({
+          ...prevData!,
+          turnInfo: { ...prevData!.turnInfo, trash: cardId, played: null },
+        }));
+      } else if (target === "played") {
+        setPlayer1Data((prevData) => ({
+          ...prevData!,
+          turnInfo: { ...prevData!.turnInfo, trash: null, played: cardId },
+        }));
+      }
+    } else if (player === "red") {
+      if (target === "trash") {
+        setPlayer2Data((prevData) => ({
+          ...prevData!,
+          turnInfo: { ...prevData!.turnInfo, trash: cardId, played: null },
+        }));
+      } else if (target === "played") {
+        setPlayer2Data((prevData) => ({
+          ...prevData!,
+          turnInfo: { ...prevData!.turnInfo, trash: null, played: cardId },
+        }));
+      }
+    }
+  };
+
   return (
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
@@ -167,42 +248,80 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data }) => {
                 </div>
               </div>
               <div className="card-turn-placement g20 flex-center">
-                <div
-                  className={`player-blue normal-container flex-center absolute ${
-                    Player2Data && Player2Data.turnInfo.trash ? "on-delete" : ""
-                  }`}
-                >
-                  <i className="blue fs30">delete</i>
-                </div>
+                {Player1Data ? (
+                  <div className={`flex g20 ${SelectedCard ? "" : "darker"}`}>
+                    <div className={`player-blue flex-center `}>
+                      <i
+                        className={`blue fs30 normal-container zi1 absolute`}
+                        onClick={() => {
+                          if (SelectedCard && !Player1Data.turnInfo.trash) {
+                            SelectCardToPlay(SelectedCard, "trash", "blue");
+                          } else if (SelectedCard && Player1Data && Player1Data.turnInfo.trash) {
+                            SelectCardToPlay(null, "trash", "blue");
+                          }
+                        }}
+                      >
+                        delete
+                      </i>
+                      {Player1Data.turnInfo.trash ? (
+                        <Card
+                          color={"#0084ff"}
+                          card={getCardInfoById(Player1Data.turnInfo.trash, Cards)!}
+                          AddedClass={`${Player1Data.turnInfo.trash ? "darker" : ""}`}
+                          ClickFunction={() => {}}
+                        />
+                      ) : (
+                        <div className="op0 card"></div>
+                      )}
+                    </div>
 
-                {Player1Data && Player1Data.turnInfo.played ? (
-                  <Card
-                    color={"#0084ff"}
-                    card={getCardInfoById(Player1Data.turnInfo.played, Cards)!}
-                    AddedClass={""}
-                    ClickFunction={() => {}}
-                  />
-                ) : (
-                  <div className="card empty-card-place blue-player-border-dash"></div>
-                )}
-                {Player2Data && Player2Data.turnInfo.played ? (
-                  <Card
-                    color={"#ff2768"}
-                    card={getCardInfoById(Player2Data.turnInfo.played, Cards)!}
-                    AddedClass={""}
-                    ClickFunction={() => {}}
-                  />
-                ) : (
-                  <div className="card empty-card-place red-player-border-dash"></div>
-                )}
+                    {Player1Data && Player1Data.turnInfo.played ? (
+                      <Card
+                        color={"#0084ff"}
+                        card={getCardInfoById(Player1Data.turnInfo.played, Cards)!}
+                        AddedClass={""}
+                        ClickFunction={() => SelectCardToPlay(null, "played", "blue")}
+                      />
+                    ) : (
+                      <div
+                        className="card empty-card-place blue-player-border-dash"
+                        onClick={() => {
+                          console.log("test");
+                          SelectCardToPlay(SelectedCard, "played", "blue");
+                        }}
+                      ></div>
+                    )}
+                  </div>
+                ) : null}
 
-                <div
-                  className={`player-red normal-container flex-center ${
-                    Player1Data && Player1Data.turnInfo.trash ? "on-delete" : ""
-                  }`}
-                >
-                  <i className="red">delete</i>
-                </div>
+                {Player2Data ? (
+                  <div className={`flex g20 darker`}>
+                    {Player2Data && Player2Data.turnInfo.played ? (
+                      <Card
+                        color={"#0084ff"}
+                        card={getCardInfoById(Player2Data.turnInfo.played, Cards)!}
+                        AddedClass={""}
+                        ClickFunction={() => {}}
+                      />
+                    ) : (
+                      <div className="card empty-card-place red-player-border-dash"></div>
+                    )}
+
+                    <div className={`player-red flex-center `}>
+                      <i className={`red fs30 normal-container zi1 absolute`}>delete</i>
+                      {Player2Data.turnInfo.trash ? (
+                        <Card
+                          color={"#0084ff"}
+                          card={getCardInfoById(Player2Data.turnInfo.trash, Cards)!}
+                          AddedClass={`${Player2Data.turnInfo.trash ? "darker" : ""}`}
+                          ClickFunction={() => {}}
+                        />
+                      ) : (
+                        <div className="op0 card"></div>
+                      )}
+                    </div>
+                  </div>
+                ) : null}
               </div>
               <div className="player2-life normal-container flex-col">
                 <div className="life relative flex-center p25">

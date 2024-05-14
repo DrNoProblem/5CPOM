@@ -4,7 +4,7 @@ a {display: inline-block; text-decoration: none; color: inherit;}
 section {position: relative;}
 body {margin: 0;}
 
-.absolute {position: absolute;}
+.absolute {position: absolute !important;}
 .relative {position: relative;}
 .flex {display: flex;}
 .flex-wrap {display: flex; flex-wrap: wrap;}

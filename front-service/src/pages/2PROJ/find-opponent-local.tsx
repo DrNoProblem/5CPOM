@@ -6,7 +6,6 @@ const FindOpponentLocal: FunctionComponent = () => {
   const [MenuOpen, setMenuOpen] = useState("start");
   const [Pseudo, setPseudo] = useState("");
 
-
   return (
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">

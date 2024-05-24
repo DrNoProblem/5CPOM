@@ -56,7 +56,7 @@ import UserModel from "./models/user-model";
 import voidUser from "./models/mocks/void-user";
 import CardModel from "./models/card-model";
 import DeckEdition from "./pages/2PROJ/deck-edition";
-import GameBoard from "./pages/2PROJ/game-board";
+import GameBoard from "./pages/2PROJ/components/game-board";
 import FindOpponentLocal from "./pages/2PROJ/find-opponent-local";
 import getCardsList from "./api-request/card/card-get-all";
 
@@ -160,8 +160,12 @@ const App: FunctionComponent = () => {
                 <Route exact path="/" render={() => <HomePage currentUser={currentUser} />} />
                 <Route exact path="/1PROJ" render={() => <HomePage1PROJ currentUser={currentUser} />} />
                 <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} Data={Data} />} />
-                <Route exact path="/2PROJ/game" render={() => <GameBoard currentUser={currentUser} Data={Data} />} />
-                <Route exact path="/2PROJ/find-local" render={() => <FindOpponentLocal />} />
+                <Route exact path="/2PROJ/game" render={() => <GameBoard currentUser={currentUser} Data={Data} peerConnection={null} dataChannel={null} />} />
+                <Route
+                  exact
+                  path="/2PROJ/find-local"
+                  render={() => <FindOpponentLocal currentUser={currentUser} Data={Data} />}
+                />
                 <Route exact path="/2PROJ/deck" render={() => <DeckEdition currentUser={currentUser} />} />
                 <Route
                   path="/3PROJ/room/:roomid/task/:taskid"

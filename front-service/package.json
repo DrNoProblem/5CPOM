@@ -10,12 +10,17 @@
     "@types/react-router-dom": "^5.1.2",
     "axios": "^1.4.0",
     "cors": "^2.8.5",
+    "dgram": "^1.0.1",
+    "dgram-browserify": "^0.0.13",
     "js-cookie": "^3.0.5",
+    "multicast-dns": "^7.2.5",
+    "os-browserify": "^0.3.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^5.0.1",
     "sass": "^1.68.0",
+    "simple-peer": "^9.11.1",
     "typescript": "3.6.4"
   },
   "scripts": {
@@ -39,6 +44,8 @@
   },
   "devDependencies": {
     "@types/aws-sdk": "^2.7.0",
-    "@types/js-cookie": "^3.0.3"
+    "@types/js-cookie": "^3.0.3",
+    "@types/multicast-dns": "^7.2.4",
+    "@types/simple-peer": "^9.11.8"
   }
 }

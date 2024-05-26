@@ -468,7 +468,7 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
         <h1
-          className={`dark-container scores flex-center g50  playerTurn${PlayerTurn}`}
+          className={`dark-container scores flex-bet flex-center-align g50  playerTurn${PlayerTurn}`}
           onClick={() => console.log(VirtualBoardRender)} //!
         >
           <i className=" blue" onClick={() => setMenuOpen("red win")}>
@@ -486,8 +486,19 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
             {VirtualBoardRender.map((e, ei) =>
               e.map((f, fi) => (
                 <span key={"case-" + ei + "-" + fi} className={"setting-line " + f.css}>
-                  <span className={"case flex-center"} data-placement-y={ei} data-placement-x={fi} data-player={f.p} onClick={(e) => clickPawn(e)}>
-                    {f.p !== 0 ? <span onClick={(e) => clickPawn(e)} className={`pawn flex-center ${f.p === 1 ? "red-player" : "blue-player"}`}></span> : null}
+                  <span
+                    className={"case flex-center"}
+                    data-placement-y={ei}
+                    data-placement-x={fi}
+                    data-player={f.p}
+                    onClick={(e) => clickPawn(e)}
+                  >
+                    {f.p !== 0 ? (
+                      <span
+                        onClick={(e) => clickPawn(e)}
+                        className={`pawn flex-center ${f.p === 1 ? "red-player" : "blue-player"}`}
+                      ></span>
+                    ) : null}
                   </span>
                 </span>
               ))
@@ -495,7 +506,8 @@ const HomePage1PROJ: FunctionComponent<Props> = ({ currentUser }) => {
           </div>
           {MenuOpen ? (
             <div className="menu-pop-up absolute zi5 flex-center">
-              <div className="normal-container">
+              <div className="dark-background zi1"></div>
+              <div className="normal-container  zi1">
                 <h2 className=" blue txt-center">Game Menu</h2>
                 {MenuOpen === "blue win" ? <h2 className={`winner${PlayerTurn}`}>CONGRATULATION BLUE PLAYER</h2> : null}
                 {MenuOpen === "red win" ? <h2 className={`winner${PlayerTurn}`}>CONGRATULATION RED PLAYER</h2> : null}

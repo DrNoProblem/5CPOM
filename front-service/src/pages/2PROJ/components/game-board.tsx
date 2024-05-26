@@ -183,7 +183,6 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, peerConnection
   const SelectCardToPlay = (cardId: string | null, target: "trash" | "played", player: "blue" | "red") => {
     if (player === "blue") {
       if (target === "trash") {
-        console.log(cardId);
         setPlayer1Data((prevData) => ({
           ...prevData!,
           turnInfo: { ...prevData!.turnInfo, trash: cardId, played: null },
@@ -210,7 +209,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, peerConnection
   };
 
   return (
-    <div className="dark-container flex-col flex-center w100">
+    <div className="dark-container flex-col flex-center m20">
       <div className="PlayerBoard flex-center flex-col w100">
         <div className="card-hand flex-center w80 g5 player-red">
           {Array.from({ length: 8 }).map((_, index) => (
@@ -314,7 +313,6 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, peerConnection
                   <div
                     className="card empty-card-place blue-player-border-dash"
                     onClick={() => {
-                      console.log("test");
                       SelectCardToPlay(SelectedCard, "played", "blue");
                     }}
                   ></div>
@@ -372,7 +370,6 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, peerConnection
           {Player1Data && Player1Data.cardHand
             ? Player1Data.cardHand.map((cardId) => {
                 let CardHandValue = getCardInfoById(cardId, Cards);
-                console.log(CardHandValue);
                 return CardHandValue ? (
                   <Card
                     key={cardId}

@@ -1,7 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataModel from "../../models/data-model";
 import UserModel from "../../models/user-model";
 import GameBoard from "./components/game-board";
+
+// Définir un identifiant unique pour votre application
+const APP_IDENTIFIER = "my-unique-app-id";
+
+type OfferType = {
+  pseudo: string;
+  offer: string; // This will be JSON stringified RTCSessionDescriptionInit
+  appId: string;
+  userId: string;
+};
 
 type Props = {
   currentUser: UserModel;
@@ -9,12 +19,26 @@ type Props = {
 };
 
 const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
+  const [pseudoT, setPseudoT] = useState("");
   const [pseudo, setPseudo] = useState("");
   const [opponentFound, setOpponentFound] = useState(false);
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
   const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
+  const [offers, setOffers] = useState<OfferType[]>([]);
 
-  const startSearching = () => {
+  useEffect(() => {
+    // Retrieve stored offers from localStorage on component mount and filter them
+    const storedOffers = localStorage.getItem("offers");
+    if (storedOffers) {
+      const parsedOffers = JSON.parse(storedOffers);
+      const filteredOffers = parsedOffers.filter(
+        (offer: OfferType) => offer.appId === APP_IDENTIFIER && offer.userId !== currentUser._id
+      );
+      setOffers(filteredOffers);
+    }
+  }, [currentUser._id]);
+
+  const startSearching = async () => {
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
@@ -29,18 +53,26 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         console.log("ICE Candidate:", event.candidate);
-        alert(JSON.stringify(event.candidate));
       }
     };
 
-    pc.createOffer().then((offer) => {
-      pc.setLocalDescription(offer);
-      console.log("Offer:", offer);
-      alert(JSON.stringify(offer));
-    });
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    console.log("Offer:", offer);
+
+    // Store the offer locally with app identifier and user id
+    const newOffer: OfferType = { pseudo, offer: JSON.stringify(offer), appId: APP_IDENTIFIER, userId: currentUser._id };
+    const storedOffers = localStorage.getItem("offers");
+    const parsedOffers = storedOffers ? JSON.parse(storedOffers) : [];
+    const updatedOffers = [...parsedOffers, newOffer];
+    localStorage.setItem("offers", JSON.stringify(updatedOffers));
+
+    // Update the state excluding the current user's offer
+    const filteredOffers = updatedOffers.filter((offer: OfferType) => offer.userId !== currentUser._id);
+    setOffers(filteredOffers);
   };
 
-  const handleConnection = () => {
+  const handleConnection = async (offer: string) => {
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
@@ -55,17 +87,14 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
       dc.onmessage = (event) => console.log("Received message:", event.data);
     };
 
-    const answer = prompt("Enter the signaling data (offer) received from the other player:");
-    if (answer) {
-      const offer = JSON.parse(answer);
-      pc.setRemoteDescription(new RTCSessionDescription(offer)).then(() => {
-        pc.createAnswer().then((answer) => {
-          pc.setLocalDescription(answer);
-          console.log("Answer:", answer);
-          alert(JSON.stringify(answer));
-        });
-      });
-    }
+    await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    console.log("Answer:", answer);
+
+    // Here you would share the answer with the offer creator
+    // For simplicity, we'll log it
+    alert(JSON.stringify(answer));
 
     pc.onicecandidate = (event) => {
       if (event.candidate) {
@@ -82,27 +111,70 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
     }
   };
 
+  const clearLocalStorage = () => {
+    localStorage.clear();
+    setOffers([]); // Clear the offers state as well
+  };
+
   return (
-    <div className="main p20 flex-col relative flex-end-align g20">
+    <div className="relative">
       {!opponentFound ? (
-        <div className="flex-col g20 w100">
-          <h2>Find Opponent in local network:</h2>
-          <div className="flex-wrap g20 w80 mb15 flex-center-align">
-            <input type="text" value={pseudo} onChange={(e) => setPseudo(e.target.value)} placeholder="Enter your pseudo" />
-            <div className="cta cta-blue" onClick={startSearching}>
-              <span>Start Searching</span>
-            </div>
-            <div className="cta cta-blue" onClick={handleConnection}>
-              <span>Connect to Opponent</span>
-            </div>
-            <div className="cta cta-blue" onClick={handleSignal}>
-              <span>Add ICE Candidate</span>
-            </div>
+        <div className="absolute flex-center menu-pop-up">
+          <div className="dark-background zi1"></div>
+          <div className="dark-container zi3 w50">
+            {!pseudo ? (
+              <div className="flex-col g20 w100">
+                <h2 className="m0">Choose pseudo :</h2>
+                <input type="text" value={pseudoT} onChange={(e) => setPseudoT(e.target.value)} placeholder="Enter your pseudo" />
+                <div
+                  className="cta cta-blue mlauto"
+                  onClick={() => {
+                    setPseudo(pseudoT);
+                    startSearching();
+                  }}
+                >
+                  <span>Start Searching</span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-col g20 w100">
+                <div className="flex-bet">
+                  <h2 className="m0">Find Opponent in local network :</h2>
+                  <h3 className="m0 txt-end">
+                    Your a visible as :<br />
+                    <span className="blue" onClick={() => setPseudo("")}>
+                      {pseudo}
+                    </span>
+                  </h3>
+                </div>
+
+                <div className="flex-wrap g20 mb15 flex-center-align">
+                  <div className="cta cta-blue" onClick={handleSignal}>
+                    <span>Add ICE Candidate</span>
+                  </div>
+                  <div className="offers-list w100">
+                    <div className="flex-center-align w100">
+                      <h3 className="m0">Available Offers:</h3>
+                      <div className="cta cta-red ml20" onClick={clearLocalStorage}>
+                        <span>Clear Offers</span>
+                      </div>
+                    </div>
+                    {offers.map((offer, index) => (
+                      <div key={index} className="offer-item">
+                        <p>{offer.pseudo}</p>
+                        <div className="cta cta-normal blue-h" onClick={() => handleConnection(offer.offer)}>
+                          <span>Connect</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      ) : (
-        <GameBoard currentUser={currentUser} Data={Data} peerConnection={peerConnection} dataChannel={dataChannel} />
-      )}
+      ) : null}
+      <GameBoard currentUser={currentUser} Data={Data} peerConnection={peerConnection} dataChannel={dataChannel} />
     </div>
   );
 };

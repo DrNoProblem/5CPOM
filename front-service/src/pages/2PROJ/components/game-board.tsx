@@ -7,6 +7,7 @@ import "./../2P-style.scss";
 import CustomIcons from "./Custom-Icons";
 import Card from "./card";
 import Peer from "simple-peer";
+import { cardCanBePlayed } from "./../helpers/game-function";
 
 type Props = {
   currentUser: UserModel;
@@ -110,14 +111,6 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, peerConnection
 
   const ClickCard = (cardId: string) => {
     SelectedCard === cardId ? setSelectedCard(null) : setSelectedCard(cardId);
-  };
-
-  const cardCanBePlayed = (CardHandValue: CardModel, Owner: PlayerDataMode2PROJ) => {
-    if (Owner.statRessources[CardHandValue.costType] >= CardHandValue.costValue) {
-      return true;
-    } else {
-      return false;
-    }
   };
 
   const NextTurnClick = (turnPlayer1Data: PlayerDataMode2PROJ, turnPlayer2Data: PlayerDataMode2PROJ) => {

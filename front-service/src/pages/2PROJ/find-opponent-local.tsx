@@ -27,70 +27,90 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
   const [offers, setOffers] = useState<OfferType[]>([]);
 
   useEffect(() => {
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    });
+
+    pc.ondatachannel = (event) => {
+      const dc = event.channel;
+      console.log("Data channel received:", dc);
+      dc.onopen = () => console.log("Data channel is open");
+      dc.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log("Data channel message received:", message);
+        if (message.type === "offer" && message.appId === APP_IDENTIFIER && message.userId !== currentUser._id) {
+          setOffers((prevOffers) => [...prevOffers, message]);
+        }
+      };
+    };
+
+    setPeerConnection(pc);
+
     // Retrieve stored offers from localStorage on component mount and filter them
     const storedOffers = localStorage.getItem("offers");
+    console.log("Stored offers on mount:", storedOffers);
     if (storedOffers) {
       const parsedOffers = JSON.parse(storedOffers);
       const filteredOffers = parsedOffers.filter(
         (offer: OfferType) => offer.appId === APP_IDENTIFIER && offer.userId !== currentUser._id
       );
+      console.log("Filtered offers on mount:", filteredOffers);
       setOffers(filteredOffers);
     }
   }, [currentUser._id]);
 
   const startSearching = async () => {
-    const pc = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    });
-
+    console.log("Starting search...");
+    const pc = peerConnection!;
     const dc = pc.createDataChannel("game");
-    setPeerConnection(pc);
     setDataChannel(dc);
 
-    dc.onopen = () => console.log("Data channel is open");
-    dc.onmessage = (event) => console.log("Received message:", event.data);
+    dc.onopen = async () => {
+      console.log("Data channel is open");
 
-    pc.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log("ICE Candidate:", event.candidate);
-      }
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          console.log("ICE Candidate:", event.candidate);
+        }
+      };
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      console.log("Offer created:", offer);
+
+      // Broadcast the offer via DataChannel
+      const newOffer: OfferType = { pseudo, offer: JSON.stringify(offer), appId: APP_IDENTIFIER, userId: currentUser._id };
+      console.log("Sending offer via DataChannel:", newOffer);
+      dc.send(JSON.stringify({ type: "offer", ...newOffer }));
+
+      // Store the offer locally with app identifier and user id
+      const storedOffers = localStorage.getItem("offers");
+      const parsedOffers = storedOffers ? JSON.parse(storedOffers) : [];
+      const updatedOffers = [...parsedOffers, newOffer];
+      localStorage.setItem("offers", JSON.stringify(updatedOffers));
+
+      // Log the updated offers
+      console.log("Updated offers:", updatedOffers);
+
+      // Update the state excluding the current user's offer
+      const filteredOffers = updatedOffers.filter((offer: OfferType) => offer.userId !== currentUser._id);
+      console.log("Filtered offers after update:", filteredOffers);
+      setOffers(filteredOffers);
     };
 
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    console.log("Offer:", offer);
-
-    // Store the offer locally with app identifier and user id
-    const newOffer: OfferType = { pseudo, offer: JSON.stringify(offer), appId: APP_IDENTIFIER, userId: currentUser._id };
-    const storedOffers = localStorage.getItem("offers");
-    const parsedOffers = storedOffers ? JSON.parse(storedOffers) : [];
-    const updatedOffers = [...parsedOffers, newOffer];
-    localStorage.setItem("offers", JSON.stringify(updatedOffers));
-
-    // Update the state excluding the current user's offer
-    const filteredOffers = updatedOffers.filter((offer: OfferType) => offer.userId !== currentUser._id);
-    setOffers(filteredOffers);
+    dc.onmessage = (event) => console.log("Received message:", event.data);
+    dc.onclose = () => console.log("Data channel is closed");
+    dc.onerror = (error) => console.error("Data channel error:", error);
   };
 
   const handleConnection = async (offer: string) => {
-    const pc = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    });
-
-    setPeerConnection(pc);
-
-    pc.ondatachannel = (event) => {
-      const dc = event.channel;
-      setDataChannel(dc);
-
-      dc.onopen = () => console.log("Data channel is open");
-      dc.onmessage = (event) => console.log("Received message:", event.data);
-    };
+    console.log("Handling connection for offer:", offer);
+    const pc = peerConnection!;
 
     await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)));
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
-    console.log("Answer:", answer);
+    console.log("Answer created:", answer);
 
     // Here you would share the answer with the offer creator
     // For simplicity, we'll log it
@@ -113,6 +133,7 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
 
   const clearLocalStorage = () => {
     localStorage.clear();
+    console.log("Local storage cleared");
     setOffers([]); // Clear the offers state as well
   };
 
@@ -125,7 +146,12 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
             {!pseudo ? (
               <div className="flex-col g20 w100">
                 <h2 className="m0">Choose pseudo :</h2>
-                <input type="text" value={pseudoT} onChange={(e) => setPseudoT(e.target.value)} placeholder="Enter your pseudo" />
+                <input
+                  type="text"
+                  value={pseudoT}
+                  onChange={(e) => setPseudoT(e.target.value)}
+                  placeholder="Enter your pseudo"
+                />
                 <div
                   className="cta cta-blue mlauto"
                   onClick={() => {

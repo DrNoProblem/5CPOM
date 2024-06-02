@@ -57,7 +57,7 @@
 .side-menu.mini-menu {
   width: auto;
   overflow: visible;
-  width: 2vw;
+  min-width: 2vw;
 
   a {
     justify-content: center;

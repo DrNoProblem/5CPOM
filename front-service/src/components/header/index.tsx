@@ -20,7 +20,7 @@ const Header5CPOM: FC<Props> = ({ currentUser, log_out, isLog }) => {
           </Link>
         </div>
         {isLog ? (
-          <div className="header__user-part flex-row w60-tab flex-center g25">
+          <div className="flex-center-align flex-end-justify flex-row g25 header__user-part">
             <Link className="m0 flex-center g15 blue-h" to={`/user/${currentUser._id}`}>
               {currentUser.name}
               <i className="">account_circle</i>

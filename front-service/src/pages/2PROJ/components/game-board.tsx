@@ -12,8 +12,8 @@ import { cardCanBePlayed } from "./../helpers/game-function";
 type Props = {
   currentUser: UserModel;
   Data: DataModel;
-  peerConnection: RTCPeerConnection | null;
-  dataChannel: RTCDataChannel | null;
+  OpponentTurn: Function;
+  playersInfo: { blue: PlayerDataMode2PROJ; red: PlayerDataMode2PROJ } | null;
 };
 
 interface PlayerDataMode2PROJ {
@@ -36,7 +36,7 @@ interface PlayerDataMode2PROJ {
   };
 }
 
-const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, peerConnection, dataChannel }) => {
+const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo }) => {
   const [MenuOpen, setMenuOpen] = useState<string | false>("start");
   const [user, setUser] = useState<UserModel>(currentUser);
   const [Cards, setCards] = useState<CardModel[]>(Data!.cards);
@@ -53,60 +53,10 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, peerConnection
   }, [SelectedCard]);
 
   const initGame = () => {
-    let TempoPlayer1Data: PlayerDataMode2PROJ = {
-      username: "Player1",
-      cardDeck: currentUser!.deck,
-      cardHand: ["664278bfe74300c36269666f", "6642974ee74300c3627c8b4e"],
-      statRessources: {
-        generatorBrick: 1,
-        brick: 5,
-        generatorWeapon: 1,
-        weapon: 0,
-        generatorCrystal: 1,
-        crystal: 5,
-        health: 30,
-        shield: 10,
-      },
-      turnInfo: {
-        trash: null,
-        played: null,
-      },
-    };
-    let TempoOpponentData: PlayerDataMode2PROJ = {
-      username: "Player2",
-      cardDeck: currentUser!.deck,
-      cardHand: [],
-      statRessources: {
-        generatorBrick: 1,
-        brick: 0,
-        generatorWeapon: 1,
-        weapon: 0,
-        generatorCrystal: 1,
-        crystal: 0,
-        health: 40,
-        shield: 10,
-      },
-      turnInfo: {
-        trash: null,
-        played: null,
-      },
-    };
-    /*     for (let i = 0; i < 8; i++) {
-      TempoPlayer1Data = {
-        ...TempoPlayer1Data,
-        cardDeck: AddCardToHand(TempoPlayer1Data!.cardDeck, TempoPlayer1Data!.cardHand).cardDeck,
-        cardHand: AddCardToHand(TempoPlayer1Data!.cardDeck, TempoPlayer1Data!.cardHand).cardHand,
-      };
+    if (playersInfo) {
+      setPlayer1Data(playersInfo.blue);
+      setPlayer2Data(playersInfo.red);
     }
-    for (let i = 0; i < 8; i++) {
-      TempoOpponentData = {
-        ...TempoOpponentData,
-        cardDeck: AddCardToHand(TempoOpponentData!.cardDeck, TempoOpponentData!.cardHand).cardDeck,
-        cardHand: AddCardToHand(TempoOpponentData!.cardDeck, TempoOpponentData!.cardHand).cardHand,
-      };
-    } */
-    setPlayer1Data(TempoPlayer1Data);
-    setPlayer2Data(TempoOpponentData);
   };
 
   const ClickCard = (cardId: string) => {

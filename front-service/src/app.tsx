@@ -160,7 +160,6 @@ const App: FunctionComponent = () => {
                 <Route exact path="/" render={() => <HomePage currentUser={currentUser} />} />
                 <Route exact path="/1PROJ" render={() => <HomePage1PROJ currentUser={currentUser} />} />
                 <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} Data={Data} />} />
-                <Route exact path="/2PROJ/game" render={() => <GameBoard currentUser={currentUser} Data={Data} peerConnection={null} dataChannel={null} />} />
                 <Route
                   exact
                   path="/2PROJ/find-local"

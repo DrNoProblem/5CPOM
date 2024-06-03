@@ -146,12 +146,7 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
             {!pseudo ? (
               <div className="flex-col g20 w100">
                 <h2 className="m0">Choose pseudo :</h2>
-                <input
-                  type="text"
-                  value={pseudoT}
-                  onChange={(e) => setPseudoT(e.target.value)}
-                  placeholder="Enter your pseudo"
-                />
+                <input type="text" value={pseudoT} onChange={(e) => setPseudoT(e.target.value)} placeholder="Enter your pseudo" />
                 <div
                   className="cta cta-blue mlauto"
                   onClick={() => {
@@ -200,7 +195,7 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
           </div>
         </div>
       ) : null}
-      <GameBoard currentUser={currentUser} Data={Data} peerConnection={peerConnection} dataChannel={dataChannel} />
+      <GameBoard currentUser={currentUser} Data={Data} OpponentTurn={() => { } } playersInfo={null} />
     </div>
   );
 };

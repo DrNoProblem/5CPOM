@@ -32,8 +32,8 @@ export const playRandomCard = (player: PlayerDataMode2PROJ, Cards: CardModel[]) 
   return playableCards[getRandomNumber(0, playableCards.length)];
 };
 
-export const lvl1TurnAi = (player: PlayerDataMode2PROJ, Cards: CardModel[]) => {
-  return playRandomCard(player, Cards);
+export const lvl1TurnAi = (players: { blue: PlayerDataMode2PROJ; red: PlayerDataMode2PROJ }, Cards: CardModel[]) => {
+  return playRandomCard(players.red, Cards);
 };
 
 export const lvl2TurnAi = (players: { blue: PlayerDataMode2PROJ; red: PlayerDataMode2PROJ }, Cards: CardModel[]) => {

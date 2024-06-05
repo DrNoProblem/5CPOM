@@ -675,7 +675,7 @@ a.icon {
   justify-content: center;
 
   padding-bottom: 5vh;
-  >* {
+  > * {
     max-width: 500px;
   }
 }
@@ -1273,4 +1273,46 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 
 .darker {
   filter: brightness(0.5);
+}
+
+.page-content-area {
+  height: 94vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  width: 85vw;
+}
+.page-content-area::-webkit-scrollbar {
+  width: 15px;
+  color: var(--color-dark-bg)
+}
+.page-content-area::-webkit-scrollbar-thumb {
+  width: 5px;
+  border: var(--color-normal-bg) 5px solid;
+}
+
+.menu-content-area {
+  height: 94vh;
+  width: 15vw;
+}
+
+.menu-content-area:has(.side-menu.mini-menu) {
+  height: 94vh;
+  width: unset;
+}
+
+.side-menu.mini-menu {
+  width: auto;
+  overflow: visible;
+  min-width: 2vw;
+}
+.side-menu {
+  position: fixed;
+  margin: 20px;
+  top: 0;
+  border-radius: 8px;
+  height: calc(100% - 6vh - 58px);
+  z-index: 2;
+  padding: 8px;
+  width: calc(15vw - 36px);
+  margin-top: calc(6vh + 22px);
 }

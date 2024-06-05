@@ -152,10 +152,10 @@ const App: FunctionComponent = () => {
         <div>
           <Header5CPOM currentUser={currentUser} log_out={log_out} isLog={isLog} />
           <div className="flex-row">
-            <div className={`w20-tab${MiniMenu ? " side-menu-mini" : ""}`}>
+            <div className={`menu-content-area w20-tab${MiniMenu ? " side-menu-mini" : ""}`}>
               <SideMenu miniMenu={toggleSizeMenu} />
             </div>
-            <div className={`w80-tab${MiniMenu ? " side-menu-mini" : ""}`}>
+            <div className={`page-content-area w80-tab${MiniMenu ? " side-menu-mini" : ""}`}>
               <Switch>
                 <Route exact path="/" render={() => <HomePage currentUser={currentUser} />} />
                 <Route exact path="/1PROJ" render={() => <HomePage1PROJ currentUser={currentUser} />} />

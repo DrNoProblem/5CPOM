@@ -2,46 +2,26 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import getCardInfoById from "../../../helpers/getCardInfoById";
 import CardModel from "../../../models/card-model";
 import DataModel from "../../../models/data-model";
+import PlayerDataModel2PROJ from "../../../models/player-model";
 import UserModel from "../../../models/user-model";
 import "./../2P-style.scss";
+import { cardCanBePlayed } from "./../helpers/game-function";
 import CustomIcons from "./Custom-Icons";
 import Card from "./card";
-import Peer from "simple-peer";
-import { cardCanBePlayed } from "./../helpers/game-function";
 
 type Props = {
   currentUser: UserModel;
   Data: DataModel;
   OpponentTurn: Function;
-  playersInfo: { blue: PlayerDataMode2PROJ; red: PlayerDataMode2PROJ } | null;
+  playersInfo: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ } | null;
 };
 
-interface PlayerDataMode2PROJ {
-  username: string;
-  cardDeck: string[];
-  cardHand: string[];
-  statRessources: {
-    generatorBrick: number;
-    brick: number;
-    generatorWeapon: number;
-    weapon: number;
-    generatorCrystal: number;
-    crystal: number;
-    health: number;
-    shield: number;
-  };
-  turnInfo: {
-    trash: string | null;
-    played: string | null;
-  };
-}
-
-const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo }) => {
+const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, OpponentTurn }) => {
   const [MenuOpen, setMenuOpen] = useState<string | false>("start");
   const [user, setUser] = useState<UserModel>(currentUser);
   const [Cards, setCards] = useState<CardModel[]>(Data!.cards);
-  const [Player1Data, setPlayer1Data] = useState<PlayerDataMode2PROJ>();
-  const [Player2Data, setPlayer2Data] = useState<PlayerDataMode2PROJ>();
+  const [Player1Data, setPlayer1Data] = useState<PlayerDataModel2PROJ>();
+  const [Player2Data, setPlayer2Data] = useState<PlayerDataModel2PROJ>();
 
   const [SelectedCard, setSelectedCard] = useState<string | null>(null);
 
@@ -63,9 +43,9 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo })
     SelectedCard === cardId ? setSelectedCard(null) : setSelectedCard(cardId);
   };
 
-  const NextTurnClick = (turnPlayer1Data: PlayerDataMode2PROJ, turnPlayer2Data: PlayerDataMode2PROJ) => {
+  const NextTurnClick = (turnPlayer1Data: PlayerDataModel2PROJ, turnPlayer2Data: PlayerDataModel2PROJ) => {
     if (turnPlayer1Data && turnPlayer2Data) {
-      let tempoPlayerInfo: { blue: PlayerDataMode2PROJ; red: PlayerDataMode2PROJ } = {
+      let tempoPlayerInfo: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ } = {
         blue: turnPlayer1Data,
         red: turnPlayer2Data,
       };
@@ -94,10 +74,10 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo })
   };
 
   const ApplyCardEffect = (
-    owner: PlayerDataMode2PROJ,
-    enemy: PlayerDataMode2PROJ,
+    owner: PlayerDataModel2PROJ,
+    enemy: PlayerDataModel2PROJ,
     card: CardModel
-  ): { owner: PlayerDataMode2PROJ; enemy: PlayerDataMode2PROJ } => {
+  ): { owner: PlayerDataModel2PROJ; enemy: PlayerDataModel2PROJ } => {
     if (card.ownerTargetType !== "all") {
       owner = {
         ...owner,
@@ -152,7 +132,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo })
   };
 
   return (
-    <div className="dark-container flex-col flex-center m20">
+    <div className="dark-container flex-col flex-center m20 container-board">
       <div className="PlayerBoard flex-center flex-col w100">
         <div className="card-hand flex-center w80 g5 player-red">
           {Array.from({ length: 8 }).map((_, index) => (

@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 import { Link } from "react-router-dom";
+import PlayerDataModel2PROJ from "../../models/player-model";
 import DataModel from "../../models/data-model";
 import UserModel from "../../models/user-model";
 import "./2P-style.scss";
@@ -11,30 +12,12 @@ type Props = {
   Data: DataModel;
 };
 
-interface PlayerDataMode2PROJ {
-  username: string;
-  cardDeck: string[];
-  cardHand: string[];
-  statRessources: {
-    generatorBrick: number;
-    brick: number;
-    generatorWeapon: number;
-    weapon: number;
-    generatorCrystal: number;
-    crystal: number;
-    health: number;
-    shield: number;
-  };
-  turnInfo: {
-    trash: string | null;
-    played: string | null;
-  };
-}
+
 
 const HomePage2PROJ: FunctionComponent<Props> = ({ currentUser, Data }) => {
-  const [OpponentType, setOpponentType] = useState<Function>();
+  const [OpponentType, setOpponentType] = useState<Function | null>(null);
 
-  let players: { blue: PlayerDataMode2PROJ; red: PlayerDataMode2PROJ } = {
+  let players: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ } = {
     blue: {
       username: "Player1",
       cardDeck: currentUser!.deck,
@@ -76,7 +59,7 @@ const HomePage2PROJ: FunctionComponent<Props> = ({ currentUser, Data }) => {
   };
   return (
     <div className="main p20 flex-col relative flex-end-align g20">
-      {OpponentType ? (
+      {OpponentType !== null ? (
         <GameBoard currentUser={currentUser} Data={Data} OpponentTurn={OpponentType} playersInfo={players} />
       ) : (
         <div className="flex-col g20 w100">

@@ -1,36 +1,52 @@
 export default class CardModel {
   _id: string;
-  costType: "brick"  | "weapon"  | "crystal";
+  costType: "brick" | "weapon" | "crystal";
   costValue: number;
-  ownerTargetType: ( | "generatorBrick" | "brick" | "generatorWeapon" | "weapon" | "generatorCrystal" | "crystal" | "health" | "shield" | "all" );
+  ownerTargetType:
+    | "generatorBrick"
+    | "brick"
+    | "generatorWeapon"
+    | "weapon"
+    | "generatorCrystal"
+    | "crystal"
+    | "health"
+    | "shield"
+    | "all";
   ownerTargetValue: number;
-  enemyTargetType: ( | "generatorBrick" | "brick" | "generatorWeapon" | "weapon" | "generatorCrystal" | "crystal" | "health" | "shield" | "all"  );
+  enemyTargetType:
+    | "generatorBrick"
+    | "brick"
+    | "generatorWeapon"
+    | "weapon"
+    | "generatorCrystal"
+    | "crystal"
+    | "health"
+    | "shield"
+    | "all";
   enemyTargetValue: number;
   constructor(
     _id: string,
-    costType: "brick"  | "weapon"  | "crystal",
+    costType: "brick" | "weapon" | "crystal",
     costValue: number,
-    ownerTargetType: (
-       | "generatorBrick"
-       | "brick"
-       | "generatorWeapon"
-       | "weapon"
-       | "generatorCrystal"
-       | "crystal"
-       | "health"
-       | "shield"
-    ),
+    ownerTargetType:
+      | "generatorBrick"
+      | "brick"
+      | "generatorWeapon"
+      | "weapon"
+      | "generatorCrystal"
+      | "crystal"
+      | "health"
+      | "shield",
     ownerTargetValue: number,
-    enemyTargetType: (
-       | "generatorBrick"
-       | "brick"
-       | "generatorWeapon"
-       | "weapon"
-       | "generatorCrystal"
-       | "crystal"
-       | "health"
-       | "shield"
-    ),
+    enemyTargetType:
+      | "generatorBrick"
+      | "brick"
+      | "generatorWeapon"
+      | "weapon"
+      | "generatorCrystal"
+      | "crystal"
+      | "health"
+      | "shield",
     enemyTargetValue: number
   ) {
     this._id = _id;

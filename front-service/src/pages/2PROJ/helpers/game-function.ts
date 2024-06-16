@@ -1,6 +1,6 @@
 import CardModel from "../../../models/card-model";
 
-interface PlayerDataMode2PROJ {
+interface PlayerDataModel2PROJ {
   username: string;
   cardDeck: string[];
   cardHand: string[];
@@ -20,7 +20,7 @@ interface PlayerDataMode2PROJ {
   };
 }
 
-export const cardCanBePlayed = (CardHandValue: CardModel, Owner: PlayerDataMode2PROJ) => {
+export const cardCanBePlayed = (CardHandValue: CardModel, Owner: PlayerDataModel2PROJ) => {
   if (Owner.statRessources[CardHandValue.costType] >= CardHandValue.costValue) {
     return true;
   } else {
@@ -48,8 +48,8 @@ export const ReturnCardInDeck = (cardDeck: string[], cardId: string) => {
 
 export const ApplyPlayerCardEffect = (
   card: CardModel,
-  OwnerTempoData: PlayerDataMode2PROJ,
-  OpponentTempoData: PlayerDataMode2PROJ
+  OwnerTempoData: PlayerDataModel2PROJ,
+  OpponentTempoData: PlayerDataModel2PROJ
 ) => {
   let returnPlayerData = OwnerTempoData;
   let returnOpponentData = OpponentTempoData;

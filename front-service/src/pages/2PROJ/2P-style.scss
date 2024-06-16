@@ -128,3 +128,9 @@
 .turn-btn {
   transform: translateY(-150%);
 }
+
+
+.container-board {
+  width: calc(100% - 40px);
+  margin: unset;
+}

@@ -1,24 +1,5 @@
 import CardModel from "../../../models/card-model";
-
-interface PlayerDataModel2PROJ {
-  username: string;
-  cardDeck: string[];
-  cardHand: string[];
-  statRessources: {
-    generatorBrick: number;
-    brick: number;
-    generatorWeapon: number;
-    weapon: number;
-    generatorCrystal: number;
-    crystal: number;
-    health: number;
-    shield: number;
-  };
-  turnInfo: {
-    trash: string | null;
-    played: string | null;
-  };
-}
+import PlayerDataModel2PROJ from "../../../models/player-model";
 
 export const cardCanBePlayed = (CardHandValue: CardModel, Owner: PlayerDataModel2PROJ) => {
   if (Owner.statRessources[CardHandValue.costType] >= CardHandValue.costValue) {
@@ -54,7 +35,7 @@ export const ApplyPlayerCardEffect = (
   let returnPlayerData = OwnerTempoData;
   let returnOpponentData = OpponentTempoData;
   if (OwnerTempoData && OpponentTempoData) {
-    if (card.ownerTargetType !== "all")
+    if (card.ownerTargetType !== "all" && card.ownerTargetType !== null)
       returnPlayerData = {
         ...OwnerTempoData,
         statRessources: {
@@ -69,7 +50,7 @@ export const ApplyPlayerCardEffect = (
               : OwnerTempoData.statRessources[card.ownerTargetType] + card.ownerTargetValue,
         },
       };
-    if (card.enemyTargetType !== "all") {
+    if (card.enemyTargetType !== "all" && card.enemyTargetType !== null) {
       if (card.enemyTargetType === "health") {
         let tempoShield = OpponentTempoData.statRessources.shield - card.enemyTargetValue;
         let tempoAttack = card.enemyTargetValue;

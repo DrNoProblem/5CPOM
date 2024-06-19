@@ -129,8 +129,21 @@
   transform: translateY(-150%);
 }
 
-
 .container-board {
   width: calc(100% - 40px);
   margin: unset;
+}
+
+.edit-deck-card {
+  .normal-container {
+    padding: 5px;
+    gap: 5px;
+    display: flex;
+    align-items: center;
+  }
+  i {
+    padding: 0px;
+    border-radius: 8px;
+  }
+  
 }

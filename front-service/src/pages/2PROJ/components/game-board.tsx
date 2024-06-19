@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, default as React, useEffect, useState } from "react";
 import getCardInfoById from "../../../helpers/getCardInfoById";
 import CardModel from "../../../models/card-model";
 import DataModel from "../../../models/data-model";
@@ -6,8 +6,8 @@ import PlayerDataModel2PROJ from "../../../models/player-model";
 import UserModel from "../../../models/user-model";
 import "./../2P-style.scss";
 import { cardCanBePlayed } from "./../helpers/game-function";
-import CustomIcons from "./Custom-Icons";
 import Card from "./card";
+import CustomIcons from "./custom-icons";
 
 type Props = {
   currentUser: UserModel;
@@ -78,7 +78,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
     enemy: PlayerDataModel2PROJ,
     card: CardModel
   ): { owner: PlayerDataModel2PROJ; enemy: PlayerDataModel2PROJ } => {
-    if (card.ownerTargetType !== "all") {
+    if (card.ownerTargetType !== "all" && card.ownerTargetType !== null) {
       owner = {
         ...owner,
         statRessources: {
@@ -89,7 +89,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
     } else if (card.ownerTargetType === "all") {
       console.log("effect all resources");
     }
-    if (card.enemyTargetType !== "all") {
+    if (card.enemyTargetType !== "all" && card.enemyTargetType !== null) {
       enemy = {
         ...enemy,
         statRessources: {

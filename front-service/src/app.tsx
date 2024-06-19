@@ -59,6 +59,7 @@ import DeckEdition from "./pages/2PROJ/deck-edition";
 import GameBoard from "./pages/2PROJ/components/game-board";
 import FindOpponentLocal from "./pages/2PROJ/find-opponent-local";
 import getCardsList from "./api-request/card/card-get-all";
+import { JsonCardList } from "./pages/2PROJ/data/cards-list";
 
 const App: FunctionComponent = () => {
   const [isLog, setIsLog] = useState<string | Boolean>(false);
@@ -95,14 +96,14 @@ const App: FunctionComponent = () => {
               let RoomsList: RoomModel[] = [];
               let TasksList: TaskModel[] = [];
               let DrawsList: DrawModel[] = [];
-              let CardList: CardModel[] = [];
+              let CardList: CardModel[] = JsonCardList;
               let UsersList: UserModel[] | MiniUserModel[] = [];
 
               if (isHttpStatusValid(RoomsResult.status)) RoomsList = RoomsResult.response;
               if (isHttpStatusValid(TasksResult.status)) TasksList = TasksResult.response;
               if (isHttpStatusValid(DrawsResult.status)) DrawsList = DrawsResult.response;
-              if (isHttpStatusValid(DrawsResult.status)) CardList = CardsResult.response;
-              if (isHttpStatusValid(UsersResult.status)) UsersList = UsersResult.response;
+              //if (isHttpStatusValid(CardsResult.status)) CardList = CardsResult.response;
+              if (isHttpStatusValid(UsersResult.status)) UsersList = UsersResult.response;//
 
               console.log({
                 rooms: RoomsList,

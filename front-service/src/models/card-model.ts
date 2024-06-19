@@ -11,7 +11,8 @@ export default class CardModel {
     | "crystal"
     | "health"
     | "shield"
-    | "all";
+    | "all"
+    | null;
   ownerTargetValue: number;
   enemyTargetType:
     | "generatorBrick"
@@ -22,7 +23,8 @@ export default class CardModel {
     | "crystal"
     | "health"
     | "shield"
-    | "all";
+    | "all"
+    | null;
   enemyTargetValue: number;
   constructor(
     _id: string,
@@ -36,7 +38,8 @@ export default class CardModel {
       | "generatorCrystal"
       | "crystal"
       | "health"
-      | "shield",
+      | "shield"
+      | null,
     ownerTargetValue: number,
     enemyTargetType:
       | "generatorBrick"
@@ -46,7 +49,8 @@ export default class CardModel {
       | "generatorCrystal"
       | "crystal"
       | "health"
-      | "shield",
+      | "shield"
+      | null,
     enemyTargetValue: number
   ) {
     this._id = _id;

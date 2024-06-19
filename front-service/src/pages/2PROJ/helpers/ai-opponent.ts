@@ -26,15 +26,14 @@ export const lvl1TurnAi = (
   players: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ },
   Cards: CardModel[]
 ): { cardId: string; placement: boolean } | "" => {
-  //return players ? playRandomCard(players.red, Cards) : "";
-  return playRandomCard(players.red, Cards);
+  return players ? playRandomCard(players.red, Cards) : "";
 };
 
 export const lvl2TurnAi = (
   players: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ },
   Cards: CardModel[]
 ): { cardId: string; placement: boolean } | "" => {
-  //if (!players) return "";
+  if (!players) return "";
   let cardWillBePlayed: { cardId: string; placement: boolean } | null = null;
   let blue: PlayerDataModel2PROJ = players.blue;
   let red: PlayerDataModel2PROJ = players.red;

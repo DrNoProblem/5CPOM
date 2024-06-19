@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 import CardModel from "../../../models/card-model";
-import CustomIcons from "./Custom-Icons";
+import CustomIcons from "./custom-icons";
 
 type Props = {
   card: CardModel;

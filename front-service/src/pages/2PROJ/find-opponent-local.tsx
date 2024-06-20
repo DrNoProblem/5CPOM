@@ -195,7 +195,7 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
           </div>
         </div>
       ) : null}
-      <GameBoard currentUser={currentUser} Data={Data} OpponentTurn={() => { } } playersInfo={null} />
+      <GameBoard currentUser={currentUser} Data={Data} OpponentTurn={0} playersInfo={null} />
     </div>
   );
 };

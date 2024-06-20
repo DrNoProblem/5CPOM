@@ -13,12 +13,10 @@ type Props = {
   Data: DataModel;
 };
 
-
-
 const HomePage2PROJ: FunctionComponent<Props> = ({ currentUser, Data }) => {
-  const [OpponentType, setOpponentType] = useState<Function | null>(null);
+  const [OpponentType, setOpponentType] = useState<number | null>(null);
 
-  let players: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ } = JsonPlayerData
+  let players: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ } = JsonPlayerData;
   return (
     <div className="main p20 flex-col relative flex-end-align g20">
       {OpponentType !== null ? (
@@ -31,22 +29,13 @@ const HomePage2PROJ: FunctionComponent<Props> = ({ currentUser, Data }) => {
               <h2 className="m0">Start Game</h2>
               <h4 className="m0">Select AI opponent level :</h4>
               <div className="g20">
-                <div
-                  className="home-tile normal-container"
-                  onClick={() => setOpponentType(lvl1TurnAi)}
-                >
+                <div className="home-tile normal-container" onClick={() => setOpponentType(1)}>
                   <span className="ml15 mr15">level 1</span>
                 </div>
-                <div
-                  className="home-tile normal-container"
-                  onClick={() => setOpponentType(lvl2TurnAi)}
-                >
+                <div className="home-tile normal-container" onClick={() => setOpponentType(2)}>
                   <span className="ml15 mr15">level 2</span>
                 </div>
-                <div
-                  className="home-tile normal-container red-h"
-                  onClick={() => setOpponentType(lvl3TurnAi)}
-                >
+                <div className="home-tile normal-container red-h" onClick={() => setOpponentType(3)}>
                   <span className="ml15 mr15">level 3</span>
                 </div>
               </div>

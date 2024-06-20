@@ -3,6 +3,7 @@ import PlayerDataModel2PROJ from "../../../models/player-model";
 import { v4 as uuidv4 } from "uuid";
 
 export const cardCanBePlayed = (CardHandValue: CardModel, Owner: PlayerDataModel2PROJ) => {
+
   return Owner.statRessources[CardHandValue.costType] >= CardHandValue.costValue;
 };
 

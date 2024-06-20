@@ -10,8 +10,10 @@ type Props = {
 };
 const Card: FunctionComponent<Props> = ({ card, color, AddedClass, ClickFunction }) => {
   let colorClass = "";
-  if ((color = "#0084ff")) {
+  if (color === "#0084ff") {
     colorClass = "blue";
+  } else if (color === "#ff2768") {
+    colorClass = "red";
   }
   const formTxt = (txt: string) => {
     if (txt === "generatorBrick") return "brick generator";

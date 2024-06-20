@@ -1,11 +1,10 @@
 import { FunctionComponent, default as React, useEffect, useState } from "react";
-import getCardInfoById from "../../../helpers/getCardInfoById";
 import CardModel from "../../../models/card-model";
 import DataModel from "../../../models/data-model";
 import PlayerDataModel2PROJ from "../../../models/player-model";
 import UserModel from "../../../models/user-model";
 import "./../2P-style.scss";
-import { cardCanBePlayed } from "./../helpers/game-function";
+import { ApplyPlayerCardEffect, cardCanBePlayed, getCardInfoByIdWithSuffix, initGame } from "./../helpers/game-function";
 import Card from "./card";
 import CustomIcons from "./custom-icons";
 
@@ -22,7 +21,6 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
   const [Cards, setCards] = useState<CardModel[]>(Data!.cards);
   const [Player1Data, setPlayer1Data] = useState<PlayerDataModel2PROJ>();
   const [Player2Data, setPlayer2Data] = useState<PlayerDataModel2PROJ>();
-
   const [SelectedCard, setSelectedCard] = useState<string | null>(null);
 
   useEffect(() => {
@@ -31,13 +29,6 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
       turnInfo: { trash: null, played: null },
     }));
   }, [SelectedCard]);
-
-  const initGame = () => {
-    if (playersInfo) {
-      setPlayer1Data(playersInfo.blue);
-      setPlayer2Data(playersInfo.red);
-    }
-  };
 
   const ClickCard = (cardId: string) => {
     SelectedCard === cardId ? setSelectedCard(null) : setSelectedCard(cardId);
@@ -54,53 +45,31 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
 
       if (tempoPlayerInfo.blue.turnInfo.played && !tempoPlayerInfo.blue.turnInfo.trash)
         blueCardId = tempoPlayerInfo.blue.turnInfo.played;
-      else if (tempoPlayerInfo.blue.turnInfo.trash && !tempoPlayerInfo.blue.turnInfo.played)
-        blueCardId = tempoPlayerInfo.blue.turnInfo.trash;
+      /* else if (tempoPlayerInfo.blue.turnInfo.trash && !tempoPlayerInfo.blue.turnInfo.played)
+        blueCardId = tempoPlayerInfo.blue.turnInfo.trash; */
       if (tempoPlayerInfo.red.turnInfo.played && !tempoPlayerInfo.red.turnInfo.trash)
         redCardId = tempoPlayerInfo.red.turnInfo.played;
-      else if (tempoPlayerInfo.red.turnInfo.trash && !tempoPlayerInfo.red.turnInfo.played)
-        redCardId = tempoPlayerInfo.red.turnInfo.trash;
+      /* else if (tempoPlayerInfo.red.turnInfo.trash && !tempoPlayerInfo.red.turnInfo.played)
+        redCardId = tempoPlayerInfo.red.turnInfo.trash; */
 
       if (redCardId) {
-        let result = ApplyCardEffect(tempoPlayerInfo.red, tempoPlayerInfo.blue, getCardInfoById(redCardId, Cards)!);
-        tempoPlayerInfo = { blue: result.enemy, red: result.owner };
+        let result = ApplyPlayerCardEffect(
+          getCardInfoByIdWithSuffix(redCardId, Cards)!,
+          tempoPlayerInfo.red,
+          tempoPlayerInfo.blue
+        );
+        tempoPlayerInfo = { blue: result.enemy, red: result.player };
       }
 
       if (blueCardId) {
-        let result = ApplyCardEffect(tempoPlayerInfo.blue, tempoPlayerInfo.red, getCardInfoById(blueCardId, Cards)!);
-        tempoPlayerInfo = { blue: result.owner, red: result.enemy };
+        let result = ApplyPlayerCardEffect(
+          getCardInfoByIdWithSuffix(blueCardId, Cards)!,
+          tempoPlayerInfo.blue,
+          tempoPlayerInfo.red
+        );
+        tempoPlayerInfo = { blue: result.player, red: result.enemy };
       }
     }
-  };
-
-  const ApplyCardEffect = (
-    owner: PlayerDataModel2PROJ,
-    enemy: PlayerDataModel2PROJ,
-    card: CardModel
-  ): { owner: PlayerDataModel2PROJ; enemy: PlayerDataModel2PROJ } => {
-    if (card.ownerTargetType !== "all" && card.ownerTargetType !== null) {
-      owner = {
-        ...owner,
-        statRessources: {
-          ...owner.statRessources,
-          [card.ownerTargetType]: owner.statRessources[card.ownerTargetType] + card.ownerTargetValue,
-        },
-      };
-    } else if (card.ownerTargetType === "all") {
-      console.log("effect all resources");
-    }
-    if (card.enemyTargetType !== "all" && card.enemyTargetType !== null) {
-      enemy = {
-        ...enemy,
-        statRessources: {
-          ...enemy.statRessources,
-          [card.enemyTargetType]: enemy.statRessources[card.enemyTargetType] + card.enemyTargetValue,
-        },
-      };
-    } else if (card.enemyTargetType === "all") {
-      console.log("effect all resources");
-    }
-    return { owner, enemy };
   };
 
   const SelectCardToPlay = (cardId: string | null, target: "trash" | "played", player: "blue" | "red") => {
@@ -136,7 +105,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
       <div className="PlayerBoard flex-center flex-col w100">
         <div className="card-hand flex-center w80 g5 player-red">
           {Array.from({ length: 8 }).map((_, index) => (
-            <div key={index} className="card red-player-border"></div>
+            <div key={index} className="card red-player-border can-not-play"></div>
           ))}
         </div>
         <div className="normal-container resource-player-info w80 flex-end-justify g15 red-player-border">
@@ -216,7 +185,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
                   {Player1Data.turnInfo.trash ? (
                     <Card
                       color={"#0084ff"}
-                      card={getCardInfoById(Player1Data.turnInfo.trash, Cards)!}
+                      card={getCardInfoByIdWithSuffix(Player1Data.turnInfo.trash, Cards)!}
                       AddedClass={`${Player1Data.turnInfo.trash ? "darker" : ""}`}
                       ClickFunction={() => {}}
                     />
@@ -228,7 +197,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
                 {Player1Data && Player1Data.turnInfo.played ? (
                   <Card
                     color={"#0084ff"}
-                    card={getCardInfoById(Player1Data.turnInfo.played, Cards)!}
+                    card={getCardInfoByIdWithSuffix(Player1Data.turnInfo.played, Cards)!}
                     AddedClass={""}
                     ClickFunction={() => SelectCardToPlay(null, "played", "blue")}
                   />
@@ -248,7 +217,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
                 {Player2Data && Player2Data.turnInfo.played ? (
                   <Card
                     color={"#0084ff"}
-                    card={getCardInfoById(Player2Data.turnInfo.played, Cards)!}
+                    card={getCardInfoByIdWithSuffix(Player2Data.turnInfo.played, Cards)!}
                     AddedClass={""}
                     ClickFunction={() => {}}
                   />
@@ -261,7 +230,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
                   {Player2Data.turnInfo.trash ? (
                     <Card
                       color={"#0084ff"}
-                      card={getCardInfoById(Player2Data.turnInfo.trash, Cards)!}
+                      card={getCardInfoByIdWithSuffix(Player2Data.turnInfo.trash, Cards)!}
                       AddedClass={`${Player2Data.turnInfo.trash ? "darker" : ""}`}
                       ClickFunction={() => {}}
                     />
@@ -292,24 +261,20 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
         <div className="card-hand flex-center w80 g5 player-blue">
           {Player1Data && Player1Data.cardHand
             ? Player1Data.cardHand.map((cardId) => {
-                let CardHandValue = getCardInfoById(cardId, Cards);
+                let CardHandValue = getCardInfoByIdWithSuffix(cardId, Cards);
                 return CardHandValue ? (
                   <Card
                     key={cardId}
                     color={"#0084ff"}
                     card={CardHandValue}
-                    AddedClass={`${SelectedCard === CardHandValue._id ? "selected-card" : ""} ${
+                    AddedClass={`${SelectedCard === CardHandValue!._id ? "selected-card" : ""} ${
                       cardCanBePlayed(CardHandValue, Player1Data) ? "" : "can-not-play"
-                    }`}
-                    ClickFunction={cardCanBePlayed(CardHandValue, Player1Data) ? ClickCard : () => {}}
+                    } ${SelectedCard} ${cardId}`}
+                    ClickFunction={cardCanBePlayed(CardHandValue, Player1Data) ? () => ClickCard(CardHandValue!._id) : () => {}}
                   />
                 ) : null;
               })
             : null}
-          <div className="card blue-player-border"></div>
-          <div className="card blue-player-border"></div>
-          <div className="card blue-player-border"></div>
-          <div className="card blue-player-border"></div>
         </div>
         <div className="normal-container resource-player-info w80 flex-start-justify g15 blue-player-border flex-center-align">
           <div className="dark-container resource-container flex-center g10">
@@ -342,7 +307,11 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, playersInfo, O
               className="cta cta-blue"
               onClick={() => {
                 setMenuOpen("");
-                initGame();
+                const initialisePlayer = initGame(playersInfo!);
+                if (initialisePlayer) {
+                  setPlayer1Data(initialisePlayer.blue);
+                  setPlayer2Data(initialisePlayer.red);
+                }
               }}
             >
               <span className="flex-center g10">

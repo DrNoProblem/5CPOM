@@ -1,12 +1,18 @@
 import CardModel from "../../../models/card-model";
 import PlayerDataModel2PROJ from "../../../models/player-model";
+import { v4 as uuidv4 } from "uuid";
 
 export const cardCanBePlayed = (CardHandValue: CardModel, Owner: PlayerDataModel2PROJ) => {
-  if (Owner.statRessources[CardHandValue.costType] >= CardHandValue.costValue) {
-    return true;
-  } else {
-    return false;
+  return Owner.statRessources[CardHandValue.costType] >= CardHandValue.costValue;
+};
+
+export const shuffleDeck = (deck: string[]): string[] => {
+  let shuffledDeck = [...deck];
+  for (let i = shuffledDeck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledDeck[i], shuffledDeck[j]] = [shuffledDeck[j], shuffledDeck[i]];
   }
+  return shuffledDeck;
 };
 
 export const AddCardToHand = (cardDeck: string[], cardHand: string[]) => {
@@ -88,4 +94,39 @@ export const ApplyPlayerCardEffect = (
     player: returnPlayerData,
     enemy: returnOpponentData,
   };
+};
+
+export const initGame = (playersInfo: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ }) => {
+  if (playersInfo) {
+    let BluePlayerInfo: PlayerDataModel2PROJ = {
+      ...playersInfo.blue,
+      cardDeck: playersInfo.blue.cardDeck.map((cardId) => addSuffix(cardId, "blue")),
+    };
+    let RedPlayerInfo: PlayerDataModel2PROJ = {
+      ...playersInfo.red,
+      cardDeck: playersInfo.red.cardDeck.map((cardId) => addSuffix(cardId, "red")),
+    };
+    let blueDraw: { cardDeck: string[]; cardHand: string[] };
+    let RedDraw: { cardDeck: string[]; cardHand: string[] };
+    for (let i = 0; i < 8; i++) {
+      blueDraw = AddCardToHand(shuffleDeck(BluePlayerInfo.cardDeck), BluePlayerInfo.cardHand);
+      RedDraw = AddCardToHand(shuffleDeck(RedPlayerInfo.cardDeck), RedPlayerInfo.cardHand);
+      BluePlayerInfo = { ...BluePlayerInfo, cardDeck: blueDraw.cardDeck, cardHand: blueDraw.cardHand };
+      RedPlayerInfo = { ...RedPlayerInfo, cardDeck: RedDraw.cardDeck, cardHand: RedDraw.cardHand };
+    }
+    return { blue: BluePlayerInfo, red: RedPlayerInfo };
+  }
+};
+
+export const addSuffix = (cardId: string, owner: "blue" | "red"): string => {
+  return `${cardId}-${owner}-${uuidv4()}`;
+};
+
+export const getCardIdSuffixLess = (cardIdWithSuffix: string): string => {
+  return cardIdWithSuffix.split("-")[0];
+};
+
+export const getCardInfoByIdWithSuffix = (cardIdWithSuffix: string, cards: CardModel[]): CardModel | undefined => {
+  const cardId = getCardIdSuffixLess(cardIdWithSuffix);
+  return cards.find((card) => card._id === cardId);
 };

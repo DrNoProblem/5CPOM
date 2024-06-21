@@ -1,44 +1,62 @@
 import { FunctionComponent, default as React, useEffect, useState } from "react";
+import { RouteComponentProps } from "react-router-dom";
 import CardModel from "../../../models/card-model";
 import DataModel from "../../../models/data-model";
 import PlayerDataModel2PROJ from "../../../models/player-model";
 import UserModel from "../../../models/user-model";
 import { lvl1TurnAi, lvl2TurnAi, lvl3TurnAi } from "../helpers/ai-opponent";
 import "./../2P-style.scss";
-import { ApplyPlayerCardEffect, cardCanBePlayed, getCardInfoByIdWithSuffix, initGame } from "./../helpers/game-function";
+import {
+  cardCanBePlayed,
+  ExecuteTheProccess,
+  getCardInfoByIdWithSuffix,
+  initGame
+} from "./../helpers/game-function";
 import Card from "./card";
 import CustomIcons from "./custom-icons";
 
-type Props = {
+interface Props extends RouteComponentProps<{ OpponentTurn: string }> {
   currentUser: UserModel;
   Data: DataModel;
-  OpponentTurn: number;
   playersInfo: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ } | null;
-};
+}
 
-const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, OpponentTurn, playersInfo }) => {
+const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, playersInfo }) => {
   const [MenuOpen, setMenuOpen] = useState<string | false>("start");
   const [user, setUser] = useState<UserModel>(currentUser);
   const [Cards, setCards] = useState<CardModel[]>(Data!.cards);
   const [Player1Data, setPlayer1Data] = useState<PlayerDataModel2PROJ>();
   const [Player2Data, setPlayer2Data] = useState<PlayerDataModel2PROJ>();
   const [SelectedCard, setSelectedCard] = useState<string | null>(null);
+  const [OpponentTurn, setOpponentTurn] = useState<number>(0);
 
   const [TurnTempo, setTurnTempo] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log("ok");//! attention il faut mettre les player dans des variable temporaire pour interagir avec 
-    if (TurnTempo && Player2Data && Player2Data.turnInfo.played && Player1Data && Player1Data.turnInfo.played) {
-      console.log("blue");
-      console.log(
-        ApplyPlayerCardEffect(getCardInfoByIdWithSuffix(Player1Data.turnInfo.played, Cards)!, Player1Data, Player2Data)
-      );
-      console.log("red");
-      console.log(
-        ApplyPlayerCardEffect(getCardInfoByIdWithSuffix(Player2Data.turnInfo.played, Cards)!, Player2Data, Player1Data)
-      );
+    setOpponentTurn(parseInt(match.params.OpponentTurn));
+  }, [match]);
+
+  useEffect(() => {
+    setPlayer1Data((prevData) => ({
+      ...prevData!,
+      turnInfo: { trash: null, played: null },
+    }));
+  }, [SelectedCard]);
+
+  useEffect(() => {
+    if (TurnTempo && Player1Data && Player2Data) {
+      const executionResult = ExecuteTheProccess(Player1Data, Player2Data, Cards)
+      console.log(executionResult);
+      setTimeout(() => {
+        if (executionResult && executionResult.blue && executionResult.red) {
+          setPlayer1Data(executionResult.blue);
+          setPlayer2Data(executionResult.red);
+          setSelectedCard(null);
+          setTurnTempo(false);
+        }
+      }, 2500);
     }
-  }, [TurnTempo, Player1Data, Player2Data, Cards]);
+  }, [TurnTempo]);
 
   const PlayerEndTurn = () => {
     let infoRedPlayer: { cardId: string; placement: string } | "" = "";
@@ -70,18 +88,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, OpponentTurn, 
     setTurnTempo(true);
   };
 
-  useEffect(() => {
-    setPlayer1Data((prevData) => ({
-      ...prevData!,
-      turnInfo: { trash: null, played: null },
-    }));
-  }, [SelectedCard]);
-
-  const ClickCard = (cardId: string) => {
-    SelectedCard === cardId ? setSelectedCard(null) : setSelectedCard(cardId);
-  };
-
-  const NextTurnClick = (turnPlayer1Data: PlayerDataModel2PROJ, turnPlayer2Data: PlayerDataModel2PROJ) => {
+  /*   const NextTurnClick = (turnPlayer1Data: PlayerDataModel2PROJ, turnPlayer2Data: PlayerDataModel2PROJ) => {
     if (turnPlayer1Data && turnPlayer2Data) {
       let tempoPlayerInfo: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ } = {
         blue: turnPlayer1Data,
@@ -92,12 +99,12 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, OpponentTurn, 
 
       if (tempoPlayerInfo.blue.turnInfo.played && !tempoPlayerInfo.blue.turnInfo.trash)
         blueCardId = tempoPlayerInfo.blue.turnInfo.played;
-      /* else if (tempoPlayerInfo.blue.turnInfo.trash && !tempoPlayerInfo.blue.turnInfo.played)
-        blueCardId = tempoPlayerInfo.blue.turnInfo.trash; */
+      //else if (tempoPlayerInfo.blue.turnInfo.trash && !tempoPlayerInfo.blue.turnInfo.played)
+        //blueCardId = tempoPlayerInfo.blue.turnInfo.trash;
       if (tempoPlayerInfo.red.turnInfo.played && !tempoPlayerInfo.red.turnInfo.trash)
         redCardId = tempoPlayerInfo.red.turnInfo.played;
-      /* else if (tempoPlayerInfo.red.turnInfo.trash && !tempoPlayerInfo.red.turnInfo.played)
-        redCardId = tempoPlayerInfo.red.turnInfo.trash; */
+      //else if (tempoPlayerInfo.red.turnInfo.trash && !tempoPlayerInfo.red.turnInfo.played)
+        //redCardId = tempoPlayerInfo.red.turnInfo.trash;
 
       if (redCardId) {
         let result = ApplyPlayerCardEffect(
@@ -117,7 +124,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, OpponentTurn, 
         tempoPlayerInfo = { blue: result.player, red: result.enemy };
       }
     }
-  };
+  }; */
 
   const SelectCardToPlay = (cardId: string | null, target: "trash" | "played", player: "blue" | "red") => {
     if (player === "blue") {
@@ -177,7 +184,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, OpponentTurn, 
   };
 
   return (
-    <div className="dark-container flex-col flex-center m20 container-board">
+    <div className="dark-container flex-col flex-center m20 container-board m20">
       <div className="PlayerBoard flex-center flex-col w100">
         <div className="card-hand flex-center w80 g5 player-red">
           {Array.from({ length: 8 }).map((_, index) => (
@@ -185,19 +192,19 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, OpponentTurn, 
           ))}
         </div>
         <div className="normal-container resource-player-info w80 flex-end-justify g15 red-player-border">
-          <div className="dark-container resource-container flex-center g10">
+          <div className="dark-container resource-container flex-center g10" id="red-brick">
             <CustomIcons icon="brick" color="#dee0df" />
             {`Bricks (+${Player2Data ? Player2Data.statRessources.generatorBrick : "0"}) : ${
               Player2Data ? Player2Data.statRessources.brick : "0"
             }`}
           </div>
-          <div className="dark-container resource-container flex-center g10">
+          <div className="dark-container resource-container flex-center g10" id="red-weapon">
             <CustomIcons icon="weapon" color="#dee0df" />
             {`weapons (+${Player2Data ? Player2Data.statRessources.generatorWeapon : "0"}) : ${
               Player2Data ? Player2Data.statRessources.weapon : "0"
             }`}
           </div>
-          <div className="dark-container resource-container flex-center g10">
+          <div className="dark-container resource-container flex-center g10" id="red-crystal">
             <CustomIcons icon="crystal" color="#dee0df" />
             {`Crystals (+${Player2Data ? Player2Data.statRessources.generatorCrystal : "0"}) : ${
               Player2Data ? Player2Data.statRessources.crystal : "0"
@@ -208,20 +215,23 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, OpponentTurn, 
       <div className="GameBoard flex-col flex-center relative w80">
         <TurnButton Player1Data={Player1Data!} SelectedCard={SelectedCard!} />
         <div className="flex-bet flex-center-align g25">
-          <div className="player1-life normal-container flex-col">
-            <div className="life relative flex-center p25">
-              <i className="blue absolute">favorite</i>
-              <span className="fs30">{Player2Data ? Player2Data.statRessources.health : "0"}</span>
+          {Player1Data ? (
+            <div className="player1-life normal-container flex-col">
+              <div className="life relative flex-center p25">
+                <i className="blue absolute">favorite</i>
+                <span className="fs30">{Player1Data.statRessources ? Player1Data.statRessources.health : "0"}</span>
+              </div>
+              <div
+                className={`shield absolute r0 b0 flex-center p25 ${
+                  Player1Data.statRessources && Player1Data.statRessources.shield === 0 ? "op0" : ""
+                }`}
+              >
+                <i className="absolute grey">shield</i>
+                <span className="blue">{Player1Data.statRessources ? Player1Data.statRessources.shield : "0"}</span>
+              </div>
             </div>
-            <div
-              className={`shield absolute r0 b0 flex-center p25 ${
-                Player2Data && Player2Data.statRessources.shield === 0 ? "op0" : ""
-              }`}
-            >
-              <i className="absolute grey">shield</i>
-              <span className="blue">{Player2Data ? Player2Data.statRessources.shield : "0"}</span>
-            </div>
-          </div>
+          ) : null}
+
           <div className="card-turn-placement g20 flex-center">
             {Player1Data ? (
               <div className={`flex g20 ${SelectedCard ? "" : "darker"}`}>
@@ -273,7 +283,7 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, OpponentTurn, 
             ) : null}
 
             {Player2Data ? (
-              <div className={`flex g20 darker`}>
+              <div className={`flex g20 ${Player2Data && Player2Data.turnInfo.played ? "" : "darker"}`}>
                 {Player2Data && Player2Data.turnInfo.played ? (
                   <Card
                     color={"#ff2768"}
@@ -301,20 +311,23 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, OpponentTurn, 
               </div>
             ) : null}
           </div>
-          <div className="player2-life normal-container flex-col">
-            <div className="life relative flex-center p25">
-              <i className="red absolute">favorite</i>
-              <span className="fs30">{Player2Data ? Player2Data.statRessources.health : "0"}</span>
+
+          {Player2Data ? (
+            <div className="player2-life normal-container flex-col">
+              <div className="life relative flex-center p25">
+                <i className="red absolute">favorite</i>
+                <span className="fs30">{Player2Data.statRessources ? Player2Data.statRessources.health : "0"}</span>
+              </div>
+              <div
+                className={`shield absolute l0 b0 flex-center p25 ${
+                  Player2Data.statRessources && Player2Data.statRessources.shield === 0 ? "op0" : ""
+                }`}
+              >
+                <i className="absolute lightgrey">shield</i>
+                <span className="red">{Player2Data.statRessources ? Player2Data.statRessources.shield : "0"}</span>
+              </div>
             </div>
-            <div
-              className={`shield absolute l0 b0 flex-center p25 ${
-                Player2Data && Player2Data.statRessources.shield === 0 ? "op0" : ""
-              }`}
-            >
-              <i className="absolute lightgrey">shield</i>
-              <span className="red">{Player2Data ? Player2Data.statRessources.shield : "0"}</span>
-            </div>
-          </div>
+          ) : null}
         </div>
       </div>
       <div className="PlayerBoard flex-center flex-col w100">
@@ -330,26 +343,30 @@ const GameBoard: FunctionComponent<Props> = ({ currentUser, Data, OpponentTurn, 
                     AddedClass={`${SelectedCard === cardId ? "selected-card" : ""} ${
                       cardCanBePlayed(CardHandValue, Player1Data) ? "" : "can-not-play"
                     } ${Player1Data.turnInfo.trash === cardId || Player1Data.turnInfo.played === cardId ? "op0" : ""}`}
-                    ClickFunction={cardCanBePlayed(CardHandValue, Player1Data) ? () => ClickCard(cardId) : () => {}}
+                    ClickFunction={
+                      cardCanBePlayed(CardHandValue, Player1Data)
+                        ? () => (SelectedCard === cardId ? setSelectedCard(null) : setSelectedCard(cardId))
+                        : () => {}
+                    }
                   />
                 ) : null;
               })
             : null}
         </div>
         <div className="normal-container resource-player-info w80 flex-start-justify g15 blue-player-border flex-center-align">
-          <div className="dark-container resource-container flex-center g10">
+          <div className="dark-container resource-container flex-center g10" id="blue-brick">
             <CustomIcons icon="brick" color="#dee0df" />
             {`Bricks (+${Player1Data && Player1Data.statRessources ? Player1Data.statRessources.generatorBrick : "0"}) : ${
               Player1Data && Player1Data.statRessources ? Player1Data.statRessources.brick : "0"
             }`}
           </div>
-          <div className="dark-container resource-container flex-center g10">
+          <div className="dark-container resource-container flex-center g10" id="blue-weapon">
             <CustomIcons icon="weapon" color="#dee0df" />
             {`weapons (+${Player1Data && Player1Data.statRessources ? Player1Data.statRessources.generatorWeapon : "0"}) : ${
               Player1Data && Player1Data.statRessources ? Player1Data!.statRessources.weapon : "0"
             }`}
           </div>
-          <div className="dark-container resource-container flex-center g10">
+          <div className="dark-container resource-container flex-center g10" id="blue-crystal">
             <CustomIcons icon="crystal" color="#dee0df" />
             {`Crystals (+${Player1Data && Player1Data.statRessources ? Player1Data.statRessources.generatorCrystal : "0"}) : ${
               Player1Data && Player1Data.statRessources ? Player1Data!.statRessources.crystal : "0"

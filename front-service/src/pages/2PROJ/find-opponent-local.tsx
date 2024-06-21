@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import DataModel from "../../models/data-model";
 import UserModel from "../../models/user-model";
-import GameBoard from "./components/game-board";
 
 // Définir un identifiant unique pour votre application
 const APP_IDENTIFIER = "my-unique-app-id";
@@ -25,6 +25,15 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
   const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
   const [offers, setOffers] = useState<OfferType[]>([]);
+
+  const [OpponentType, setOpponentType] = useState<number | null>(null);
+  const history = useHistory();
+
+  useEffect(() => {
+    if (OpponentType) {
+      history.push("/2PROJ/" + OpponentType);
+    }
+  }, [OpponentType]);
 
   useEffect(() => {
     const pc = new RTCPeerConnection({
@@ -195,7 +204,6 @@ const FindOpponentLocal: React.FC<Props> = ({ currentUser, Data }) => {
           </div>
         </div>
       ) : null}
-      <GameBoard currentUser={currentUser} Data={Data} OpponentTurn={0} playersInfo={null} />
     </div>
   );
 };

@@ -60,6 +60,7 @@ import GameBoard from "./pages/2PROJ/components/game-board";
 import FindOpponentLocal from "./pages/2PROJ/find-opponent-local";
 import getCardsList from "./api-request/card/card-get-all";
 import { JsonCardList } from "./pages/2PROJ/data/cards-list";
+import { JsonPlayerData } from "./pages/2PROJ/data/players-data";
 
 const App: FunctionComponent = () => {
   const [isLog, setIsLog] = useState<string | Boolean>(false);
@@ -103,7 +104,7 @@ const App: FunctionComponent = () => {
               if (isHttpStatusValid(TasksResult.status)) TasksList = TasksResult.response;
               if (isHttpStatusValid(DrawsResult.status)) DrawsList = DrawsResult.response;
               //if (isHttpStatusValid(CardsResult.status)) CardList = CardsResult.response;
-              if (isHttpStatusValid(UsersResult.status)) UsersList = UsersResult.response;//
+              if (isHttpStatusValid(UsersResult.status)) UsersList = UsersResult.response; //
 
               console.log({
                 rooms: RoomsList,
@@ -160,12 +161,17 @@ const App: FunctionComponent = () => {
               <Switch>
                 <Route exact path="/" render={() => <HomePage currentUser={currentUser} />} />
                 <Route exact path="/1PROJ" render={() => <HomePage1PROJ currentUser={currentUser} />} />
-                <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} Data={Data} />} />
                 <Route
                   exact
                   path="/2PROJ/find-local"
                   render={() => <FindOpponentLocal currentUser={currentUser} Data={Data} />}
+                />{" "}
+                <Route
+                  exact
+                  path="/2PROJ/:OpponentTurn"
+                  render={(props) => <GameBoard {...props} currentUser={currentUser} Data={Data} playersInfo={JsonPlayerData} />}
                 />
+                <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} Data={Data} />} />
                 <Route exact path="/2PROJ/deck" render={() => <DeckEdition currentUser={currentUser} />} />
                 <Route
                   path="/3PROJ/room/:roomid/task/:taskid"

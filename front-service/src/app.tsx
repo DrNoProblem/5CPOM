@@ -166,13 +166,13 @@ const App: FunctionComponent = () => {
                   path="/2PROJ/find-local"
                   render={() => <FindOpponentLocal currentUser={currentUser} Data={Data} />}
                 />{" "}
+                <Route exact path="/2PROJ/deck" render={() => <DeckEdition currentUser={currentUser} />} />
                 <Route
                   exact
                   path="/2PROJ/:OpponentTurn"
                   render={(props) => <GameBoard {...props} currentUser={currentUser} Data={Data} playersInfo={JsonPlayerData} />}
                 />
                 <Route exact path="/2PROJ" render={() => <HomePage2PROJ currentUser={currentUser} Data={Data} />} />
-                <Route exact path="/2PROJ/deck" render={() => <DeckEdition currentUser={currentUser} />} />
                 <Route
                   path="/3PROJ/room/:roomid/task/:taskid"
                   render={(props) => <RoomTaskPageById {...props} currentUser={currentUser} SetLog={SetLog} Data={Data} />}

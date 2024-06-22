@@ -15,92 +15,18 @@ export const shuffleDeck = (deck: string[]): string[] => {
   return shuffledDeck;
 };
 
-export const AddCardToHand = (cardDeck: string[], cardHand: string[]) => {
+export const addCardToHand = (cardDeck: string[], cardHand: string[]) => {
   if (cardDeck.length !== 0) {
     const card = cardDeck.pop()!;
-    cardHand.push(card);
+    if (card) cardHand.push(card);
+    else return 8 - cardHand.length;
   }
   return { cardDeck: cardDeck, cardHand: cardHand };
 };
 
-export const RemoveCardFromHand = (cardHand: string[], cardId: string) => {
+export const removeCardFromHand = (cardHand: string[], cardId: string) => {
   cardHand = cardHand.filter((card) => card !== cardId);
   return cardHand;
-};
-
-export const ReturnCardInDeck = (cardDeck: string[], cardId: string) => {
-  cardDeck.push(cardId);
-  return cardDeck;
-};
-
-export const ApplyPlayerCardEffect = (
-  card: CardModel,
-  OwnerTempoData: PlayerDataModel2PROJ,
-  OpponentTempoData: PlayerDataModel2PROJ
-) => {
-  let returnPlayerData = OwnerTempoData;
-  let returnOpponentData = OpponentTempoData;
-  console.log(OwnerTempoData);
-  console.log(OpponentTempoData);
-  if (OwnerTempoData && OpponentTempoData) {
-    if (card.ownerTargetType !== "all" && card.ownerTargetType !== null)
-      returnPlayerData = {
-        ...OwnerTempoData,
-        statRessources: {
-          ...OwnerTempoData.statRessources,
-          [card.ownerTargetType]:
-            OwnerTempoData.statRessources[card.ownerTargetType] + card.ownerTargetValue > 0
-              ? 0
-              : OwnerTempoData.statRessources[card.ownerTargetType] + card.ownerTargetValue,
-        },
-      };
-    if (card.enemyTargetType !== "all" && card.enemyTargetType !== null) {
-      if (card.enemyTargetType === "health") {
-        let tempoShield = OpponentTempoData.statRessources.shield - card.enemyTargetValue;
-        let tempoAttack = card.enemyTargetValue;
-        let tempoHealth = OpponentTempoData.statRessources.health;
-        if (tempoAttack <= tempoShield) {
-          tempoShield -= tempoAttack;
-        } else {
-          tempoAttack -= tempoShield;
-          tempoShield = 0;
-          tempoHealth -= tempoAttack;
-        }
-        returnOpponentData = {
-          ...OpponentTempoData,
-          statRessources: {
-            ...OpponentTempoData.statRessources,
-            health: tempoHealth,
-            shield: tempoShield,
-          },
-        };
-      } else {
-        returnOpponentData = {
-          ...OpponentTempoData,
-          statRessources: {
-            ...OpponentTempoData.statRessources,
-            [card.enemyTargetType]:
-              OpponentTempoData.statRessources[card.enemyTargetType] + card.enemyTargetValue > 0
-                ? 0
-                : OpponentTempoData.statRessources[card.enemyTargetType] + card.enemyTargetValue,
-          },
-        };
-      }
-    }
-  }
-  return {
-    player: {
-      ...returnPlayerData,
-      statRessources: {
-        ...returnPlayerData.statRessources,
-        [card.costType]:
-          returnPlayerData.statRessources[card.costType] - card.costValue < 0
-            ? returnPlayerData.statRessources[card.costType] - card.costValue
-            : 0,
-      },
-    },
-    enemy: returnOpponentData,
-  };
 };
 
 export const initGame = (playersInfo: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ }) => {
@@ -108,19 +34,24 @@ export const initGame = (playersInfo: { blue: PlayerDataModel2PROJ; red: PlayerD
     let BluePlayerInfo: PlayerDataModel2PROJ = {
       ...playersInfo.blue,
       cardDeck: playersInfo.blue.cardDeck.map((cardId) => addSuffix(cardId, "blue")),
+      cardHand: [],
     };
     let RedPlayerInfo: PlayerDataModel2PROJ = {
       ...playersInfo.red,
       cardDeck: playersInfo.red.cardDeck.map((cardId) => addSuffix(cardId, "red")),
+      cardHand: [],
     };
-    let blueDraw: { cardDeck: string[]; cardHand: string[] };
-    let RedDraw: { cardDeck: string[]; cardHand: string[] };
+    let blueDraw: { cardDeck: string[]; cardHand: string[] } | number;
+    let RedDraw: { cardDeck: string[]; cardHand: string[] } | number;
     for (let i = 0; i < 8; i++) {
-      blueDraw = AddCardToHand(shuffleDeck(BluePlayerInfo.cardDeck), BluePlayerInfo.cardHand);
-      RedDraw = AddCardToHand(shuffleDeck(RedPlayerInfo.cardDeck), RedPlayerInfo.cardHand);
-      BluePlayerInfo = { ...BluePlayerInfo, cardDeck: blueDraw.cardDeck, cardHand: blueDraw.cardHand };
-      RedPlayerInfo = { ...RedPlayerInfo, cardDeck: RedDraw.cardDeck, cardHand: RedDraw.cardHand };
+      blueDraw = addCardToHand(shuffleDeck(BluePlayerInfo.cardDeck), BluePlayerInfo.cardHand);
+      RedDraw = addCardToHand(shuffleDeck(RedPlayerInfo.cardDeck), RedPlayerInfo.cardHand);
+      if (typeof blueDraw !== "number")
+        BluePlayerInfo = { ...BluePlayerInfo, cardDeck: blueDraw.cardDeck, cardHand: blueDraw.cardHand };
+      if (typeof RedDraw !== "number")
+        RedPlayerInfo = { ...RedPlayerInfo, cardDeck: RedDraw.cardDeck, cardHand: RedDraw.cardHand };
     }
+
     return { blue: BluePlayerInfo, red: RedPlayerInfo };
   }
 };
@@ -138,113 +69,192 @@ export const getCardInfoByIdWithSuffix = (cardIdWithSuffix: string, cards: CardM
   return cards.find((card) => card._id === cardId);
 };
 
-export const ExecuteTheProccess = (Player1Data: PlayerDataModel2PROJ, Player2Data: PlayerDataModel2PROJ, Cards: CardModel[]) => {
-  console.log("ok"); // Attention: il faut mettre les player dans des variables temporaires pour interagir avec
+export const ExecuteTheProccess = (blueData: PlayerDataModel2PROJ, redData: PlayerDataModel2PROJ, Cards: CardModel[]) => {
+  let tempoPlayerInfo: { blue: PlayerDataModel2PROJ | null; red: PlayerDataModel2PROJ | null } = { blue: null, red: null };
+  let redFinalyRessources;
+  let blueFinalyRessources;
 
-  let tempoPlayerInfo: { blue: PlayerDataModel2PROJ | null; red: PlayerDataModel2PROJ | null } = { blue: null, red: null }; // Initialisation de tempoPlayerInfo
+  let blueCardsPlayerData;
+  let redCardsPlayerData;
 
-  console.log("before", tempoPlayerInfo);
-  if (Player1Data && Player2Data) {
-    tempoPlayerInfo = { blue: Player1Data, red: Player2Data };
+  let blueNewHand;
+  let redNewHand;
+
+  if (blueData && redData) {
+    tempoPlayerInfo = { blue: blueData, red: redData };
   } else {
     return;
   }
 
-  if (
-    tempoPlayerInfo.blue &&
-    tempoPlayerInfo.blue.turnInfo.played &&
-    tempoPlayerInfo.red &&
-    tempoPlayerInfo.red.turnInfo.played
-  ) {
-    // Premier appel à ApplyPlayerCardEffect
-    let blueEffectResult = ApplyPlayerCardEffect(
+  if (tempoPlayerInfo.red && tempoPlayerInfo.blue && tempoPlayerInfo.blue.turnInfo.played) {
+    let blueEffectResult = getPlayersNewStatRessources(
       getCardInfoByIdWithSuffix(tempoPlayerInfo.blue.turnInfo.played, Cards)!,
-      tempoPlayerInfo.blue,
-      tempoPlayerInfo.red
+      tempoPlayerInfo.blue.statRessources,
+      tempoPlayerInfo.red.statRessources
     );
-
-    // Mise à jour de tempoPlayerInfo avec les résultats du premier appel
-    tempoPlayerInfo.blue = blueEffectResult.player;
-    tempoPlayerInfo.red = blueEffectResult.enemy;
+    tempoPlayerInfo.blue.statRessources = blueEffectResult.player;
+    tempoPlayerInfo.red.statRessources = blueEffectResult.enemy;
   }
-  if (
-    tempoPlayerInfo.blue &&
-    tempoPlayerInfo.blue.turnInfo.played &&
-    tempoPlayerInfo.red &&
-    tempoPlayerInfo.red.turnInfo.played
-  ) {
-    // Deuxième appel à ApplyPlayerCardEffect basé sur les résultats du premier
-    let redEffectResult = ApplyPlayerCardEffect(
+  if (tempoPlayerInfo.blue && tempoPlayerInfo.red && tempoPlayerInfo.red.turnInfo.played) {
+    let redEffectResult = getPlayersNewStatRessources(
       getCardInfoByIdWithSuffix(tempoPlayerInfo.red.turnInfo.played, Cards)!,
-      tempoPlayerInfo.red,
-      tempoPlayerInfo.blue
+      tempoPlayerInfo.red.statRessources,
+      tempoPlayerInfo.blue.statRessources
     );
-
-    // Mise à jour finale de tempoPlayerInfo avec les résultats du deuxième appel
-    tempoPlayerInfo.blue = redEffectResult.enemy;
-    tempoPlayerInfo.red = redEffectResult.player;
+    tempoPlayerInfo.blue.statRessources = redEffectResult.enemy;
+    tempoPlayerInfo.red.statRessources = redEffectResult.player;
   }
 
-  console.log("traitement", tempoPlayerInfo);
-  if (tempoPlayerInfo && tempoPlayerInfo.blue && tempoPlayerInfo.red) {
-    console.log(
-      "blue card",
-      getCardInfoByIdWithSuffix(
-        tempoPlayerInfo.blue.turnInfo.played ? tempoPlayerInfo.blue.turnInfo.played : tempoPlayerInfo.blue.turnInfo.trash!,
-        Cards
-      )
+  let resetTurnInfo = { played: null, trash: null };
+
+  if (tempoPlayerInfo.red && tempoPlayerInfo.blue) {
+    redFinalyRessources = applyRessourcesGeneration(tempoPlayerInfo.red.statRessources);
+    blueFinalyRessources = applyRessourcesGeneration(tempoPlayerInfo.blue.statRessources);
+
+    blueCardsPlayerData = addCardToHand(tempoPlayerInfo.blue.cardDeck, tempoPlayerInfo.blue.cardHand);
+    redCardsPlayerData = addCardToHand(tempoPlayerInfo.red.cardDeck, tempoPlayerInfo.red.cardHand);
+
+    if (typeof blueCardsPlayerData === "number")
+      blueFinalyRessources = { ...blueFinalyRessources, health: blueFinalyRessources.health - blueCardsPlayerData };
+
+    if (typeof redCardsPlayerData === "number")
+      redFinalyRessources = { ...redFinalyRessources, health: redFinalyRessources.health - redCardsPlayerData };
+
+    blueNewHand = removeCardFromHand(
+      typeof blueCardsPlayerData === "number" ? tempoPlayerInfo.blue.cardHand : blueCardsPlayerData.cardHand,
+      tempoPlayerInfo.blue.turnInfo.played ? tempoPlayerInfo.blue.turnInfo.played : tempoPlayerInfo.blue.turnInfo.trash!
     );
-    console.log(
-      "red card",
-      getCardInfoByIdWithSuffix(
-        tempoPlayerInfo.red.turnInfo.played ? tempoPlayerInfo.red.turnInfo.played : tempoPlayerInfo.red.turnInfo.trash!,
-        Cards
-      )
+    redNewHand = removeCardFromHand(
+      typeof redCardsPlayerData === "number" ? tempoPlayerInfo.red.cardHand : redCardsPlayerData.cardHand,
+      tempoPlayerInfo.red.turnInfo.played ? tempoPlayerInfo.red.turnInfo.played : tempoPlayerInfo.red.turnInfo.trash!
     );
-    console.log("2traitement", tempoPlayerInfo);
 
-    let CardsPlayerRedData = AddCardToHand(tempoPlayerInfo.red.cardDeck, tempoPlayerInfo.red.cardHand);
-    console.log("-");
-    console.log(tempoPlayerInfo.red.statRessources.generatorBrick);
-    console.log(tempoPlayerInfo.red.statRessources.brick);
-    console.log(tempoPlayerInfo.red.statRessources.brick + tempoPlayerInfo.red.statRessources.generatorBrick);
-    tempoPlayerInfo.red = {
-      ...tempoPlayerInfo.red,
-      cardDeck: CardsPlayerRedData.cardDeck,
-      cardHand: RemoveCardFromHand(
-        CardsPlayerRedData.cardHand,
-        tempoPlayerInfo.red.turnInfo.played ? tempoPlayerInfo.red.turnInfo.played : tempoPlayerInfo.red.turnInfo.trash!
-      ),
-      statRessources: {
-        ...tempoPlayerInfo.red.statRessources,
-        brick: tempoPlayerInfo.red.statRessources.brick + tempoPlayerInfo.red.statRessources.generatorBrick,
-        weapon: tempoPlayerInfo.red.statRessources.brick + tempoPlayerInfo.red.statRessources.generatorWeapon,
-        crystal: tempoPlayerInfo.red.statRessources.brick + tempoPlayerInfo.red.statRessources.generatorCrystal,
+    return {
+      blue: {
+        ...tempoPlayerInfo.blue,
+        statRessources: blueFinalyRessources,
+        cardDeck: typeof blueCardsPlayerData === "number" ? [] : blueCardsPlayerData.cardDeck,
+        cardHand: blueNewHand,
+        turnInfo: resetTurnInfo,
       },
-      turnInfo: { played: null, trash: null },
-    };
-
-    let CardsPlayerBlueData = AddCardToHand(tempoPlayerInfo.blue.cardDeck, tempoPlayerInfo.blue.cardHand);
-    console.log(tempoPlayerInfo.blue.statRessources.generatorBrick);
-    console.log(tempoPlayerInfo.blue.statRessources.brick);
-    console.log(tempoPlayerInfo.blue.statRessources.brick + tempoPlayerInfo.blue.statRessources.generatorBrick);
-    console.log("-");
-    tempoPlayerInfo.blue = {
-      ...tempoPlayerInfo.blue,
-      cardDeck: CardsPlayerBlueData.cardDeck,
-      cardHand: RemoveCardFromHand(
-        CardsPlayerBlueData.cardHand,
-        tempoPlayerInfo.blue.turnInfo.played ? tempoPlayerInfo.blue.turnInfo.played : tempoPlayerInfo.blue.turnInfo.trash!
-      ),
-      statRessources: {
-        ...tempoPlayerInfo.blue.statRessources,
-        brick: tempoPlayerInfo.blue.statRessources.brick + tempoPlayerInfo.blue.statRessources.generatorBrick,
-        weapon: tempoPlayerInfo.blue.statRessources.brick + tempoPlayerInfo.blue.statRessources.generatorWeapon,
-        crystal: tempoPlayerInfo.blue.statRessources.brick + tempoPlayerInfo.blue.statRessources.generatorCrystal,
+      red: {
+        ...tempoPlayerInfo.red,
+        statRessources: redFinalyRessources,
+        cardDeck: typeof redCardsPlayerData === "number" ? [] : redCardsPlayerData.cardDeck,
+        cardHand: redNewHand,
+        turnInfo: resetTurnInfo,
       },
-      turnInfo: { played: null, trash: null },
     };
-
-    return tempoPlayerInfo;
   }
+};
+
+export const getPlayersNewStatRessources = (
+  card: CardModel,
+  OwnerTempoData: PlayerDataModel2PROJ["statRessources"],
+  OpponentTempoData: PlayerDataModel2PROJ["statRessources"]
+) => {
+  console.log(card);
+  let returnPlayerData = OwnerTempoData;
+  let returnOpponentData = OpponentTempoData;
+
+  let returnPlayerStatRessources: PlayerDataModel2PROJ["statRessources"] = returnPlayerData;
+  let returnOpponentStatRessources: PlayerDataModel2PROJ["statRessources"] = returnOpponentData;
+
+  if (OwnerTempoData && OpponentTempoData) {
+    if (card.ownerTargetType !== "all" && card.ownerTargetType !== null) {
+      returnPlayerStatRessources = {
+        ...OwnerTempoData,
+        [card.ownerTargetType]:
+          OwnerTempoData[card.ownerTargetType] + card.ownerTargetValue > 0
+            ? OwnerTempoData[card.ownerTargetType] + card.ownerTargetValue
+            : 0,
+      };
+    } else if (card.ownerTargetType === "all") {
+      returnPlayerStatRessources = {
+        ...OwnerTempoData,
+        brick: OwnerTempoData.brick + card.enemyTargetValue > 0 ? OwnerTempoData.brick + card.enemyTargetValue : 0,
+        weapon: OwnerTempoData.weapon + card.enemyTargetValue > 0 ? OwnerTempoData.weapon + card.enemyTargetValue : 0,
+        crystal: OwnerTempoData.crystal + card.enemyTargetValue > 0 ? OwnerTempoData.crystal + card.enemyTargetValue : 0,
+        generatorBrick:
+          OwnerTempoData.generatorBrick + card.enemyTargetValue > 0 ? OwnerTempoData.generatorBrick + card.enemyTargetValue : 0,
+        generatorWeapon:
+          OwnerTempoData.generatorWeapon + card.enemyTargetValue > 0 ? OwnerTempoData.generatorWeapon + card.enemyTargetValue : 0,
+        generatorCrystal:
+          OwnerTempoData.generatorCrystal + card.enemyTargetValue > 0
+            ? OwnerTempoData.generatorCrystal + card.enemyTargetValue
+            : 0,
+      };
+    }
+    if (card.enemyTargetType !== "all" && card.enemyTargetType !== null) {
+      if (card.enemyTargetType === "health") {
+        const AttackAndShield = getHealthShieldAfterAttack(
+          card.enemyTargetValue * -1,
+          OpponentTempoData.shield,
+          OpponentTempoData.health
+        );
+        returnOpponentStatRessources = {
+          ...OpponentTempoData,
+          health: AttackAndShield.health,
+          shield: AttackAndShield.shield,
+        };
+      } else {
+        returnOpponentStatRessources = {
+          ...OpponentTempoData,
+          [card.enemyTargetType]:
+            OpponentTempoData[card.enemyTargetType] + card.enemyTargetValue > 0
+              ? OpponentTempoData[card.enemyTargetType] + card.enemyTargetValue
+              : 0,
+        };
+      }
+    } else if (card.enemyTargetType === "all") {
+      returnOpponentStatRessources = {
+        ...OpponentTempoData,
+        brick: OpponentTempoData.brick + card.enemyTargetValue > 0 ? OpponentTempoData.brick + card.enemyTargetValue : 0,
+        weapon: OpponentTempoData.weapon + card.enemyTargetValue > 0 ? OpponentTempoData.weapon + card.enemyTargetValue : 0,
+        crystal: OpponentTempoData.crystal + card.enemyTargetValue > 0 ? OpponentTempoData.crystal + card.enemyTargetValue : 0,
+        generatorBrick:
+          OpponentTempoData.generatorBrick + card.enemyTargetValue > 0
+            ? OpponentTempoData.generatorBrick + card.enemyTargetValue
+            : 0,
+        generatorWeapon:
+          OpponentTempoData.generatorWeapon + card.enemyTargetValue > 0
+            ? OpponentTempoData.generatorWeapon + card.enemyTargetValue
+            : 0,
+        generatorCrystal:
+          OpponentTempoData.generatorCrystal + card.enemyTargetValue > 0
+            ? OpponentTempoData.generatorCrystal + card.enemyTargetValue
+            : 0,
+      };
+    }
+  }
+  return {
+    player: {
+      ...returnPlayerStatRessources,
+      [card.costType]:
+        returnPlayerStatRessources[card.costType] - card.costValue > 0
+          ? returnPlayerStatRessources[card.costType] - card.costValue
+          : 0,
+    },
+    enemy: returnOpponentStatRessources,
+  };
+};
+
+const applyRessourcesGeneration = (statRessources: PlayerDataModel2PROJ["statRessources"]) => {
+  return {
+    ...statRessources,
+    brick: statRessources.generatorBrick + statRessources.brick,
+    crystal: statRessources.generatorCrystal + statRessources.crystal,
+    weapon: statRessources.generatorWeapon + statRessources.weapon,
+  };
+};
+
+const getHealthShieldAfterAttack = (attack: number, shield: number, health: number) => {
+  if (attack <= shield) {
+    shield -= attack;
+  } else {
+    attack -= shield;
+    health -= attack;
+    shield = 0;
+  }
+  return { health: health, shield: shield };
 };

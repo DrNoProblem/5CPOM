@@ -1,17 +1,12 @@
 import { FunctionComponent, default as React, useEffect, useState } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import CardModel from "../../../models/card-model";
 import DataModel from "../../../models/data-model";
 import PlayerDataModel2PROJ from "../../../models/player-model";
 import UserModel from "../../../models/user-model";
 import { lvl1TurnAi, lvl2TurnAi, lvl3TurnAi } from "../helpers/ai-opponent";
+import { cardCanBePlayed, ExecuteTheProccess, getCardInfoByIdWithSuffix, initGame } from "../helpers/game-function";
 import "./../2P-style.scss";
-import {
-  cardCanBePlayed,
-  ExecuteTheProccess,
-  getCardInfoByIdWithSuffix,
-  initGame
-} from "./../helpers/game-function";
 import Card from "./card";
 import CustomIcons from "./custom-icons";
 
@@ -45,16 +40,32 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
 
   useEffect(() => {
     if (TurnTempo && Player1Data && Player2Data) {
-      const executionResult = ExecuteTheProccess(Player1Data, Player2Data, Cards)
-      console.log(executionResult);
-      setTimeout(() => {
-        if (executionResult && executionResult.blue && executionResult.red) {
-          setPlayer1Data(executionResult.blue);
-          setPlayer2Data(executionResult.red);
-          setSelectedCard(null);
-          setTurnTempo(false);
-        }
-      }, 2500);
+      const executionResult = ExecuteTheProccess(Player1Data, Player2Data, Cards);
+      if (
+        executionResult &&
+        executionResult.blue &&
+        (executionResult.blue.statRessources.health === 0 || executionResult.red.statRessources.health > 99)
+      )
+        setMenuOpen("red");
+      else if (
+        executionResult &&
+        executionResult.red &&
+        (executionResult.red.statRessources.health === 0 || executionResult.blue.statRessources.health > 99)
+      )
+        setMenuOpen("blue");
+      else {
+        let gameBoard = document.querySelector(".container-board");
+        gameBoard!.classList.add("no-click");
+        setTimeout(() => {
+          if (executionResult && executionResult.blue && executionResult.red) {
+            gameBoard!.classList.remove("no-click");
+            setPlayer1Data(executionResult.blue);
+            setPlayer2Data(executionResult.red);
+            setSelectedCard(null);
+            setTurnTempo(false);
+          }
+        }, 1500);
+      }
     }
   }, [TurnTempo]);
 
@@ -87,44 +98,6 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
     }));
     setTurnTempo(true);
   };
-
-  /*   const NextTurnClick = (turnPlayer1Data: PlayerDataModel2PROJ, turnPlayer2Data: PlayerDataModel2PROJ) => {
-    if (turnPlayer1Data && turnPlayer2Data) {
-      let tempoPlayerInfo: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ } = {
-        blue: turnPlayer1Data,
-        red: turnPlayer2Data,
-      };
-      let blueCardId: string | undefined;
-      let redCardId: string | undefined;
-
-      if (tempoPlayerInfo.blue.turnInfo.played && !tempoPlayerInfo.blue.turnInfo.trash)
-        blueCardId = tempoPlayerInfo.blue.turnInfo.played;
-      //else if (tempoPlayerInfo.blue.turnInfo.trash && !tempoPlayerInfo.blue.turnInfo.played)
-        //blueCardId = tempoPlayerInfo.blue.turnInfo.trash;
-      if (tempoPlayerInfo.red.turnInfo.played && !tempoPlayerInfo.red.turnInfo.trash)
-        redCardId = tempoPlayerInfo.red.turnInfo.played;
-      //else if (tempoPlayerInfo.red.turnInfo.trash && !tempoPlayerInfo.red.turnInfo.played)
-        //redCardId = tempoPlayerInfo.red.turnInfo.trash;
-
-      if (redCardId) {
-        let result = ApplyPlayerCardEffect(
-          getCardInfoByIdWithSuffix(redCardId, Cards)!,
-          tempoPlayerInfo.red,
-          tempoPlayerInfo.blue
-        );
-        tempoPlayerInfo = { blue: result.enemy, red: result.player };
-      }
-
-      if (blueCardId) {
-        let result = ApplyPlayerCardEffect(
-          getCardInfoByIdWithSuffix(blueCardId, Cards)!,
-          tempoPlayerInfo.blue,
-          tempoPlayerInfo.red
-        );
-        tempoPlayerInfo = { blue: result.player, red: result.enemy };
-      }
-    }
-  }; */
 
   const SelectCardToPlay = (cardId: string | null, target: "trash" | "played", player: "blue" | "red") => {
     if (player === "blue") {
@@ -187,9 +160,20 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
     <div className="dark-container flex-col flex-center m20 container-board m20">
       <div className="PlayerBoard flex-center flex-col w100">
         <div className="card-hand flex-center w80 g5 player-red">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <div key={index} className="card red-player-border can-not-play"></div>
-          ))}
+          {Player2Data && Player2Data.cardHand
+            ? Player2Data.cardHand.map((cardId) => {
+                return (
+                  <div
+                    key={cardId}
+                    className={`card red-player-border can-not-play ${
+                      Player2Data.turnInfo.trash === cardId || Player2Data.turnInfo.played === cardId ? "op0" : ""
+                    }`}
+                  ></div>
+                );
+              })
+            : Array.from({ length: 8 }).map((_, index) => (
+                <div key={index} className="card red-player-border can-not-play"></div>
+              ))}
         </div>
         <div className="normal-container resource-player-info w80 flex-end-justify g15 red-player-border">
           <div className="dark-container resource-container flex-center g10" id="red-brick">
@@ -346,12 +330,16 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
                     ClickFunction={
                       cardCanBePlayed(CardHandValue, Player1Data)
                         ? () => (SelectedCard === cardId ? setSelectedCard(null) : setSelectedCard(cardId))
-                        : () => {}
+                        : () => {
+                            setPlayer1Data({ ...Player1Data, turnInfo: { ...Player1Data.turnInfo, trash: cardId } });
+                          }
                     }
                   />
                 ) : null;
               })
-            : null}
+            : Array.from({ length: 8 }).map((_, index) => (
+                <div key={index} className="card blue-player-border can-not-play"></div>
+              ))}
         </div>
         <div className="normal-container resource-player-info w80 flex-start-justify g15 blue-player-border flex-center-align">
           <div className="dark-container resource-container flex-center g10" id="blue-brick">
@@ -375,26 +363,42 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
         </div>
       </div>
 
-      {MenuOpen === "start" ? (
+      {MenuOpen ? (
         <div className="absolute flex-center menu-pop-up">
           <div className="dark-background zi1"></div>
-          <div className="dark-container zi1 w50">
-            <h2>Start a new game :</h2>
-            <div
-              className="cta cta-blue"
-              onClick={() => {
-                setMenuOpen("");
-                const initialisePlayer = initGame(playersInfo!);
-                if (initialisePlayer) {
-                  setPlayer1Data(initialisePlayer.blue);
-                  setPlayer2Data(initialisePlayer.red);
-                }
-              }}
-            >
-              <span className="flex-center g10">
-                <i>play_circle_outline</i>Start
-              </span>
-            </div>
+          <div className="dark-container zi1 w30 flex-center flex-col">
+            {MenuOpen === "start" ? (
+              <>
+                <h2>Start a new game :</h2>
+                <div
+                  className="cta cta-blue"
+                  onClick={() => {
+                    setMenuOpen("");
+                    const initialisePlayer = initGame(playersInfo!);
+                    if (initialisePlayer) {
+                      setPlayer1Data(initialisePlayer.blue);
+                      setPlayer2Data(initialisePlayer.red);
+                    }
+                  }}
+                >
+                  <span className="flex-center g10">
+                    <i>play_circle_outline</i>Start
+                  </span>
+                </div>
+              </>
+            ) : null}
+
+            {MenuOpen === "red" || MenuOpen === "blue" ? (
+              <>
+                <h2 className="cap">{MenuOpen} Player Win !</h2>
+
+                <Link to={`/2PROJ`} className="cta cta-blue">
+                  <span className="flex-center g10">
+                    <i>edit</i>Back Home
+                  </span>
+                </Link>
+              </>
+            ) : null}
           </div>
         </div>
       ) : null}

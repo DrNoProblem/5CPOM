@@ -9,20 +9,16 @@ type Props = {
 };
 
 const DeckEdition: FunctionComponent<Props> = ({ currentUser }) => {
-  // Initialiser l'état local avec le deck actuel de blue
   const [playerDeck, setPlayerDeck] = useState(JsonPlayerData.blue.cardDeck);
 
-  // Fonction pour obtenir le compte des cartes
   const getCardCount = (cardId: string): number => {
     return playerDeck.filter((id) => id === cardId).length;
   };
 
-  // Fonction pour ajouter une carte au deck
   const addCardToDeck = (cardId: string) => {
     setPlayerDeck((prevDeck) => [...prevDeck, cardId]);
   };
 
-  // Fonction pour retirer une carte du deck
   const removeCardFromDeck = (cardId: string) => {
     setPlayerDeck((prevDeck) => {
       const index = prevDeck.indexOf(cardId);

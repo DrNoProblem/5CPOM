@@ -73,7 +73,7 @@ export const JsonPlayerData: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2
       weapon: 10,
       generatorCrystal: 1,
       crystal: 10,
-      health: 40,
+      health: 99,
       shield: 10,
     },
     turnInfo: {

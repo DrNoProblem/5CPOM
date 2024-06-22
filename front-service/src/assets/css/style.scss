@@ -555,6 +555,7 @@ i.warning:hover::after {
   min-height: 100vh;
   min-width: 100vw;
   background: #00000088 !important;
+  backdrop-filter: blur(10px);
 }
 
 select {
@@ -1283,7 +1284,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 }
 .page-content-area::-webkit-scrollbar {
   width: 15px;
-  color: var(--color-dark-bg)
+  color: var(--color-dark-bg);
 }
 .page-content-area::-webkit-scrollbar-thumb {
   width: 5px;

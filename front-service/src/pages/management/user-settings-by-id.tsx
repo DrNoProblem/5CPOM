@@ -4,18 +4,23 @@ import DeleteUserById from '../../api-request/user/delete';
 import userUpdate from '../../api-request/user/update-by-id';
 import isHttpStatusValid from '../../helpers/check-status';
 import displayStatusRequest from '../../helpers/display-status-request';
+import { getToken } from '../../helpers/token-verifier';
 import voidUser from '../../models/mocks/void-user';
 import UserModel from '../../models/user-model';
-import { getToken } from '../../helpers/token-verifier';
+import TableNoteUser from '../3PROJ/components/table-note-user';
+import RoomModel from '../../models/room-model';
+import TaskModel from '../../models/tasks-model';
 
 
 
 interface Props extends RouteComponentProps<{ id: string }> {
     userList: Array<UserModel>
     SetLog: Function
+    RoomList: RoomModel[]
+    TaskList: TaskModel[]
 }
 
-const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => {
+const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog, TaskList, RoomList }) => {
 
     useEffect(() => {
         userList.forEach(element => {
@@ -127,7 +132,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
         <div className='main p20 flex-col relative flex-end-align '>
             <div className="flex-col g10 w100" >
                 <div>
-                    <Link to='/manage-users' className='cta cta-blue '><span>Back to users list</span></Link>
+                    <Link to='/' className='cta cta-blue '><span>Back to users list</span></Link>
                 </div>
                 <div className="flex-row g50">
                     <div className='dark-container flex-col flex-start-align flex-start-justify w35 display-from-left zi2'>
@@ -230,6 +235,7 @@ const UserSettings: FunctionComponent<Props> = ({ match, userList, SetLog }) => 
                         </div>
                     ) : null}
                 </div>
+                <TableNoteUser RoomList={RoomList} TaskList={TaskList} currentUser={user}/>
 
             </div>
 

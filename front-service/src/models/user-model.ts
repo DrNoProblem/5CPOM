@@ -5,7 +5,7 @@ export default class UserModel {
   password: string;
   role: string;
   draws: string[];
-  notes: { taskId: string; note: number }[];
+  notes: { taskId: string; roomId: string; script: string; note: number }[];
   deck: string[];
   constructor(
     _id: string,
@@ -14,7 +14,7 @@ export default class UserModel {
     password: string,
     role: string,
     draws: string[],
-    notes: { taskId: string; note: number }[],
+    notes: { taskId: string; roomId: string; script: string; note: number }[],
     deck: string[]
   ) {
     this._id = _id;

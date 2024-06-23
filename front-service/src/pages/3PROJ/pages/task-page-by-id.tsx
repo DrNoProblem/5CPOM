@@ -394,7 +394,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                   </div>
                 ) : Task.renders.some((e) => e.id === currentUser._id) ? (
                   <div className="dark-container flex-col display-from-left">
-                    <h2 className="m0">Notes for this tack :</h2>
+                    <h2 className="m0">Notes for this task :</h2>
                     <span className="normal-container flex-center fs20 bold">
                       {Task.renders.find((e) => e.id === currentUser._id)!.note}
                       &nbsp;/&nbsp;100

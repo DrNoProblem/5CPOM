@@ -225,6 +225,8 @@ const App: FunctionComponent = () => {
                       {...props}
                       userList={currentUser.role === "user" ? [currentUser] : (Data.users as UserModel[])}
                       SetLog={SetLog}
+                      TaskList={Data.tasks}
+                      RoomList={Data.rooms}
                     />
                   )}
                 />

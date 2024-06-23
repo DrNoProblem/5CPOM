@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "./static/css/main.3157ae72.css",
-    "main.js": "./static/js/main.f1116c4c.js",
+    "main.css": "./static/css/main.d7c224e0.css",
+    "main.js": "./static/js/main.1844fba6.js",
     "static/media/silka-semibold-webfont.woff": "./static/media/silka-semibold-webfont.06edbc6ccb1ecbdeb0fc.woff",
     "static/media/silka-bold-webfont.woff": "./static/media/silka-bold-webfont.b6bfea190711a147ea0a.woff",
     "static/media/silka-medium-webfont.woff": "./static/media/silka-medium-webfont.1109c9c2dcc6fa529e04.woff",
     "index.html": "./index.html",
-    "main.3157ae72.css.map": "./static/css/main.3157ae72.css.map",
-    "main.f1116c4c.js.map": "./static/js/main.f1116c4c.js.map"
+    "main.d7c224e0.css.map": "./static/css/main.d7c224e0.css.map",
+    "main.1844fba6.js.map": "./static/js/main.1844fba6.js.map"
   },
   "entrypoints": [
-    "static/css/main.3157ae72.css",
-    "static/js/main.f1116c4c.js"
+    "static/css/main.d7c224e0.css",
+    "static/js/main.1844fba6.js"
   ]
 }

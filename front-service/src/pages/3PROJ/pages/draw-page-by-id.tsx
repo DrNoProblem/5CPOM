@@ -63,8 +63,9 @@ const DrawPageById: FC<Props> = ({ match, currentUser, Data, SetLog }) => {
   return Draw ? (
     <div className="main p20 flex-col flex-end-align g20">
       <div className="flex-col g20 w100">
+        
         <div className="g20 flex-center-align ">
-          <Link to={`/3PROJ`} className="cta cta-blue">
+          <Link to={`/3PROJ`} className="cta cta-dark cta-blue-h">
             <span>Back</span>
           </Link>
           <h2 className="mb0">Draw :</h2>
@@ -80,6 +81,7 @@ const DrawPageById: FC<Props> = ({ match, currentUser, Data, SetLog }) => {
             returnedScript={false}
             currentUser={currentUser}
             SetLog={SetLog}
+            title={undefined}
           />
         </div>
         {ParamsActive ? (

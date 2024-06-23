@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     type: Array,
     required: false
   },
-  draws: {
+  notes: {
     type: Array,
     required: false
   }

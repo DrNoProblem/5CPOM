@@ -102,11 +102,11 @@ exports.UpdateNoteRender = async (req, res, next) => {
   try {
     const { roomId, updates } = req.body;
     const room = await Room.findById(roomId);
-    if (!room) return res.status(404).json({ message: "Room not found" });
+    if (!room) return res.status(401).json({ message: "Room not found" });
     if (req.userId === room.owner || req.userId === room.co_owner)
-      return res.status(404).json({ message: "You can not submit a render as owner or co-owner for this room" });
+      return res.status(401).json({ message: "You can not submit a render as owner or co-owner for this room" });
     const task = await Task.findById(req.params.taskId);
-    if (!task) return res.status(404).json({ message: "Task not found" });
+    if (!task) return res.status(401).json({ message: "Task not found" });
 
     updates.forEach((update) => {
       const renderIndex = task.renders.findIndex((render) => render.id === update.userId);

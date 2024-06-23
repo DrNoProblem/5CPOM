@@ -73,7 +73,7 @@ const HomePage3PROJ: FC<Props> = ({ currentUser, SetLog, usersList, tasks, rooms
     <div className="main p20 flex-col flex-end-align g20">
       <div className="flex-col g20 w100">
         <div className="g20 flex-center-align">
-          <Link to={`/`} className="cta cta-blue">
+          <Link to={`/`} className="cta cta-dark cta-blue-h">
             <span>Back</span>
           </Link>
           <h2 className="mb0">3PROJ :</h2>

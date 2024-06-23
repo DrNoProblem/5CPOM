@@ -68,13 +68,12 @@ router.patch(
   userController.updateDrawsCurrentUser
 );
 
-router.patch(
-  "/updateNotes/",
+router.post(
+  "/updateNoteUsers/",
   [
     body("notes").notEmpty().withMessage("Notes is required"),
   ],
-  authController.protect,
-  userController.updateNotesCurrentUser
+  userController.updateNoteUsers
 );
 
 //! private route for updating current user's info

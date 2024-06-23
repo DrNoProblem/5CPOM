@@ -49,7 +49,7 @@ const DrawnListPage: FC<Props> = ({ currentUser, Data, SetLog }) => {
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
         <div className="g20 flex-center-align">
-          <Link to={`/3PROJ`} className="cta cta-blue">
+          <Link to={`/3PROJ`} className="cta cta-dark cta-blue-h">
             <span>Back</span>
           </Link>
           <h2 className="m0">Draw list :</h2>

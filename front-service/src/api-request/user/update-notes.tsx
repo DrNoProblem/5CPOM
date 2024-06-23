@@ -1,9 +1,19 @@
 import { getToken } from "../../helpers/token-verifier";
 
-async function UserNotesUpdate(value: { id: string; script: string; note: number  }[]) {
+async function UserNotesUpdate(
+  value: {
+    userId: string;
+    notes: {
+      note: number;
+      script: string;
+      taskId: string;
+      roomId: string;
+    };
+  }[]
+) {
   var data: any = [];
-  const response = await fetch("http://localhost:4000/users/updateNotes", {
-    method: "PATCH",
+  const response = await fetch("http://localhost:4000/users/updateNoteUsers", {
+    method: "POST",
     body: JSON.stringify(value),
     headers: {
       "Content-Type": "application/json",

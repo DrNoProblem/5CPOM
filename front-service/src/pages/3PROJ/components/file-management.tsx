@@ -122,7 +122,7 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
               delete
             </i>
           </div>
-          <div className="cta blue-h normal-bg" onClick={UploadFileContent}>
+          <div className="cta cta-blue-h cta-normal" onClick={UploadFileContent}>
             <span className="add-user flex-row flex-center-align flex-start-justify g15">
               <i className="">keyboard_tab</i>
               Save imported script
@@ -132,13 +132,13 @@ const FileManagementComponent: FC<Props> = ({ script, functionReturned, currentU
       ) : null}
 
       <div className="flex-wrap g15">
-        <div className="cta blue-h normal-bg" onClick={() => SaveScriptOnDataBase(script)}>
+        <div className="cta cta-blue-h cta-normal" onClick={() => SaveScriptOnDataBase(script)}>
           <span className="add-user flex-row flex-center-align flex-start-justify g15">
             <i className="">save</i>Save script
           </span>
         </div>
 
-        <div className="cta blue-h normal-bg" onClick={downloadScript}>
+        <div className="cta cta-blue-h cta-normal" onClick={downloadScript}>
           <span className="add-user flex-row flex-center-align flex-start-justify g15">
             <i className="">download</i>
             Download script

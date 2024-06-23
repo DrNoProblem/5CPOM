@@ -61,10 +61,9 @@ const RoomPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
     });
   }, [match.params, Data]);
 
-
   const SuccessInfoSubmited = (update: string) => {
-    if (update === 'succes') SetLog();
-    if (update === 'delete') setPopUpActive("delete task");
+    if (update === "succes") SetLog();
+    if (update === "delete") setPopUpActive("delete task");
     else setPopUpActive(false);
   };
   let history = useHistory();
@@ -78,20 +77,19 @@ const RoomPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
           history.push(`/room/${currentUser!._id}`);
         } else displayStatusRequest("error " + result.status + " : " + result.response.message, true);
       });
-    } else SuccessInfoSubmited('')
+    } else SuccessInfoSubmited("");
   };
-  
 
   return Room ? (
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
         <div className="g20 flex-center-align">
-          <Link to={`/3PROJ`} className="cta cta-blue">
+          <Link to={`/3PROJ`} className="cta cta-dark cta-blue-h">
             <span>Back</span>
           </Link>
           <h2 className="mb0">
             Room{" "}
-            <span className="blue" onClick={() => IsOwner ? setPopUpActive("edit room") : null}>
+            <span className="blue" onClick={() => (IsOwner ? setPopUpActive("edit room") : null)}>
               {Room!.name}
             </span>{" "}
             :
@@ -170,7 +168,7 @@ const RoomPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 <div className="flex-center-align flex-bet mb10">
                   <h2 className="m0">List of Tasks :</h2>
                   {IsOwner ? (
-                    <div className="flex-row flex-bet normal-bg-h cta  blue-h" onClick={() => setPopUpActive("add task")}>
+                    <div className="flex-row flex-bet cta-blue-h cta-normal cta " onClick={() => setPopUpActive("add task")}>
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
                         <i className="">add</i>
                         Add new Task
@@ -262,10 +260,9 @@ const RoomPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 />
               ) : null}
 
-              
-            {PopUpActive === "delete task" ? (
-              <ModalConfirmDelete functionReturned={ConfirmToDelete} itemTitle={Room.name} />
-            ) : null}
+              {PopUpActive === "delete task" ? (
+                <ModalConfirmDelete functionReturned={ConfirmToDelete} itemTitle={Room.name} />
+              ) : null}
             </div>
           ) : null}
         </div>

@@ -166,7 +166,6 @@ const App: FunctionComponent = () => {
                   path="/2PROJ/find-local"
                   render={() => <FindOpponentLocal currentUser={currentUser} Data={Data} />}
                 />{" "}
-                <Route exact path="/2PROJ/deck" render={() => <DeckEdition currentUser={currentUser} />} />
                 <Route
                   exact
                   path="/2PROJ/:OpponentTurn"

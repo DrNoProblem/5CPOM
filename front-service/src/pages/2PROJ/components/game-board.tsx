@@ -9,6 +9,7 @@ import { cardCanBePlayed, ExecuteTheProccess, getCardInfoByIdWithSuffix, initGam
 import "./../2P-style.scss";
 import Card from "./card";
 import CustomIcons from "./custom-icons";
+import DeckEdition from "../deck-edition";
 
 interface Props extends RouteComponentProps<{ OpponentTurn: string }> {
   currentUser: UserModel;
@@ -18,18 +19,25 @@ interface Props extends RouteComponentProps<{ OpponentTurn: string }> {
 
 const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, playersInfo }) => {
   const [MenuOpen, setMenuOpen] = useState<string | false>("start");
-  const [user, setUser] = useState<UserModel>(currentUser);
   const [Cards, setCards] = useState<CardModel[]>(Data!.cards);
   const [Player1Data, setPlayer1Data] = useState<PlayerDataModel2PROJ>();
   const [Player2Data, setPlayer2Data] = useState<PlayerDataModel2PROJ>();
   const [SelectedCard, setSelectedCard] = useState<string | null>(null);
-  const [OpponentTurn, setOpponentTurn] = useState<number>(0);
+  const [OpponentTurnType, setOpponentTurnType] = useState<number>(0);
+  const [newPlayerInfo, setNewBluePlayerInfo] = useState<PlayerDataModel2PROJ | null>();
 
   const [TurnTempo, setTurnTempo] = useState<boolean>(false);
 
   useEffect(() => {
-    setOpponentTurn(parseInt(match.params.OpponentTurn));
+    setOpponentTurnType(parseInt(match.params.OpponentTurn));
   }, [match]);
+
+  const setBlueNewCardDeck = (newDeck: string[]) => {
+    if (playersInfo) {
+      setMenuOpen("start");
+      setNewBluePlayerInfo({ ...playersInfo.blue, cardDeck: newDeck });
+    }
+  };
 
   useEffect(() => {
     setPlayer1Data((prevData) => ({
@@ -44,13 +52,17 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
       if (
         executionResult &&
         executionResult.blue &&
-        (executionResult.blue.statRessources.health === 0 || executionResult.red.statRessources.health > 99)
+        (executionResult.blue.statRessources.health === 0 ||
+          executionResult.red.statRessources.health > 99 ||
+          executionResult.blue.cardHand.length === 0)
       )
         setMenuOpen("red");
       else if (
         executionResult &&
         executionResult.red &&
-        (executionResult.red.statRessources.health === 0 || executionResult.blue.statRessources.health > 99)
+        (executionResult.red.statRessources.health === 0 ||
+          executionResult.blue.statRessources.health > 99 ||
+          executionResult.red.cardHand.length === 0)
       )
         setMenuOpen("blue");
       else {
@@ -71,7 +83,7 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
 
   const PlayerEndTurn = () => {
     let infoRedPlayer: { cardId: string; placement: string } | "" = "";
-    switch (OpponentTurn) {
+    switch (OpponentTurnType) {
       case 1:
         infoRedPlayer = lvl1TurnAi({ blue: Player1Data!, red: Player2Data! }, Cards);
         break;
@@ -82,7 +94,7 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
         infoRedPlayer = lvl3TurnAi({ blue: Player1Data!, red: Player2Data! }, Cards);
         break;
       default:
-        console.log(OpponentTurn);
+        console.log(OpponentTurnType);
         break;
     }
     if (infoRedPlayer !== "")
@@ -140,13 +152,13 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
             </span>
           </div>
         ) : SelectedCard ? (
-          <div className="cta cta-blue absolute t0 turn-btn">
+          <div className="cta cta-dark absolute t0 turn-btn">
             <span className="flex-center g15 blue">
               <i className="blue">info</i>place card
             </span>
           </div>
         ) : (
-          <div className="cta cta-blue absolute t0 turn-btn">
+          <div className="cta cta-dark absolute t0 turn-btn">
             <span className="flex-center g15 blue">
               <i className="blue">info</i>choose card
             </span>
@@ -175,7 +187,8 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
                 <div key={index} className="card red-player-border can-not-play"></div>
               ))}
         </div>
-        <div className="normal-container resource-player-info w80 flex-end-justify g15 red-player-border">
+        <div className="normal-container resource-player-info w80 flex-end-justify flex-center-align g15 red-player-border">
+          <h3 className="m0 absolute l0 ml25">AI level : {OpponentTurnType}</h3>
           <div className="dark-container resource-container flex-center g10" id="red-brick">
             <CustomIcons icon="brick" color="#dee0df" />
             {`Bricks (+${Player2Data ? Player2Data.statRessources.generatorBrick : "0"}) : ${
@@ -197,6 +210,9 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
         </div>
       </div>
       <div className="GameBoard flex-col flex-center relative w80">
+        <i className="absolute l0 blue-h normal fs30" onClick={() => setMenuOpen("pause")}>
+          settings
+        </i>
         <TurnButton Player1Data={Player1Data!} SelectedCard={SelectedCard!} />
         <div className="flex-bet flex-center-align g25">
           {Player1Data ? (
@@ -366,18 +382,20 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
       {MenuOpen ? (
         <div className="absolute flex-center menu-pop-up">
           <div className="dark-background zi1"></div>
-          <div className="dark-container zi1 w30 flex-center flex-col">
+          <div className="dark-container zi1 flex-center-align flex-col g10">
             {MenuOpen === "start" ? (
-              <>
+              <div className="mr50 ml25 pr50 flex-center-justify flex-col g15">
                 <h2>Start a new game :</h2>
                 <div
-                  className="cta cta-blue"
+                  className="cta cta-blue mrauto"
                   onClick={() => {
                     setMenuOpen("");
-                    const initialisePlayer = initGame(playersInfo!);
-                    if (initialisePlayer) {
-                      setPlayer1Data(initialisePlayer.blue);
-                      setPlayer2Data(initialisePlayer.red);
+                    if (playersInfo) {
+                      const initialisePlayer = initGame(newPlayerInfo ? { ...playersInfo, blue: newPlayerInfo } : playersInfo!);
+                      if (initialisePlayer) {
+                        setPlayer1Data(initialisePlayer.blue);
+                        setPlayer2Data(initialisePlayer.red);
+                      }
                     }
                   }}
                 >
@@ -385,20 +403,64 @@ const GameBoard: FunctionComponent<Props> = ({ match, currentUser, Data, players
                     <i>play_circle_outline</i>Start
                   </span>
                 </div>
-              </>
+
+                <div className="cta cta-blue mrauto" onClick={() => setMenuOpen("deck")}>
+                  <span className="flex-center g10">
+                    <i>view_agenda</i>Edit Deck
+                  </span>
+                </div>
+
+                <Link to={`/2PROJ`} className="cta cta-blue mrauto">
+                  <span className="flex-center g10">
+                    <i>arrow_back</i>Back Home
+                  </span>
+                </Link>
+              </div>
+            ) : null}
+
+            {MenuOpen === "pause" ? (
+              <div className="mr50 ml25 pr50 flex-center-justify flex-col g15">
+                <h2 className="cap">pause</h2>
+
+                <div className="cta cta-blue mrauto" onClick={() => setMenuOpen(false)}>
+                  <span className="flex-center g10">
+                    <i>play_circle_outline</i>Resume
+                  </span>
+                </div>
+
+                <div className="cta cta-blue mrauto" onClick={() => setMenuOpen("start")}>
+                  <span className="flex-center g10">
+                    <i>restart_alt</i>Restart the game
+                  </span>
+                </div>
+
+                <Link to={`/2PROJ`} className="cta cta-blue mrauto">
+                  <span className="flex-center g10">
+                    <i>arrow_back</i>Back Home
+                  </span>
+                </Link>
+              </div>
             ) : null}
 
             {MenuOpen === "red" || MenuOpen === "blue" ? (
-              <>
+              <div className="mr50 ml25 pr50 flex-center-justify flex-col g15">
                 <h2 className="cap">{MenuOpen} Player Win !</h2>
 
-                <Link to={`/2PROJ`} className="cta cta-blue">
+                <div className="cta cta-blue mrauto" onClick={() => setMenuOpen("start")}>
                   <span className="flex-center g10">
-                    <i>edit</i>Back Home
+                    <i>restart_alt</i>Restart the game
+                  </span>
+                </div>
+
+                <Link to={`/2PROJ`} className="cta cta-blue mrauto">
+                  <span className="flex-center g10">
+                    <i>arrow_back</i>Back Home
                   </span>
                 </Link>
-              </>
+              </div>
             ) : null}
+
+            {MenuOpen === "deck" ? <DeckEdition returnFunction={setBlueNewCardDeck} /> : null}
           </div>
         </div>
       ) : null}

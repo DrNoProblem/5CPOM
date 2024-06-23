@@ -50,7 +50,7 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
         <Link
           to={`/2PROJ`}
           data-title={"2PROJ"}
-          className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${actualPage === "/2PROJ" ? " blue" : ""}`}
+          className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${actualPage.includes("/2PROJ") ? " blue" : ""}`}
         >
           <i className="">web</i>
           {!MiniMenu ? <p className="pl10 m0">2PROJ</p> : null}
@@ -58,12 +58,11 @@ const SideMenu: FunctionComponent<Props> = ({ miniMenu }) => {
         <Link
           to={`/3PROJ`}
           data-title={"3PROJ"}
-          className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${actualPage === "/3PROJ" ? " blue" : ""}`}
+          className={`side-item after-info flex-row flex-center-align normal-bg-h p10 ${actualPage.includes("/3PROJ") ? " blue" : ""}`}
         >
           <i className="">web</i>
           {!MiniMenu ? <p className="pl10 m0">3PROJ</p> : null}
         </Link>
-        {actualPage.includes("/3PROJ/") ? <div className="space"></div> : null}
       </div>
 
       <div className="space"></div>

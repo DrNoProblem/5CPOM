@@ -18,7 +18,7 @@ exports.AddDraw = async (req, res, next) => {
     const { script } = req.body;
     let existingDraw;
     try {
-      existingDraw = await Draw.findOne({ owner: req.userId, script: script });
+      existingDraw = await Draw.findOne({ owner: req.user.id, script: script });
     } catch (err) {
       return next(err);
     }
@@ -27,7 +27,7 @@ exports.AddDraw = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ status: "fail", message: "Validation error", errors: errors.array() });
     }
-    const newDraw = await Draw.create({ owner: req.userId, script: script });
+    const newDraw = await Draw.create({ owner: req.user.id, script: script });
     res.status(201).json({
       status: "success",
       data: newDraw,

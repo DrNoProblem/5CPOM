@@ -1,27 +1,27 @@
 import React, { FC, useEffect, useState } from "react";
 import { Link, RouteComponentProps, useHistory } from "react-router-dom";
+import DeleteDrawById from "../../../api-request/draw/draw-delete";
 import addCorrectionToTask from "../../../api-request/task/correction-add";
+import addDetailToTask from "../../../api-request/task/detail-add";
 import addRenderToTask from "../../../api-request/task/render-add";
 import DeleteTaskById from "../../../api-request/task/task-delete";
+import CurrentUserDrawsUpdate from "../../../api-request/user/update-draw";
+import UserNotesUpdate from "../../../api-request/user/update-notes";
 import { isDatePast } from "../../../helpers/check-date-passed";
 import isHttpStatusValid from "../../../helpers/check-status";
 import { formatDate } from "../../../helpers/display-date-format";
 import displayStatusRequest from "../../../helpers/display-status-request";
 import getNameById from "../../../helpers/getNameById";
 import { getToken } from "../../../helpers/token-verifier";
+import DataModel from "../../../models/data-model";
 import RoomModel from "../../../models/room-model";
 import TaskModel from "../../../models/tasks-model";
 import UserModel from "../../../models/user-model";
 import "../3P-style.scss";
 import ModalConfirmDelete from "../components/confirmation-delete";
 import ConsoleDrawComponent from "../components/console-draw";
-import TableDraw from "../components/table-draw-list";
 import EditTaskInfo from "../components/fields-task-info";
-import DataModel from "../../../models/data-model";
-import DeleteDrawById from "../../../api-request/draw/draw-delete";
-import CurrentUserDrawsUpdate from "../../../api-request/user/update-draw";
-import addDetailToTask from "../../../api-request/task/detail-add";
-import UserNotesUpdate from "../../../api-request/user/update-notes";
+import TableDraw from "../components/table-draw-list";
 import updateRenderNotes from "../../../api-request/task/note-update";
 
 interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> {
@@ -30,13 +30,31 @@ interface Props extends RouteComponentProps<{ roomid: string; taskid: string }> 
   Data: DataModel;
 }
 
+/* 
+
 type UserListNote = {
   id: string;
   script: string;
   note: number;
 };
+ */
+type UserListNote = {
+  userId: string;
+  notes: {
+    note: number;
+    script: string;
+    taskId: string;
+    roomId: string;
+  };
+};
 
-function countNegativeOnes(entries: UserListNote[]): number {
+type NoteRender = {
+  id: string;
+  script: string;
+  note: number;
+};
+
+function countNegativeOnes(entries: NoteRender[]): number {
   return entries.reduce((acc, entry) => {
     if (entry.note === -1) acc += 1;
     return acc;
@@ -49,11 +67,11 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
 
   const [RenderStatus, setRenderStatus] = useState<boolean>(false);
 
-  const [TempoTaskRender, setTempoTaskRender] = useState<UserListNote[]>();
+  const [TempoTaskRender, setTempoTaskRender] = useState<NoteRender[]>();
 
   const [IsOwner, setIsOwner] = useState<boolean>(false);
   const [IsDatePassed, setIsDatePassed] = useState<boolean>(false);
-  const [WorkView, setWorkView] = useState<UserListNote | false>();
+  const [WorkView, setWorkView] = useState<NoteRender | false>();
 
   const [PopUpActive, setPopUpActive] = useState<string | false>(false);
 
@@ -131,28 +149,50 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
         setPopUpActive(false);
         SetLog();
       } else displayStatusRequest("Detail fail to sumbit", true);
-      
     });
   };
 
   const UpdateNotes = () => {
-    const updatedTempoTaskRender: UserListNote[] = Room!.users.reduce((acc, userId) => {
+    const newUsersToSend: UserListNote[] = Room!.users.reduce((acc, userId) => {
       const existingTask = TempoTaskRender!.find((task) => task.id === userId);
       if (!existingTask) {
-        acc.push({ id: userId, script: "", note: 0 });
+        acc.push({ userId: userId, notes: { script: "", note: 0, roomId: Room!._id, taskId: Task!._id } });
       }
       return acc;
     }, [] as UserListNote[]);
+
+    let NewNotesRendersValues: NoteRender[] = [];
+    if (TempoTaskRender) {
+      TempoTaskRender.forEach((e) => {
+        newUsersToSend.push({ userId: e.id, notes: { script: e.script, note: e.note, roomId: Room!._id, taskId: Task!._id } });
+      });
+      NewNotesRendersValues = Room!.users.reduce((acc, userId) => {
+        const existingTask = TempoTaskRender.find((task) => task.id === userId);
+        if (!existingTask) {
+          acc.push({ id: userId, script: "", note: 0 });
+        }
+        return acc;
+      }, [] as NoteRender[]);
+    }
+
+    UserNotesUpdate(newUsersToSend).then((result) => {
+      if (isHttpStatusValid(result.status)) {
+        setWorkView(false);
+        setPopUpActive(false);
+        displayStatusRequest("Notes submited successfully", false);
+      } else displayStatusRequest("Notes fail to sumbit", true);
+    });
+
     Promise.all([
-      updateRenderNotes(Task!._id, [...TempoTaskRender!, ...updatedTempoTaskRender]),
-      UserNotesUpdate([...TempoTaskRender!, ...updatedTempoTaskRender]),
+      updateRenderNotes(Task!._id, Room!._id, [...TempoTaskRender!, ...NewNotesRendersValues]),
+      UserNotesUpdate(newUsersToSend),
     ]).then((result) => {
       const [UpdateRenderNotesResult, UpdateUserNotesResult] = result;
       if (isHttpStatusValid(UpdateRenderNotesResult.status) && isHttpStatusValid(UpdateUserNotesResult.status)) {
         setWorkView(false);
         setPopUpActive(false);
         displayStatusRequest("Notes submited successfully", false);
-      }else displayStatusRequest("Notes fail to sumbit", true);
+      } else displayStatusRequest("Notes fail to sumbit", true);
     });
   };
 
@@ -208,7 +248,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
       <div className="flex-col g20 w100">
         <div className="g20 flex-center-align">
           <div className="g20 flex-center-align w50">
-            <Link to={`/3PROJ/room/${Room!._id}`} className="cta cta-blue">
+            <Link to={`/3PROJ/room/${Room!._id}`} className="cta cta-dark cta-blue-h">
               <span>Back</span>
             </Link>
             <h2 className="mb0 flex-center-align g15">
@@ -280,7 +320,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                         <i className=" red ml25">warning</i>
                       </h2>
                       <textarea name="deatil-input" id="deatil-input" rows={15}></textarea>
-                      <div className="cta normal-bg blue-h mlauto" onClick={submitOwnerDetail}>
+                      <div className="cta cta-blue-h cta-normal mlauto" onClick={submitOwnerDetail}>
                         <span className="add-user flex-center g15">
                           <i className="">add</i>add detail
                         </span>
@@ -300,13 +340,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                   <div className="dark-container display-from-left flex-col flex-start-justify">
                     <h2>Correction for this task :</h2>
                     <div className="flex g20">
-                      <div className="cta normal-bg blue-h" onClick={() => setPopUpActive("view correction")}>
+                      <div className="cta cta-blue-h cta-normal" onClick={() => setPopUpActive("view correction")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="">open_in_new</i>View
                         </span>
                       </div>
                       {IsOwner ? (
-                        <div className="cta normal-bg blue-h" onClick={() => setPopUpActive("edit correction")}>
+                        <div className="cta cta-blue-h cta-normal" onClick={() => setPopUpActive("edit correction")}>
                           <span className="add-user flex-row flex-center-align flex-start-justify g15">
                             <i className="">edit</i>Edit
                           </span>
@@ -319,13 +359,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                     <h2 className="m0">No corrections yet</h2>
                     {IsOwner ? (
                       <div>
-                        <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit correction")}>
+                        <div className="cta cta-blue-h cta-normal mrauto" onClick={() => setPopUpActive("submit correction")}>
                           <span className="add-user flex-row flex-center-align flex-start-justify g15">
                             <i className="">add</i>Add script
                           </span>
                         </div>
 
-                        <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose correction")}>
+                        <div className="cta cta-blue-h cta-normal mrauto" onClick={() => setPopUpActive("choose correction")}>
                           <span className="add-user flex-row flex-center-align flex-start-justify g15">
                             <i className="">add</i>Choose script
                           </span>
@@ -340,7 +380,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 IsOwner ? (
                   <div className="dark-container display-from-left flex-col flex-start-justify g20">
                     <h2 className="mb0">Note users's renders</h2>
-                    <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("note")}>
+                    <div className="cta cta-blue-h cta-normal mrauto" onClick={() => setPopUpActive("note")}>
                       {countNegativeOnes(Task.renders) === Room.users.length ? (
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="">edit</i>Edit
@@ -407,12 +447,12 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                       <h2 className="m0">Render is submited</h2>
                     </div>
                     <div className="flex g15">
-                      <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("view render")}>
+                      <div className="cta cta-blue-h cta-normal mrauto" onClick={() => setPopUpActive("view render")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="">visibility</i>View
                         </span>
                       </div>
-                      <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("edit render")}>
+                      <div className="cta cta-blue-h cta-normal mrauto" onClick={() => setPopUpActive("edit render")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="">edit</i>Edit
                         </span>
@@ -427,13 +467,13 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                     <i className=" red ml25">warning</i>
                   </h2>
                   <div className="flex-col g15">
-                    <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("submit render")}>
+                    <div className="cta cta-blue-h cta-normal mrauto" onClick={() => setPopUpActive("submit render")}>
                       <span className="add-user flex-row flex-center-align flex-start-justify g15">
                         <i className="">add</i>Add draw
                       </span>
                     </div>
                     {currentUser.draws.length > 0 ? (
-                      <div className="cta normal-bg blue-h mrauto" onClick={() => setPopUpActive("choose render")}>
+                      <div className="cta cta-blue-h cta-normal mrauto" onClick={() => setPopUpActive("choose render")}>
                         <span className="add-user flex-row flex-center-align flex-start-justify g15">
                           <i className="">add</i>Choose draws
                         </span>
@@ -550,7 +590,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                             &nbsp;/&nbsp;100
                           </span>
                           <div
-                            className="cta normal-bg blue-h mlauto"
+                            className="cta cta-blue-h cta-normal mlauto"
                             onClick={() =>
                               EditTempoNote(
                                 WorkView.id,
@@ -577,6 +617,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                       returnedScript={false}
                       currentUser={currentUser}
                       SetLog={SetLog}
+                      title={undefined}
                     />
                   ) : (
                     <ConsoleDrawComponent
@@ -585,6 +626,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                       returnedScript={false}
                       currentUser={currentUser}
                       SetLog={SetLog}
+                      title={undefined}
                     />
                   )}
                 </div>
@@ -596,7 +638,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 currentUser={currentUser}
                 returnFunction={submitUserRender}
                 title=""
-                DrawsList={[]}
+                DrawsList={Data.draws.filter((draw) => currentUser.draws.includes(draw._id))}
                 deleteFunction={SetDeleteDraw}
               />
             ) : null}
@@ -607,6 +649,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 returnedScript={submitUserRender}
                 currentUser={currentUser}
                 SetLog={SetLog}
+                title={`Submit render for ${Task.title} of ${Room.name}`}
               />
             ) : null}
             {PopUpActive === "view render" ? (
@@ -616,6 +659,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 returnedScript={false}
                 currentUser={currentUser}
                 SetLog={SetLog}
+                title={`View render for ${Task.title} of ${Room.name}`}
               />
             ) : null}
 
@@ -635,6 +679,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 returnedScript={submitOwnerCorrection}
                 currentUser={currentUser}
                 SetLog={SetLog}
+                title={`Submit correction for ${Task.title} of ${Room.name}`}
               />
             ) : null}
             {PopUpActive === "view correction" ? (
@@ -644,6 +689,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 returnedScript={false}
                 currentUser={currentUser}
                 SetLog={SetLog}
+                title={`View correction for ${Task.title} of ${Room.name}`}
               />
             ) : null}
             {PopUpActive === "edit correction" ? (
@@ -653,6 +699,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 returnedScript={submitOwnerCorrection}
                 currentUser={currentUser}
                 SetLog={SetLog}
+                title={`Edit correction for ${Task.title} of ${Room.name}`}
               />
             ) : null}
 
@@ -663,6 +710,7 @@ const RoomTaskPageById: FC<Props> = ({ match, currentUser, SetLog, Data }) => {
                 returnedScript={submitUserRender}
                 currentUser={currentUser}
                 SetLog={SetLog}
+                title={`Edit render for ${Task.title} of {Room.name}`}
               />
             ) : null}
 

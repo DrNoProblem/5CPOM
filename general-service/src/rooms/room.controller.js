@@ -19,7 +19,7 @@ exports.AddRoom = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ status: "fail", message: "Validation error", errors: errors.array() });
     }
-    const newRoom = await Room.create({ name, owner: req.userId, co_owner, users, tasks: [""] });
+    const newRoom = await Room.create({ name, owner: req.user.id, co_owner, users, tasks: [""] });
     res.status(201).json({
       status: "success",
       data: {

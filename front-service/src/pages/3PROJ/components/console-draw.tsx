@@ -30,9 +30,10 @@ type Props = {
   returnedScript: Function | false;
   currentUser: UserModel;
   SetLog: Function;
+  title: string | undefined;
 };
 
-const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedScript, currentUser, SetLog }) => {
+const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedScript, currentUser, SetLog, title }) => {
   const [ZoneTXT, setZoneTXT] = useState<Boolean>(true);
   const [ConsoleTXT, setConsoleTXT] = useState<string[]>(["> reset draw"]);
 
@@ -354,126 +355,128 @@ const ConsoleDrawComponent: FC<Props> = ({ DefaultScript, correction, returnedSc
   };
 
   return (
-    <div className={`${correction ? "flex-col g5" : "flex-row g20"} dark-bg dark-container display-from-left w100`}>
-      <div className="canva-container relative">
-        <i className={`pointer ${LoadPopUp ? "op0" : ""}`} id="cursor">
-          rocket
-        </i>
-        {SpeedPopUp ? (
-          <div className="speed-input absolute flex-center p10 w80 flex-bet">
-            <i className=" mr10">speed</i>
-            <input
-              className="w60"
-              type="range"
-              defaultValue={DrawProperties.speed}
-              max={1000}
-              min={0}
-              step={50}
-              onChange={(e) => setDrawProperties({ ...DrawProperties, speed: parseInt(e.currentTarget.value) })}
-              onMouseUp={(e) => {
-                setSpeedPopUp(!SpeedPopUp);
-                setConsoleTXT([...ConsoleTXT, `Speed is set to ${e.currentTarget.value}ms`]);
-              }}
-            />
-            <span className="mlauto">{DrawProperties.speed}ms</span>
-          </div>
-        ) : null}
-
-        {LoadPopUp ? (
-          <div className="absolute zi2 w100">
-            <FileManagementComponent
-              script={
-                (document.querySelector("textarea[name=draw-script]") as HTMLInputElement)
-                  ? (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value
-                  : ""
-              }
-              functionReturned={onReturnFileManage}
-              currentUser={currentUser}
-              SetLog={SetLog}
-            />
-          </div>
-        ) : null}
-
-        <canvas ref={canvasRef} width="450" height="450" id="viewDraft" className={`${LoadPopUp ? "op0" : ""}`} />
-      </div>
-
-      <div className="flex-col h100 relative w100">
-        <div className={`b0  flex-start-justify g5 relative flex-center-align  ${correction ? "" : "mb5"}`}>
-          <div className={`mini-cta ${ZoneTXT ? "blue" : "blue-h"}`} onClick={() => setZoneTXT(true)}>
-            SCRIPT
-          </div>
-          <span className="normal">|</span>
-          <div className={`mini-cta ${ZoneTXT ? "blue-h" : "blue"}`} onClick={() => setZoneTXT(false)}>
-            CONSOLE
-          </div>
-          <i
-            className={` blue-h mlauto ${SpeedPopUp ? "blue" : "blue-h"}`}
-            onClick={() => {
-              setSpeedPopUp(!SpeedPopUp);
-              setLoadPopUp(false);
-            }}
-          >
-            speed
+    <div className={`${correction ? "flex-col g5" : "flex-col g20"} dark-bg dark-container display-from-left`}>
+      {title ? <h2 className="m0">{title}</h2> : null}
+      <div className={`${correction ? "flex-col" : "flex-row g20 "}`}>
+        <div className="canva-container relative">
+          <i className={`pointer ${LoadPopUp ? "op0" : ""}`} id="cursor">
+            rocket
           </i>
-          {correction ? null : (
+          {SpeedPopUp ? (
+            <div className="speed-input absolute flex-center p10 w80 flex-bet">
+              <i className=" mr10">speed</i>
+              <input
+                className="w60"
+                type="range"
+                defaultValue={DrawProperties.speed}
+                max={1000}
+                min={0}
+                step={50}
+                onChange={(e) => setDrawProperties({ ...DrawProperties, speed: parseInt(e.currentTarget.value) })}
+                onMouseUp={(e) => {
+                  setSpeedPopUp(!SpeedPopUp);
+                  setConsoleTXT([...ConsoleTXT, `Speed is set to ${e.currentTarget.value}ms`]);
+                }}
+              />
+              <span className="mlauto">{DrawProperties.speed}ms</span>
+            </div>
+          ) : null}
+
+          {LoadPopUp ? (
+            <div className="absolute zi2 w100">
+              <FileManagementComponent
+                script={
+                  (document.querySelector("textarea[name=draw-script]") as HTMLInputElement)
+                    ? (document.querySelector("textarea[name=draw-script]") as HTMLInputElement).value
+                    : ""
+                }
+                functionReturned={onReturnFileManage}
+                currentUser={currentUser}
+                SetLog={SetLog}
+              />
+            </div>
+          ) : null}
+
+          <canvas ref={canvasRef} width="450" height="450" id="viewDraft" className={`${LoadPopUp ? "op0" : ""}`} />
+        </div>
+        <div className="flex-col h100 relative w100">
+          <div className={`b0  flex-start-justify g5 relative flex-center-align  ${correction ? "" : "mb5"}`}>
+            <div className={`mini-cta ${ZoneTXT ? "blue" : "blue-h"}`} onClick={() => setZoneTXT(true)}>
+              SCRIPT
+            </div>
+            <span className="normal">|</span>
+            <div className={`mini-cta ${ZoneTXT ? "blue-h" : "blue"}`} onClick={() => setZoneTXT(false)}>
+              CONSOLE
+            </div>
             <i
-              className={` ${LoadPopUp ? "blue" : "blue-h"}`}
+              className={` blue-h mlauto ${SpeedPopUp ? "blue" : "blue-h"}`}
               onClick={() => {
-                setLoadPopUp(!LoadPopUp);
-                setSpeedPopUp(false);
+                setSpeedPopUp(!SpeedPopUp);
+                setLoadPopUp(false);
               }}
             >
-              open_in_new
+              speed
             </i>
-          )}
-          <i className=" blue-h">translate</i>
-          <i className=" blue-h" onClick={resetDraw}>
-            restart_alt
-          </i>
-        </div>
-
-        <div className={`relative flex h100 ${ZoneTXT ? "" : "hidden"}`}>
-          <div
-            className="flex-center mini-cta cta-blue 
-          absolute b0 r0 mb10 mr15"
-            onClick={() =>
-              ScriptValue ? parseAndExecuteLogoScript(ScriptValue!) : setConsoleTXT([...ConsoleTXT, "No script to test"])
-            }
-          >
-            test script
+            {correction ? null : (
+              <i
+                className={` ${LoadPopUp ? "blue" : "blue-h"}`}
+                onClick={() => {
+                  setLoadPopUp(!LoadPopUp);
+                  setSpeedPopUp(false);
+                }}
+              >
+                open_in_new
+              </i>
+            )}
+            <i className=" blue-h">translate</i>
+            <i className=" blue-h" onClick={resetDraw}>
+              restart_alt
+            </i>
           </div>
-          <textarea
-            disabled={correction}
-            name="draw-script"
-            className="input"
-            onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))}
-            defaultValue={DefaultScript}
-          />
-        </div>
 
-        <div className={`flex h100 ${ZoneTXT ? "hidden" : ""}`}>
-          <textarea name="console-script" className="input" disabled value={ConsoleTXT.join("\n> ")} />
-        </div>
+          <div className={`relative flex h100 ${ZoneTXT ? "" : "hidden"}`}>
+            <div
+              className="flex-center mini-cta cta-blue 
+          absolute b0 r0 mb10 mr15"
+              onClick={() =>
+                ScriptValue ? parseAndExecuteLogoScript(ScriptValue!) : setConsoleTXT([...ConsoleTXT, "No script to test"])
+              }
+            >
+              test script
+            </div>
+            <textarea
+              disabled={correction}
+              name="draw-script"
+              className="input"
+              onKeyUp={(e) => setScriptValue(e.currentTarget.value.split(/\r?\n/))}
+              defaultValue={DefaultScript}
+            />
+          </div>
 
-        {returnedScript ? (
-          ScriptValue ? (
-            <div className="flex-bet ">
-              <div className="cta cta-blue mlauto" onClick={() => returnedScript(ScriptValue.join("\n"))}>
-                <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                  <i className="">add</i>Submit
-                </span>
+          <div className={`flex h100 ${ZoneTXT ? "hidden" : ""}`}>
+            <textarea name="console-script" className="input" disabled value={ConsoleTXT.join("\n> ")} />
+          </div>
+
+          {returnedScript ? (
+            ScriptValue ? (
+              <div className="flex-bet ">
+                <div className="cta cta-normal cta-blue-h mlauto mt20" onClick={() => returnedScript(ScriptValue.join("\n"))}>
+                  <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                    <i className="">add</i>Submit
+                  </span>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex-bet ">
-              <div className="cta cta-disable mlauto">
-                <span className="add-user flex-row flex-center-align flex-start-justify g15">
-                  <i className="">close</i>Submit
-                </span>
+            ) : (
+              <div className="flex-bet ">
+                <div className="cta cta-disable mlauto mt20">
+                  <span className="add-user flex-row flex-center-align flex-start-justify g15">
+                    <i className="">close</i>Submit
+                  </span>
+                </div>
               </div>
-            </div>
-          )
-        ) : null}
+            )
+          ) : null}
+        </div>
       </div>
     </div>
   );

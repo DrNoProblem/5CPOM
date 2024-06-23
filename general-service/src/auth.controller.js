@@ -13,7 +13,7 @@ exports.protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
     }
     if (!token) return res.status(400).json({ status: "fail", message: "log in to get access error", errors: errors.array() });
-    req.userId = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
+    req.user = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
     req.token = token;
     next();
   } catch (error) {

@@ -24,23 +24,27 @@ const HomePage2PROJ: FunctionComponent<Props> = ({ currentUser, Data }) => {
     }
   }, [OpponentType]);
 
-  let players: { blue: PlayerDataModel2PROJ; red: PlayerDataModel2PROJ } = JsonPlayerData;
   return (
     <div className="main p20 flex-col relative flex-end-align g20">
       <div className="flex-col g20 w100">
-        <h2 className="mb0">Projects : 2PROJ</h2>
+        <div className="g20 flex-center-align">
+          <Link to={`/`} className="cta cta-dark cta-blue-h">
+            <span>Back</span>
+          </Link>
+          <h2 className="mb0">Projects : 2PROJ</h2>
+        </div>
         <div className="flex-wrap g20 flex-start-align">
           <div className="dark-container g20 flex-col">
             <h2 className="m0">Start Game</h2>
             <h4 className="m0">Select AI opponent level :</h4>
             <div className="g20">
-              <div className="home-tile normal-container" onClick={() => setOpponentType(1)}>
+              <div className="cta cta-normal blue-h " onClick={() => setOpponentType(1)}>
                 <span className="ml15 mr15">level 1</span>
               </div>
-              <div className="home-tile normal-container" onClick={() => setOpponentType(2)}>
+              <div className="cta cta-normal blue-h " onClick={() => setOpponentType(2)}>
                 <span className="ml15 mr15">level 2</span>
               </div>
-              <div className="home-tile normal-container red-h" onClick={() => setOpponentType(3)}>
+              <div className="cta cta-disable ">
                 <span className="ml15 mr15">level 3</span>
               </div>
             </div>
@@ -49,13 +53,6 @@ const HomePage2PROJ: FunctionComponent<Props> = ({ currentUser, Data }) => {
               <span className="ml15 mr15">Start search</span>
             </Link>
           </div>
-
-          <Link className="home-tile dark-container blue-h" to={"/2PROJ/deck"}>
-            <span className="ml15 mr15 g25 flex-center">
-              <i>settings</i>
-              Edit Deck
-            </span>
-          </Link>
         </div>
       </div>
     </div>

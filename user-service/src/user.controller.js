@@ -51,13 +51,26 @@ exports.updateDrawsCurrentUser = async (req, res, next) => {
   }
 };
 
-exports.updateNotesCurrentUser = async (req, res, next) => {
+exports.updateNoteUsers = async (req, res, next) => {
   try {
-    const { notes, userId } = req.body;
-    const user = await User.findById(userId);
-    if (notes) user.notes = notes;
-    await user.save();
-    res.json({ message: "User updated successfully" });
+    const users = req.body;
+
+    for (const { notes, userId } of users) {
+      const user = await User.findById(userId);
+      if (user) {
+        const noteIndex = user.notes.findIndex((note) => note.taskId === notes.taskId);
+        if (noteIndex !== -1) {
+          // Remplacer la note existante par la nouvelle note
+          user.notes[noteIndex] = notes;
+        } else {
+          // Ajouter la nouvelle note si taskId n'existe pas
+          user.notes.push(notes);
+        }
+        await user.save();
+      }
+    }
+
+    res.json({ message: "Users updated successfully" });
   } catch (err) {
     next(err);
   }

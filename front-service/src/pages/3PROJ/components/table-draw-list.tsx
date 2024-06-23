@@ -31,24 +31,23 @@ const TableDraw: FC<Props> = ({ currentUser, returnFunction, title, DrawsList, d
         {DrawsList.map((draw: DrawModel) => {
           counter++;
           return (
-            <li key={draw._id} className={`no-hover${ActiveRow === draw._id + "" ? " active-row" : ""}`}>
+            <li
+              key={draw._id}
+              className={`no-hover${ActiveRow === draw._id + "" ? " active-row" : ""}`}
+              onClick={() => {
+                ActiveRow === draw._id + "" ? setActiveRow("") : setActiveRow(draw._id + "");
+              }}
+            >
               <div className="flex-col">
                 <div className="flex-row flex-start-align flex-start-justify w100">
                   <p className="w10">{counter}</p>
                   <p className="w90">{draw.script}</p>
-                  <i
-                    className=" mtauto mbauto blue-h expand"
-                    onClick={() => {
-                      ActiveRow === draw._id + "" ? setActiveRow("") : setActiveRow(draw._id + "");
-                    }}
-                  >
-                    chevron_right
-                  </i>
+                  <i className=" mtauto mbauto blue-h expand">chevron_right</i>
                 </div>
                 {ActiveRow === draw._id + "" ? (
                   <div className="border-top-normal flex-start-justify g15 pt15 pb5 row-detail">
                     <div className="flex-wrap g15">
-                      <Link to={`/3PROJ/draw/${draw._id}`} className="cta normal-bg mrauto blue-h">
+                      <Link to={`/3PROJ/draw/${draw._id}`} className="cta cta-blue-h cta-normal mrauto">
                         <span className="add-user flex-center g15">
                           <i className="">visibility</i>
                           View
